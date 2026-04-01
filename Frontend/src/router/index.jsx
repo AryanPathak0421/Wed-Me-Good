@@ -88,10 +88,13 @@ const AppRouter = () => {
 
   return (
     <Routes>
-      {/* Public Routes - No Header/BottomNav */}
+      {/* Root - Always show Welcome page on load */}
       <Route path="/" element={<Welcome />} />
+      
       {/* Route alias for vender misspelling */}
       <Route path="/vender/*" element={<Navigate to="/vendor" replace />} />
+      
+      {/* Auth Routes */}
       <Route path="/login" element={
         isAuthenticated ? <Navigate to="/user/dashboard" replace /> : <Login />
       } />
