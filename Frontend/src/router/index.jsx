@@ -105,240 +105,168 @@ const AppRouter = () => {
       <Route path="/vendor/*" element={<VendorRoutes />} />
       
       {/* Protected Routes */}
-      <Route path="/user/*" element={<ProtectedRoute><Routes>
-        {/* Wedding Details - No Header/BottomNav */}
-        <Route path="wedding-details" element={<WeddingDetailsForm />} />
-        
-        {/* All other routes with Header/BottomNav */}
-        <Route path="*" element={
-          <div className="min-h-screen bg-theme-card">
-            <Header />
-            <main className="pb-16 md:pb-0">
-              <Routes>
-                <Route path="dashboard" element={<Dashboard />} />
-                <Route path="home" element={<UserHome />} />
-                <Route path="search" element={<Search />} />
-                <Route path="news" element={<News />} />
-                <Route path="requirements" element={<RequirementsForm />} />
-                <Route path="requirements/planning-details" element={<PlanningDetails />} />
-                <Route path="wedding-form" element={<WeddingForm />} />
-                <Route path="planning-dashboard" element={<PlanningDashboard />} />
-                <Route path="vendors" element={<VendorsMain />} />
-                <Route path="vendors/:category" element={<VendorsList />} />
-                <Route path="vendor/:vendorId" element={<VendorDetail />} />
-                <Route path="vendor-comparison" element={<VendorComparison />} />
-                <Route path="cart" element={<Cart />} />
-                <Route path="checkout" element={<Checkout />} />
-                <Route path="chats" element={<ChatsList />} />
-                <Route path="chats/:vendorId" element={<VendorChat />} />
-                <Route path="ai-assistant" element={<AIAssistant />} />
-                
-                {/* Family Group Routes */}
-                <Route path="family/contacts" element={<FamilyContacts />} />
-                <Route path="family/create-group" element={<CreateGroup />} />
-                <Route path="family/group/:groupId" element={<GroupChat />} />
-                <Route path="family/groups" element={<FamilyGroups />} />
-                
-                <Route path="account" element={<Account />} />
-                <Route path="account/profile" element={<Profile />} />
-                <Route path="account/contact" element={<Contact />} />
-                <Route path="account/reviews" element={<Reviews />} />
-                <Route path="account/payments" element={<Payments />} />
-                
-                {/* Settings Routes */}
-                <Route path="privacy" element={<Privacy />} />
-                <Route path="language" element={<Language />} />
-                <Route path="notifications" element={<Notifications />} />
-                
-                {/* Planning Tools Routes */}
-                <Route path="tools/budget" element={<BudgetPlanner />} />
-                <Route path="tools/checklist" element={<WeddingChecklist />} />
-                <Route path="tools/timeline" element={<WeddingTimeline />} />
-                <Route path="tools/guests" element={<GuestList />} />
-                <Route path="tools/vendors" element={<VendorManagement />} />
-                <Route path="tools/inspiration" element={<InspirationBoard />} />
-                
-                {/* Quick Access Routes */}
-                <Route path="bookings" element={<MyBookings />} />
-                <Route path="shortlist" element={<Shortlist />} />
-                <Route path="favourites" element={<Favourites />} />
-                
-                {/* Inspiration & Ideas Routes */}
-                <Route path="inspirations" element={<Inspirations />} />
-                <Route path="inspirations/:id" element={<InspirationDetail />} />
-                <Route path="real-weddings/:id" element={<RealWedding />} />
-                <Route path="bridal-looks/:category" element={<BridalLooks />} />
-                <Route path="decor/:category" element={<DecorIdeas />} />
-                <Route path="trending/:category" element={<PlaceholderPage title="Trending Now" description="Discover what's trending in weddings" icon="trending" />} />
-                <Route path="feed/:id" element={<PlaceholderPage title="Wedding Feed" description="Explore wedding ideas and trends" icon="grid" />} />
-                <Route path="reads/:id" element={<PlaceholderPage title="Wedding Article" description="Read interesting wedding tips and guides" icon="book" />} />
-                
-                {/* Vendor Collection Routes */}
-                <Route path="photographers/:collection" element={<PhotographerCollection />} />
-                <Route path="venues/:collection" element={<VenueCollection />} />
-                <Route path="makeup/:id" element={<PlaceholderPage title="Makeup Artist" description="View makeup artist profile and portfolio" icon="makeup" />} />
-                <Route path="decorator/:id" element={<PlaceholderPage title="Decorator" description="View decorator profile and work" icon="palette" />} />
-                <Route path="photographer/:id" element={<PhotographerDetail />} />
-                
-                {/* Service Routes */}
-                <Route path="special-offers" element={<SpecialOffers />} />
-                <Route path="venue-booking-offer" element={<VenueBookingOffer />} />
-                <Route path="genie-services" element={<GenieServices />} />
-                <Route path="venue-booking" element={<VenueBooking />} />
-                <Route path="photographers" element={<Photographers />} />
-                <Route path="makeup" element={<Makeup />} />
-                <Route path="makeup/:vendorId" element={<MakeupDetail />} />
-                <Route path="decorators" element={<Decorators />} />
-                <Route path="decorator/:vendorId" element={<DecoratorDetail />} />
-                <Route path="trending" element={<Trending />} />
-                <Route path="featured-video" element={<FeaturedVideo />} />
-                <Route path="reads" element={<PlaceholderPage title="Wedding Reads" description="Browse all wedding articles and guides" icon="book" />} />
-                
-                {/* Traditional Calendar Routes */}
-                <Route path="festivals" element={<Festivals />} />
-                <Route path="horoscope" element={<Horoscope />} />
-                
-                {/* Wedding Planning Tools */}
-                <Route path="budget-planner" element={
-                  <PlaceholderPage 
-                    title="Budget Planner" 
-                    description="Plan and track your wedding expenses with our smart budget management tool."
-                    icon="money"
-                  />
-                } />
-                <Route path="checklist" element={
-                  <PlaceholderPage 
-                    title="Wedding Checklist" 
-                    description="Never miss a detail with our comprehensive wedding planning checklist."
-                    icon="checkList"
-                  />
-                } />
-                <Route path="guest-list" element={
-                  <PlaceholderPage 
-                    title="Guest List Manager" 
-                    description="Organize your guest list, track RSVPs, and manage invitations effortlessly."
-                    icon="users"
-                  />
-                } />
-                <Route path="timeline" element={
-                  <PlaceholderPage 
-                    title="Wedding Timeline" 
-                    description="Create and manage your wedding day timeline to ensure everything runs smoothly."
-                    icon="clock"
-                  />
-                } />
-                <Route path="vendor-comparison" element={
-                  <PlaceholderPage 
-                    title="Vendor Comparison" 
-                    description="Compare vendors side by side to make the best choice for your wedding."
-                    icon="compare"
-                  />
-                } />
-                <Route path="e-invites" element={<EInvites />} />
-                <Route path="e-invites/create" element={<PlaceholderPage title="Create E-Invite" description="Design your custom digital invitation" icon="edit" />} />
-                <Route path="e-invites/edit/:id" element={<EditInvite />} />
-                <Route path="e-invites/preview/:id" element={<PreviewInvite />} />
-                <Route path="e-invites/customize/:templateId" element={<PlaceholderPage title="Customize Template" description="Customize your chosen template" icon="edit" />} />
-                
-                {/* Premium Services */}
-                <Route path="hire-planner" element={
-                  <PlaceholderPage 
-                    title="Hire Wedding Planner" 
-                    description="Connect with professional wedding planners to make your dream wedding come true."
-                    icon="user"
-                  />
-                } />
-                <Route path="destination-wedding" element={
-                  <PlaceholderPage 
-                    title="Destination Wedding" 
-                    description="Plan your perfect destination wedding with our specialized services."
-                    icon="location"
-                  />
-                } />
-                <Route path="decor-consultation" element={
-                  <PlaceholderPage 
-                    title="Decor Consultation" 
-                    description="Get expert advice on wedding decorations and themes from our specialists."
-                    icon="palette"
-                  />
-                } />
-                <Route path="makeup-trial" element={
-                  <PlaceholderPage 
-                    title="Makeup Trial Booking" 
-                    description="Book makeup trials with top artists to find your perfect bridal look."
-                    icon="makeup"
-                  />
-                } />
-                <Route path="pre-wedding-shoot" element={
-                  <PlaceholderPage 
-                    title="Pre-Wedding Shoot" 
-                    description="Capture your love story with professional pre-wedding photography sessions."
-                    icon="camera"
-                  />
-                } />
-                
-                {/* Support & Settings */}
-                <Route path="help" element={<Help />} />
-                <Route path="faqs" element={
-                  <PlaceholderPage 
-                    title="Frequently Asked Questions" 
-                    description="Find answers to common questions about our wedding planning services."
-                    icon="question"
-                  />
-                } />
-                <Route path="contact-support" element={
-                  <PlaceholderPage 
-                    title="Contact Support" 
-                    description="Reach out to our support team for personalized assistance."
-                    icon="phone"
-                  />
-                } />
-                <Route path="notifications" element={
-                  <PlaceholderPage 
-                    title="Notification Settings" 
-                    description="Manage your notification preferences and stay updated on important events."
-                    icon="bell"
-                  />
-                } />
-                <Route path="language" element={
-                  <PlaceholderPage 
-                    title="Language Settings" 
-                    description="Choose your preferred language for the best user experience."
-                    icon="globe"
-                  />
-                } />
-                <Route path="privacy" element={
-                  <PlaceholderPage 
-                    title="Privacy & Terms" 
-                    description="Review our privacy policy and terms of service."
-                    icon="shield"
-                  />
-                } />
-                
-                {/* Redirect unknown user routes to dashboard */}
-                <Route path="*" element={<Navigate to="/user/dashboard" replace />} />
-              </Routes>
-            </main>
-            <BottomNav />
+      <Route path="/user/*" element={
+        <ProtectedRoute>
+          <Routes>
+            {/* Wedding Details - No Header/BottomNav */}
+            <Route path="wedding-details" element={<WeddingDetailsForm />} />
+            
+            {/* All other routes with Header/BottomNav */}
+            <Route path="*" element={
+              <div className="min-h-screen bg-theme-card">
+                <Header />
+                <main className="pb-16 md:pb-0">
+                  <Routes>
+                    <Route path="dashboard" element={<Dashboard />} />
+                    <Route path="home" element={<UserHome />} />
+                    <Route path="search" element={<Search />} />
+                    <Route path="news" element={<News />} />
+                    <Route path="requirements" element={<RequirementsForm />} />
+                    <Route path="requirements/planning-details" element={<PlanningDetails />} />
+                    <Route path="wedding-form" element={<WeddingForm />} />
+                    <Route path="planning-dashboard" element={<PlanningDashboard />} />
+                    <Route path="vendors" element={<VendorsMain />} />
+                    <Route path="vendors/:category" element={<VendorsList />} />
+                    <Route path="vendor/:vendorId" element={<VendorDetail />} />
+                    <Route path="vendor-comparison" element={<VendorComparison />} />
+                    <Route path="cart" element={<Cart />} />
+                    <Route path="checkout" element={<Checkout />} />
+                    <Route path="chats" element={<ChatsList />} />
+                    <Route path="chats/:vendorId" element={<VendorChat />} />
+                    <Route path="ai-assistant" element={<AIAssistant />} />
+                    
+                    {/* Family Group Routes */}
+                    <Route path="family/contacts" element={<FamilyContacts />} />
+                    <Route path="family/create-group" element={<CreateGroup />} />
+                    <Route path="family/group/:groupId" element={<GroupChat />} />
+                    <Route path="family/groups" element={<FamilyGroups />} />
+                    
+                    <Route path="account" element={<Account />} />
+                    <Route path="account/profile" element={<Profile />} />
+                    <Route path="account/contact" element={<Contact />} />
+                    <Route path="account/reviews" element={<Reviews />} />
+                    <Route path="account/payments" element={<Payments />} />
+                    
+                    {/* Settings Routes */}
+                    <Route path="privacy" element={<Privacy />} />
+                    <Route path="language" element={<Language />} />
+                    <Route path="notifications" element={<Notifications />} />
+                    
+                    {/* Planning Tools Routes */}
+                    <Route path="tools/budget" element={<BudgetPlanner />} />
+                    <Route path="tools/checklist" element={<WeddingChecklist />} />
+                    <Route path="tools/timeline" element={<WeddingTimeline />} />
+                    <Route path="tools/guests" element={<GuestList />} />
+                    <Route path="tools/vendors" element={<VendorManagement />} />
+                    <Route path="tools/inspiration" element={<InspirationBoard />} />
+                    
+                    {/* Quick Access Routes */}
+                    <Route path="bookings" element={<MyBookings />} />
+                    <Route path="shortlist" element={<Shortlist />} />
+                    <Route path="favourites" element={<Favourites />} />
+                    
+                    {/* Inspiration & Ideas Routes */}
+                    <Route path="inspirations" element={<Inspirations />} />
+                    <Route path="inspirations/:id" element={<InspirationDetail />} />
+                    <Route path="real-weddings/:id" element={<RealWedding />} />
+                    <Route path="bridal-looks/:category" element={<BridalLooks />} />
+                    <Route path="decor/:category" element={<DecorIdeas />} />
+                    <Route path="trending/:category" element={<PlaceholderPage title="Trending Now" description="Discover what's trending in weddings" icon="trending" />} />
+                    <Route path="feed/:id" element={<PlaceholderPage title="Wedding Feed" description="Explore wedding ideas and trends" icon="grid" />} />
+                    <Route path="reads/:id" element={<PlaceholderPage title="Wedding Article" description="Read interesting wedding tips and guides" icon="book" />} />
+                    
+                    {/* Vendor Collection Routes */}
+                    <Route path="photographers/:collection" element={<PhotographerCollection />} />
+                    <Route path="venues/:collection" element={<VenueCollection />} />
+                    <Route path="makeup/:id" element={<PlaceholderPage title="Makeup Artist" description="View makeup artist profile and portfolio" icon="makeup" />} />
+                    <Route path="decorator/:id" element={<PlaceholderPage title="Decorator" description="View decorator profile and work" icon="palette" />} />
+                    <Route path="photographer/:id" element={<PhotographerDetail />} />
+                    
+                    {/* Service Routes */}
+                    <Route path="special-offers" element={<SpecialOffers />} />
+                    <Route path="venue-booking-offer" element={<VenueBookingOffer />} />
+                    <Route path="genie-services" element={<GenieServices />} />
+                    <Route path="venue-booking" element={<VenueBooking />} />
+                    <Route path="photographers" element={<Photographers />} />
+                    <Route path="makeup" element={<Makeup />} />
+                    <Route path="makeup/:vendorId" element={<MakeupDetail />} />
+                    <Route path="decorators" element={<Decorators />} />
+                    <Route path="decorator/:vendorId" element={<DecoratorDetail />} />
+                    <Route path="trending" element={<Trending />} />
+                    <Route path="featured-video" element={<FeaturedVideo />} />
+                    <Route path="reads" element={<PlaceholderPage title="Wedding Reads" description="Browse all wedding articles and guides" icon="book" />} />
+                    
+                    {/* Traditional Calendar Routes */}
+                    <Route path="festivals" element={<Festivals />} />
+                    <Route path="horoscope" element={<Horoscope />} />
+
+                    {/* Wedding Planning Tools */}
+                    <Route path="budget-planner" element={
+                      <PlaceholderPage 
+                        title="Budget Planner" 
+                        description="Plan and track your wedding expenses with our smart budget management tool."
+                        icon="money"
+                      />
+                    } />
+                    <Route path="checklist" element={
+                      <PlaceholderPage 
+                        title="Wedding Checklist" 
+                        description="Never miss a detail with our comprehensive wedding planning checklist."
+                        icon="checkList"
+                      />
+                    } />
+                    <Route path="guest-list" element={
+                      <PlaceholderPage 
+                        title="Guest List Manager" 
+                        description="Organize your guest list, track RSVPs, and manage invitations effortlessly."
+                        icon="users"
+                      />
+                    } />
+                    <Route path="timeline" element={
+                      <PlaceholderPage 
+                        title="Wedding Timeline" 
+                        description="Create and manage your wedding day timeline to ensure everything runs smoothly."
+                        icon="clock"
+                      />
+                    } />
+                    <Route path="vendor-comparison" element={
+                      <PlaceholderPage 
+                        title="Vendor Comparison" 
+                        description="Compare vendors side by side to make the best choice for your wedding."
+                        icon="compare"
+                      />
+                    } />
+                    <Route path="e-invites" element={<EInvites />} />
+                    <Route path="e-invites/create" element={<PlaceholderPage title="Create E-Invite" description="Design your custom digital invitation" icon="edit" />} />
+                    <Route path="e-invites/edit/:id" element={<EditInvite />} />
+                    <Route path="e-invites/preview/:id" element={<PreviewInvite />} />
+                    <Route path="e-invites/customize/:templateId" element={<PlaceholderPage title="Customize Template" description="Customize your chosen template" icon="edit" />} />
+                    
+                    {/* Premium Services */}
+                    <Route path="hire-planner" element={<PlaceholderPage title="Hire Planner" description="Connect with planners" icon="user" />} />
+                    
+                    {/* Support & Settings */}
+                    <Route path="help" element={<Help />} />
+                    <Route path="faqs" element={<PlaceholderPage title="FAQs" description="Answers to questions" icon="question" />} />
+                    
+                    <Route path="language" element={<Language />} />
+                    <Route path="notifications" element={<Notifications />} />
+                    <Route path="privacy" element={<Privacy />} />
+                    
+                    {/* Redirect unknown user routes to dashboard */}
+                    <Route path="*" element={<Navigate to="/user/dashboard" replace />} />
+                  </Routes>
+                </main>
+                <BottomNav />
               </div>
             } />
           </Routes>
         </ProtectedRoute>
       } />
 
-      {/* Auth Routes - Legacy support */}
-      <Route path="/auth/home" element={
-        <ProtectedRoute>
-          <Navigate to="/user/dashboard" replace />
-        </ProtectedRoute>
-      } />
-      
-      {/* Theme System Test Route */}
+      {/* Legacy/Misc Routes */}
       <Route path="/theme-test" element={<ThemeSystemTest />} />
-      
-      <Route path="*" element={
-        <Navigate to="/" replace />
-      } />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };
