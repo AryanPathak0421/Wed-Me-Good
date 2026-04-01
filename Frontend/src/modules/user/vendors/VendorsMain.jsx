@@ -142,65 +142,59 @@ const VendorsMain = () => {
     <div className="min-h-screen pb-32" style={{ backgroundColor: '#EAE1D8' }}>
       {/* 1. Atelier Header - Arched Surface */}
       <div 
-        className="px-8 pt-12 pb-16 rounded-b-[4rem] bg-white shadow-sm border-b border-[#3D2B2B]/5 relative z-10"
+        className="px-8 pt-10 pb-12 rounded-b-[3rem] bg-white shadow-sm border-b border-[#3D2B2B]/5 relative z-10"
       >
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6">
            <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#BE185D]"></span>
-              <span className="text-[10px] font-black uppercase tracking-widest text-[#3D2B2B]/40">Curation Service</span>
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[#3D2B2B]/30">Curation Service</span>
            </div>
            <button className="w-10 h-10 rounded-full flex items-center justify-center bg-[#EAE1D8]/30 border border-[#EAE1D8]">
               <Icon name="search" size="xs" style={{ color: '#3D2B2B' }} />
            </button>
         </div>
 
-        <div className="space-y-2">
-           <h1 className="text-4xl font-bold text-[#3D2B2B] leading-tight" style={{ fontFamily: '"Playfair Display", serif' }}>
+        <div className="space-y-1">
+           <h1 className="text-[2.75rem] font-bold text-[#3D2B2B] leading-none mb-1" style={{ fontFamily: '"Playfair Display", serif' }}>
              The Atelier
            </h1>
            <div className="flex items-center gap-2 text-[#BE185D]">
               <Icon name="location" size="xs" />
-              <span className="text-[11px] font-black uppercase tracking-widest">{selectedCity}</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.15em]" style={{ fontFamily: '"Outfit", sans-serif' }}>{selectedCity}</span>
               <Icon name="chevronDown" size="xs" />
            </div>
         </div>
       </div>
 
       {/* 2. Collections Grid - Arched Cards */}
-      <div className="px-6 -mt-8 relative z-20 space-y-4">
+      <div className="px-8 -mt-6 relative z-20 space-y-4">
         {vendorCategories.map((category) => (
           <div
             key={category.id}
             onClick={() => handleCategoryClick(category)}
-            className="bg-white rounded-[2.5rem] p-6 flex items-center gap-6 shadow-sm border border-black/5 hover:shadow-md active:scale-95 transition-all group"
+            className="bg-white rounded-[2.5rem] p-6 flex items-center gap-5 shadow-sm border border-black/5 hover:shadow-md active:scale-95 transition-all group"
           >
             {/* Visual Anchor */}
-            <div className="relative w-20 h-20 shrink-0">
-               <div className="absolute inset-0 rounded-full bg-gray-100 scale-110 group-hover:scale-125 transition-transform duration-500"></div>
+            <div className="relative w-16 h-16 shrink-0">
+               <div className="absolute inset-0 rounded-full bg-gray-50 scale-125 group-hover:scale-135 transition-transform duration-500"></div>
                <img 
                  src={category.image} 
                  alt={category.name}
-                 className="w-full h-full rounded-full object-cover relative z-10 border-2 border-white shadow-sm"
+                 className="w-full h-full rounded-full object-cover relative z-10 border border-white shadow-sm"
                />
             </div>
 
             {/* Editorial Copy */}
-            <div className="flex-1 min-w-0 pr-4">
-              <div className="flex items-center justify-between mb-1">
-                <h3 className="text-xl font-bold text-[#3D2B2B] truncate" style={{ fontFamily: '"Playfair Display", serif' }}>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-0.5">
+                <h3 className="text-lg font-bold text-[#3D2B2B] truncate leading-tight" style={{ fontFamily: '"Playfair Display", serif' }}>
                   {category.name}
                 </h3>
                 <Icon name="arrowRight" size="xs" style={{ color: '#3D2B2B/20' }} />
               </div>
-              <p className="text-[10px] font-medium text-[#3D2B2B]/40 leading-relaxed uppercase tracking-tighter line-clamp-1 italic">
+              <p className="text-[9px] font-medium text-[#3D2B2B]/40 leading-relaxed uppercase tracking-widest truncate italic">
                 {category.subtitle}
               </p>
-              
-              {/* Subtle Color Indicator */}
-              <div className="mt-3 flex gap-1">
-                 <div className="w-4 h-1 rounded-full opacity-30" style={{ backgroundColor: category.bgColor }}></div>
-                 <div className="w-1 h-1 rounded-full opacity-30" style={{ backgroundColor: category.bgColor }}></div>
-              </div>
             </div>
           </div>
         ))}

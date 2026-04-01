@@ -113,7 +113,7 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
       ]
     }
   ];
-
+  return (
     <>
       {/* 1. Backdrop with Deep Blur */}
       <div
