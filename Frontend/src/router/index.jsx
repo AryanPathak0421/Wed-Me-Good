@@ -89,9 +89,7 @@ const AppRouter = () => {
   return (
     <Routes>
       {/* Public Routes - No Header/BottomNav */}
-      <Route path="/" element={
-        isAuthenticated ? <Navigate to="/user/dashboard" replace /> : <Welcome />
-      } />
+      <Route path="/" element={<Welcome />} />
       {/* Route alias for vender misspelling */}
       <Route path="/vender/*" element={<Navigate to="/vendor" replace />} />
       <Route path="/login" element={

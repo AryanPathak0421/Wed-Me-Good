@@ -55,72 +55,72 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
         className={`fixed top-0 right-0 bottom-0 z-[70] w-[85%] max-w-[400px] shadow-2xl transition-transform duration-700 cubic-bezier(0.4, 0, 0.2, 1) ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
         style={{ backgroundColor: '#EAE1D8' }}
       >
-        {/* Arched Header */}
-        <div className="bg-white px-8 pt-12 pb-10 rounded-b-[3rem] shadow-sm flex items-center justify-between border-b border-[#3D2B2B]/5">
+        {/* Arched Header - Ultra Compact */}
+        <div className="bg-white px-6 pt-8 pb-6 rounded-b-[2rem] shadow-sm flex items-center justify-between border-b border-[#3D2B2B]/5">
            <div>
-              <h2 className="text-3xl font-bold text-[#3D2B2B]" style={{ fontFamily: '"Playfair Display", serif' }}>Menu</h2>
-              <p className="text-[10px] font-black uppercase tracking-widest text-[#3D2B2B]/30">The Utsav Collection</p>
+              <h2 className="text-xl font-bold text-[#3D2B2B]" style={{ fontFamily: '"Playfair Display", serif' }}>Menu</h2>
+              <p className="text-[8px] font-black uppercase tracking-widest text-[#3D2B2B]/30">The Utsav Collection</p>
            </div>
            <button 
              onClick={onClose}
-             className="w-12 h-12 rounded-full flex items-center justify-center bg-[#EAE1D8]/30 border border-[#EAE1D8] active:scale-90 transition-all"
+             className="w-9 h-9 rounded-full flex items-center justify-center bg-[#EAE1D8]/30 border border-[#EAE1D8] active:scale-90 transition-all"
            >
-              <Icon name="close" size="sm" style={{ color: '#3D2B2B' }} />
+              <Icon name="close" size="xs" style={{ color: '#3D2B2B' }} />
            </button>
         </div>
 
-        {/* Scrollable Content */}
-        <div className="overflow-y-auto h-[calc(100vh-140px)] p-8 space-y-10 scrollbar-hide">
-           {/* Section 1: Member Card */}
+        {/* Scrollable Content - High Density */}
+        <div className="overflow-y-auto h-[calc(100vh-80px)] p-4 space-y-4 scrollbar-hide">
+           {/* Section 1: Member Card - Ultra Compact */}
            {isAuthenticated && (
-             <div className="bg-white rounded-[2.5rem] p-8 space-y-6 shadow-sm border border-black/5">
-                <div className="flex items-center gap-4">
-                   <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#EAE1D8] shadow-sm">
+             <div className="bg-white rounded-[1.5rem] p-4 space-y-3 shadow-sm border border-black/5">
+                <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-full overflow-hidden border border-[#EAE1D8] shadow-sm">
                       <img 
                         src={user.profileImage} 
                         className="w-full h-full object-cover" 
                         alt={user.name} 
-                        onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&q=80'; }}
+                        onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&q=80'; }}
                       />
                    </div>
                    <div className="min-w-0">
-                      <h3 className="text-xl font-bold text-[#3D2B2B] truncate" style={{ fontFamily: '"Playfair Display", serif' }}>{user.name}</h3>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-[#BE185D] underline">{user.city || 'Indore'}</p>
+                      <h3 className="text-base font-bold text-[#3D2B2B] truncate" style={{ fontFamily: '"Playfair Display", serif' }}>{user.name}</h3>
+                      <p className="text-[8px] font-black uppercase tracking-widest text-[#BE185D] underline">{user.city || 'Indore'}</p>
                    </div>
                 </div>
                 <button 
                   onClick={() => handleNavigation('/user/account')}
-                  className="w-full py-4 rounded-full bg-[#3D2B2B] text-white text-[9px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all"
+                  className="w-full py-2.5 rounded-full bg-[#3D2B2B] text-white text-[7px] font-black uppercase tracking-widest shadow-md active:scale-95 transition-all"
                 >
                    Guest Profile
                 </button>
              </div>
            )}
 
-           {/* Section 2: Conversational Hub */}
+           {/* Section 2: Conversational Hub - Ultra Compact */}
            <div 
              onClick={() => handleNavigation('/user/chats')}
-             className="bg-white rounded-[2rem] p-6 flex items-center justify-between shadow-sm cursor-pointer border border-black/5 active:scale-95 transition-all"
+             className="bg-white rounded-[1.25rem] p-3 flex items-center justify-between shadow-sm cursor-pointer border border-black/5 active:scale-95 transition-all"
            >
-              <div className="flex items-center gap-4">
-                 <div className="w-12 h-12 rounded-full bg-[#EAE1D8]/30 flex items-center justify-center">
-                    <Icon name="chat" size="sm" style={{ color: '#3D2B2B' }} />
+              <div className="flex items-center gap-3">
+                 <div className="w-9 h-9 rounded-full bg-[#EAE1D8]/30 flex items-center justify-center">
+                    <Icon name="chat" size="xs" style={{ color: '#3D2B2B' }} />
                  </div>
                  <div>
-                    <h4 className="text-sm font-bold text-[#3D2B2B]" style={{ fontFamily: '"Playfair Display", serif' }}>My Chats</h4>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-[#3D2B2B]/40">Internal Messengers</p>
+                    <h4 className="text-xs font-bold text-[#3D2B2B]" style={{ fontFamily: '"Playfair Display", serif' }}>My Chats</h4>
+                    <p className="text-[7px] font-black uppercase tracking-widest text-[#3D2B2B]/40">Internal Messengers</p>
                  </div>
               </div>
               <div className="flex items-center gap-2">
-                 <span className="w-6 h-6 rounded-full bg-[#BE185D] text-white flex items-center justify-center text-[10px] font-bold">{cartVendors.length}</span>
+                 <span className="w-4 h-4 rounded-full bg-[#BE185D] text-white flex items-center justify-center text-[8px] font-bold">{cartVendors.length}</span>
                  <Icon name="chevronDown" size="xs" className="-rotate-90" style={{ color: '#3D2B2B/20' }} />
               </div>
            </div>
 
-           {/* Section 3: Tiered Collections */}
-           <div className="space-y-6">
-              <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3D2B2B]/40 px-2">Curation Tools</h5>
-              <div className="space-y-3">
+           {/* Section 3: Tiered Collections - High Density */}
+           <div className="space-y-3">
+              <h5 className="text-[8px] font-black uppercase tracking-[0.2em] text-[#3D2B2B]/40 px-2" style={{ fontFamily: '"Outfit", sans-serif' }}>Curation Tools</h5>
+              <div className="space-y-1.5">
                  {[
                    { title: 'My Cart', path: '/user/cart', icon: 'cart' },
                    { title: 'Bookings', path: '/user/bookings', icon: 'calendar' },
@@ -130,11 +130,11 @@ const HamburgerMenu = ({ isOpen, onClose }) => {
                    <button 
                      key={i}
                      onClick={() => handleNavigation(item.path)}
-                     className="w-full flex items-center justify-between p-5 rounded-[1.5rem] bg-white shadow-sm border border-black/5 hover:bg-gray-50 active:scale-98 transition-all"
+                     className="w-full flex items-center justify-between p-3.5 rounded-[1.25rem] bg-white shadow-sm border border-black/5 hover:bg-gray-50 active:scale-98 transition-all"
                    >
-                     <div className="flex items-center gap-4">
-                        <Icon name={item.icon} size="sm" style={{ color: '#3D2B2B/60' }} />
-                        <span className="text-sm font-bold text-[#3D2B2B]" style={{ fontFamily: '"Playfair Display", serif' }}>{item.title}</span>
+                     <div className="flex items-center gap-3">
+                        <Icon name={item.icon} size="xs" style={{ color: '#3D2B2B/60' }} />
+                        <span className="text-[11px] font-bold text-[#3D2B2B]" style={{ fontFamily: '"Playfair Display", serif' }}>{item.title}</span>
                      </div>
                      <Icon name="chevronDown" size="xs" className="-rotate-90" style={{ color: '#3D2B2B/20' }} />
                    </button>
