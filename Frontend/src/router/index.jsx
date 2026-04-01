@@ -52,6 +52,7 @@ import EInvites from '../modules/user/invites/EInvites';
 import EditInvite from '../modules/user/invites/EditInvite';
 import PreviewInvite from '../modules/user/invites/PreviewInvite';
 import Photographers from '../modules/user/photographers/Photographers';
+import PhotographerDetail from '../modules/user/photographers/PhotographerDetail';
 import PhotographerCollection from '../modules/user/photographers/PhotographerCollection';
 import VenueCollection from '../modules/user/venues/VenueCollection';
 import VenueBooking from '../modules/user/venues/VenueBooking';
@@ -97,7 +98,7 @@ const AppRouter = () => {
         isAuthenticated ? <Navigate to="/user/dashboard" replace /> : <Login />
       } />
       <Route path="/signup" element={
-        isAuthenticated ? <Navigate to="/user/dashboard" replace /> : <Signup />
+        isAuthenticated ? <Navigate to="/user/wedding-details" replace /> : <Signup />
       } />
       
       <Route path="/vendor/*" element={<VendorRoutes />} />
@@ -176,7 +177,7 @@ const AppRouter = () => {
                 <Route path="venues/:collection" element={<VenueCollection />} />
                 <Route path="makeup/:id" element={<PlaceholderPage title="Makeup Artist" description="View makeup artist profile and portfolio" icon="makeup" />} />
                 <Route path="decorator/:id" element={<PlaceholderPage title="Decorator" description="View decorator profile and work" icon="palette" />} />
-                <Route path="photographer/:id" element={<PlaceholderPage title="Photographer" description="View photographer profile and portfolio" icon="camera" />} />
+                <Route path="photographer/:id" element={<PhotographerDetail />} />
                 
                 {/* Service Routes */}
                 <Route path="special-offers" element={<SpecialOffers />} />

@@ -90,243 +90,117 @@ const Dashboard = () => {
 
   return (
     <div
-      className="min-h-screen px-4 py-8"
-      style={{ backgroundColor: theme.semantic.background.secondary }}
+      className="min-h-screen px-6 py-2 pb-32"
+      style={{ backgroundColor: '#EAE1D8' }}
     >
-      <div className="w-full max-w-2xl mx-auto">
-        {/* Enhanced Header with Greeting */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1
-                className="text-3xl font-bold mb-1"
-                style={{ color: theme.semantic.text.primary }}
-              >
-                {getGreeting()}, {userName}! 👋
-              </h1>
-              <p
-                className="text-sm"
-                style={{ color: theme.semantic.text.secondary }}
-              >
-                Let's make your event planning easier
-              </p>
-            </div>
-            <button
-              onClick={() => navigate('/user/account')}
-              className="w-12 h-12 rounded-full overflow-hidden border-2 transition-transform hover:scale-105"
-              style={{
-                borderColor: theme.colors.primary[500],
-                backgroundColor: theme.semantic.background.primary
-              }}
-            >
-              <div
-                className="w-full h-full flex items-center justify-center"
-                style={{ backgroundColor: theme.colors.primary[100] }}
-              >
-                <Icon name="account" size="lg" style={{ color: theme.colors.primary[500] }} />
-              </div>
-            </button>
+      <div className="w-full max-w-md mx-auto space-y-6">
+        {/* Editorial Header - Compact */}
+        <div className="flex justify-between items-center pt-2">
+          <div className="space-y-0.5">
+             <h1 className="text-[#3D2B2B] text-2xl font-bold leading-tight" style={{ fontFamily: '"Playfair Display", serif' }}>
+                {getGreeting()},<br />{userName}
+             </h1>
+             <p className="text-[#3D2B2B]/40 text-[8px] font-black uppercase tracking-[0.2em]" style={{ fontFamily: '"Outfit", sans-serif' }}>
+                Curation in progress
+             </p>
           </div>
-
-          {/* Quick Stats Bar */}
-          <div
-            className="grid grid-cols-3 gap-3 p-4 rounded-xl"
-            style={{
-              backgroundColor: theme.semantic.background.primary,
-              border: `1px solid ${theme.semantic.border.primary}`
+          <button
+            onClick={() => navigate('/user/account')}
+            className="w-11 h-11 rounded-xl overflow-hidden shadow-sm group active:scale-95 transition-transform"
+            style={{ 
+               backgroundColor: 'white',
+               border: '1px solid white' 
             }}
           >
-            <div className="text-center">
-              <div
-                className="text-2xl font-bold"
-                style={{ color: theme.colors.primary[500] }}
-              >
-                12
-              </div>
-              <div
-                className="text-xs"
-                style={{ color: theme.semantic.text.secondary }}
-              >
-                Tasks Left
-              </div>
-            </div>
-            <div className="text-center border-l border-r" style={{ borderColor: theme.semantic.border.primary }}>
-              <div
-                className="text-2xl font-bold"
-                style={{ color: theme.colors.secondary[500] }}
-              >
-                8
-              </div>
-              <div
-                className="text-xs"
-                style={{ color: theme.semantic.text.secondary }}
-              >
-                Vendors Saved
-              </div>
-            </div>
-            <div className="text-center">
-              <div
-                className="text-2xl font-bold"
-                style={{ color: theme.colors.accent[500] }}
-              >
-                45
-              </div>
-              <div
-                className="text-xs"
-                style={{ color: theme.semantic.text.secondary }}
-              >
-                Days to Go
-              </div>
-            </div>
-          </div>
+             <div className="w-full h-full flex items-center justify-center bg-[#EAE1D8]/20 backdrop-blur-sm">
+                <Icon name="account" size="md" style={{ color: '#3D2B2B' }} />
+             </div>
+          </button>
         </div>
 
-        {/* Enhanced 2x2 Grid of Cards with Images - Swiggy Style Square Cards */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        {/* High-Density Quick Stats - Compact */}
+        <div className="grid grid-cols-3 gap-4 py-4 border-y border-[#3D2B2B]/10">
+            {[
+              { val: '12', label: 'Tasks Left', color: '#B45309' },
+              { val: '08', label: 'Shortlisted', color: '#BE185D' },
+              { val: '45', label: 'To Your Day', color: '#15803D' }
+            ].map((stat, i) => (
+              <div key={i} className="text-center space-y-0">
+                 <div className="text-xl font-black text-[#3D2B2B] tracking-tight">{stat.val}</div>
+                 <div className="text-[8px] font-black uppercase text-[#3D2B2B]/40 tracking-wider whitespace-nowrap">{stat.label}</div>
+              </div>
+            ))}
+        </div>
+
+        {/* Premium Action Grid - High Density */}
+        <div className="grid grid-cols-2 gap-x-5 gap-y-6">
           {dashboardOptions.map((option) => (
             <button
               key={option.id}
               onClick={() => handleCardClick(option)}
-              className="dashboard-card relative overflow-hidden rounded-3xl transition-all duration-300 active:scale-95 text-left"
-              style={{
-                boxShadow: `0 4px 12px ${option.shadowColor}`,
-                aspectRatio: '1',
-                backgroundColor: theme.semantic.background.primary
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.boxShadow = `0 12px 24px ${option.shadowColor}`;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = `0 4px 12px ${option.shadowColor}`;
-              }}
+              className="flex flex-col text-left group active:scale-[0.98] transition-transform"
             >
-              {/* Background Image with Overlay */}
-              <div className="absolute inset-0">
-                <img
-                  src={option.image}
-                  alt={option.title}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                  onError={(e) => {
-                    e.target.src = 'https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=300&fit=crop&q=80';
-                  }}
-                />
-                {/* Gradient overlay - lighter for better image visibility */}
-                <div
-                  className="absolute inset-0"
-                  style={{ background: option.gradient }}
-                />
-                {/* Bottom gradient for text readability (Swiggy style) */}
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background: 'linear-gradient(to bottom, transparent 0%, transparent 40%, rgba(0, 0, 0, 0.4) 100%)'
-                  }}
-                />
+              <div 
+                className="w-full aspect-[4/5] rounded-t-[4rem] rounded-b-[1.5rem] overflow-hidden shadow-md border border-white mb-2 relative"
+              >
+                 <img
+                   src={option.image}
+                   alt={option.title}
+                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                   loading="lazy"
+                 />
+                 <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-white/30 backdrop-blur-md border border-white/40 flex items-center justify-center text-white">
+                        <Icon name={option.icon} size="xs" />
+                    </div>
+                 </div>
               </div>
-
-              {/* Content */}
-              <div className="relative z-10 p-4 h-full flex flex-col justify-between">
-                {/* Top Section - Icon */}
-                <div className="flex items-start justify-between">
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center"
-                    style={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                      backdropFilter: 'blur(10px)',
-                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-                    }}
-                  >
-                    <Icon name={option.icon} size="md" style={{ color: 'white' }} />
-                  </div>
-                </div>
-
-                {/* Bottom Section - Title, Subtitle and Stats */}
-                <div>
-                  <h3 className="text-base font-bold text-white mb-0.5" style={{ textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}>
+              <div className="px-1">
+                 <h3 className="text-[#3D2B2B] text-sm font-bold leading-tight" style={{ fontFamily: '"Playfair Display", serif' }}>
                     {option.title}
-                  </h3>
-                  <p
-                    className="text-xs mb-2"
-                    style={{
-                      color: 'rgba(255, 255, 255, 0.95)',
-                      textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
-                    }}
-                  >
-                    {option.subtitle}
-                  </p>
-                  <div
-                    className="inline-block px-2 py-0.5 rounded-full text-xs font-medium"
-                    style={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                      backdropFilter: 'blur(10px)',
-                      color: 'white',
-                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-                    }}
-                  >
+                 </h3>
+                 <p className="text-[#3D2B2B]/30 text-[8px] font-black uppercase tracking-widest leading-none mt-0.5">
                     {option.stats}
-                  </div>
-                </div>
+                 </p>
               </div>
             </button>
           ))}
         </div>
 
-        {/* My Work Section */}
-        <div
-          className="p-4 rounded-xl"
-          style={{
-            backgroundColor: theme.semantic.background.primary,
-            border: `1px solid ${theme.semantic.border.primary}`
-          }}
-        >
-          <h3
-            className="text-sm font-semibold mb-3"
-            style={{ color: theme.semantic.text.primary }}
-          >
-            My Work
-          </h3>
-          <div className="grid grid-cols-3 gap-3">
-            {[
-              { icon: 'search', label: 'Search', route: '/user/search' },
-              { icon: 'heart', label: 'Favorites', route: '/user/favourites' },
-              { icon: 'settings', label: 'Settings', route: '/user/account' }
-            ].map((action) => (
-              <button
-                key={action.label}
-                onClick={() => navigate(action.route)}
-                className="flex flex-col items-center gap-2 p-3 rounded-xl transition-all hover:scale-105"
-                style={{
-                  backgroundColor: theme.semantic.background.secondary
-                }}
-              >
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: theme.colors.primary[100] }}
+        {/* Editorial Sub-Sections */}
+        <div className="space-y-6 pt-6">
+           <h4 className="text-[#3D2B2B]/30 text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-4 text-center justify-center">
+              <span className="w-8 h-[1px] bg-[#3D2B2B]/10" />
+              Planning Toolkit
+              <span className="w-8 h-[1px] bg-[#3D2B2B]/10" />
+           </h4>
+           <div className="grid grid-cols-3 gap-4">
+              {[
+                { icon: 'search', label: 'Explore', route: '/user/search' },
+                { icon: 'heart', label: 'Saved', route: '/user/favourites' },
+                { icon: 'settings', label: 'Account', route: '/user/account' }
+              ].map((action) => (
+                <button
+                  key={action.label}
+                  onClick={() => navigate(action.route)}
+                  className="flex flex-col items-center gap-3 p-5 rounded-[2rem] bg-white shadow-sm border border-white transition-all hover:shadow-md active:scale-95"
                 >
-                  <Icon name={action.icon} size="md" style={{ color: theme.colors.primary[500] }} />
-                </div>
-                <span
-                  className="text-xs font-medium"
-                  style={{ color: theme.semantic.text.secondary }}
-                >
-                  {action.label}
-                </span>
-              </button>
-            ))}
-          </div>
+                  <div className="w-10 h-10 rounded-2xl bg-[#EAE1D8] flex items-center justify-center text-[#3D2B2B]">
+                    <Icon name={action.icon} size="sm" />
+                  </div>
+                  <span className="text-[10px] font-black uppercase text-[#3D2B2B]/60 tracking-wider">
+                    {action.label}
+                  </span>
+                </button>
+              ))}
+           </div>
         </div>
 
-        {/* Footer Inspiration */}
-        <div className="text-center mt-6">
-          <p
-            className="text-xs italic"
-            style={{ color: theme.semantic.text.tertiary }}
-          >
-            "Every great love story deserves a perfect celebration" ✨
-          </p>
+        {/* Divine Footer Quote */}
+        <div className="text-center pt-8 border-t border-[#3D2B2B]/5">
+           <p className="text-[#3D2B2B]/40 text-[11px] italic font-medium leading-relaxed" style={{ fontFamily: '"Outfit", sans-serif' }}>
+              "Every great love story deserves a<br />perfectly curated celebration" ✨
+           </p>
         </div>
       </div>
     </div>

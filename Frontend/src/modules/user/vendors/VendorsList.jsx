@@ -236,75 +236,59 @@ const VendorsList = () => {
   return (
     <div
       className="min-h-screen"
-      style={{ backgroundColor: theme.semantic.background.primary }}
+      style={{ backgroundColor: '#EAE1D8' }}
     >
-      <div className="px-3 sm:px-4 py-3 max-w-7xl mx-auto">
-        {/* Back Button and Title */}
-        <div className="flex items-center justify-between mb-4">
+      <div className="px-4 py-3 max-w-7xl mx-auto space-y-4">
+        {/* Back Button and Title (WedMeGood Style) */}
+        <div className="flex items-center justify-between pb-2 border-b border-[#3D2B2B]/10">
           <button
             onClick={() => navigate('/user/vendors')}
-            className="flex items-center space-x-2 text-sm font-medium py-1 px-2 rounded-lg hover:bg-opacity-10 hover:bg-black transition-colors"
-            style={{ color: theme.semantic.text.secondary }}
+            className="w-10 h-10 rounded-full bg-white/40 flex items-center justify-center text-[#3D2B2B] hover:bg-white/60 transition-all active:scale-90"
           >
             <Icon name="chevronLeft" size="sm" />
-            <span className="hidden xs:inline">Back</span>
           </button>
 
-          <h1
-            className="text-base sm:text-lg font-bold text-center flex-1 mx-4"
-            style={{ color: theme.semantic.text.primary }}
-          >
-            {categoryTitle}
-          </h1>
+          <div className="text-center">
+            <h1 className="text-[#3D2B2B] text-base font-black tracking-tight" style={{ fontFamily: '"Playfair Display", serif' }}>
+              Bhopal • {categoryTitle}
+            </h1>
+          </div>
 
-          {/* Action Icons Removed as requested */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+             <button className="w-10 h-10 rounded-full bg-white/40 flex items-center justify-center text-[#3D2B2B]">
+                <Icon name="heart" size="sm" />
+             </button>
           </div>
         </div>
 
-        {/* Search Bar with Filter */}
-        <div className="flex items-center gap-3 mb-4">
-          <div className="flex-1 relative">
-            <Icon
-              name="search"
-              size="sm"
-              className="absolute left-3 top-1/2 transform -translate-y-1/2"
-              style={{ color: theme.semantic.text.secondary }}
-            />
-            <input
-              type="text"
-              placeholder={`Search ${categoryTitle.toLowerCase()}...`}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 rounded-xl border text-sm"
-              style={{
-                backgroundColor: theme.semantic.background.accent,
-                borderColor: theme.semantic.border.light,
-                color: theme.semantic.text.primary
-              }}
-            />
+        {/* Search Bar (Pill Style) */}
+        <div className="relative group">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+            <Icon name="search" size="sm" className="text-[#3D2B2B]/40" />
           </div>
-
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`p-3 rounded-xl border transition-all relative ${showFilters ? 'shadow-md' : ''}`}
+          <input
+            type="text"
+            placeholder={`Search ${categoryTitle.toLowerCase()}...`}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-12 pr-4 py-3.5 rounded-full border-none text-sm shadow-sm transition-all focus:ring-2 focus:ring-[#3D2B2B]/20"
             style={{
-              backgroundColor: showFilters ? theme.colors.primary[500] : theme.semantic.background.accent,
-              borderColor: showFilters ? theme.colors.primary[500] : theme.semantic.border.light,
-              color: showFilters ? 'white' : theme.semantic.text.primary
+              backgroundColor: 'white',
+              color: '#3D2B2B'
             }}
-          >
-            <Icon name="filter" size="sm" />
-            {getActiveFiltersCount() > 0 && (
-              <div
-                className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold"
-                style={{ backgroundColor: theme.colors.accent[500], color: 'white' }}
-              >
-                {getActiveFiltersCount()}
-              </div>
-            )}
-          </button>
+          />
         </div>
+
+        {/* Destination Pricing Toggle (WedMeGood Signature) */}
+        <div className="flex items-center justify-between px-2 mb-2">
+            <span className="text-[11px] font-black uppercase tracking-wider text-[#3D2B2B]/60" style={{ fontFamily: '"Outfit", sans-serif' }}>
+                View Destination Pricing
+            </span>
+            <div className="w-12 h-6 bg-rose-500 rounded-full relative p-1 shadow-inner">
+                <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm" />
+            </div>
+        </div>
+
 
         {/* Filter Panel */}
         {showFilters && (
@@ -613,6 +597,19 @@ const VendorsList = () => {
             </Button>
           </div>
         )}
+      </div>
+
+      {/* Floating Filter & Genie Buttons (WedMeGood Style) */}
+      <div className="fixed bottom-20 left-1/2 -translate-x-1/2 flex items-center bg-[#3D2B2B] text-white rounded-full px-5 py-2.5 shadow-2xl space-x-4 z-50">
+          <button onClick={() => setShowFilters(!showFilters)} className="flex items-center space-x-2 border-r border-white/20 pr-4">
+              <Icon name="filter" size="sm" />
+              <span className="text-xs font-bold uppercase tracking-wider">Filter</span>
+          </button>
+          <button className="flex items-center space-x-2">
+              <img src="/assets/icons/genie.png" alt="Genie" className="w-5 h-5 invert" onError={(e) => e.target.style.display = 'none'} />
+              <Icon name="sparkles" size="sm" />
+              <span className="text-xs font-bold uppercase tracking-wider">Genie</span>
+          </button>
       </div>
 
       {/* Toast Component */}

@@ -1,292 +1,124 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useTheme } from '../../../hooks/useTheme';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
-import Icon from '../../../components/ui/Icon';
+import { useTheme } from '../../../hooks/useTheme';
 
 const Login = () => {
-  const { theme } = useTheme();
-  const { login } = useAuth();
   const navigate = useNavigate();
+  const { login } = useAuth();
+  const { theme } = useTheme();
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: ''
   });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-    if (error) setError('');
-  };
+  useEffect(() => {
+    // Add Designer fonts for the Lilac theme
+    const link = document.createElement('link');
+    link.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Great+Vibes&family=Outfit:wght@300;400;600&display=swap';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
-
-    try {
-      // Clear wedding details to force form
-      localStorage.removeItem('weddingDetails');
-      
-      const result = await login(formData.email, formData.password);
-      
-      if (result.success) {
-        // Force navigation to wedding details form
-        console.log('Login successful, navigating to wedding-details');
-        setTimeout(() => {
-          navigate('/user/wedding-details', { replace: true });
-        }, 100);
-      } else {
-        setError(result.error);
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('Login failed. Please try again.');
-    } finally {
-      setIsLoading(false);
+    const result = await login(formData.username, formData.password);
+    if (result.success) {
+      navigate('/user/dashboard');
     }
   };
 
   return (
-    <div 
-      className="min-h-screen flex flex-col"
-      style={{ backgroundColor: theme.semantic.background.secondary }}
-    >
-      {/* Header with Image */}
-      <div className="relative h-64 overflow-hidden">
-        <img
-          src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&h=400&fit=crop&q=80"
-          alt="Welcome Back"
-          className="w-full h-full object-cover"
-        />
-        <div 
-          className="absolute inset-0"
-          style={{
-            background: `linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, ${theme.semantic.background.secondary} 100%)`
-          }}
-        />
-        
-        {/* Back Button */}
-        <button
-          onClick={() => navigate('/')}
-          className="absolute top-4 left-4 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm transition-all active:scale-95"
-          style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
-        >
-          <Icon name="chevronLeft" size="sm" className="text-white" />
-        </button>
-
-        {/* Brand Name */}
-        <div className="absolute bottom-6 left-0 right-0 text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Icon name="rings" size="lg" className="text-white drop-shadow-lg" />
-            <h1 className="text-2xl font-bold text-white drop-shadow-lg">
-              UtsavChakra
-            </h1>
-          </div>
-          <p className="text-white/90 text-sm drop-shadow">
-            Your Wedding Planning Partner
-          </p>
-        </div>
+    <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden" style={{ backgroundColor: '#BE9B9B' }}>
+      
+      {/* EDGE-TO-EDGE LEAF DECORATION */}
+      <div className="absolute top-0 left-0 w-full h-40 opacity-90 pointer-events-none" style={{ mixBlendMode: 'multiply' }}>
+         <img src="/assets/vendor/straight_leaves.png" alt="straight leaves top" className="w-full h-full object-cover scale-x-125 origin-top" />
       </div>
 
-      {/* Form Content */}
-      <div className="flex-1 px-6 pt-8 pb-8">
-        <div className="max-w-md mx-auto">
-          {/* Title */}
-          <div className="text-center mb-8">
-            <h1 
-              className="text-3xl font-bold mb-2"
-              style={{ color: theme.semantic.text.primary }}
-            >
-              Welcome Back
-            </h1>
-            <p 
-              className="text-sm"
-              style={{ color: theme.semantic.text.secondary }}
-            >
-              Sign in to continue your wedding planning
+      <div className="absolute bottom-0 left-0 w-full h-40 opacity-90 pointer-events-none rotate-180 -mb-16" style={{ mixBlendMode: 'multiply' }}>
+         <img src="/assets/vendor/straight_leaves.png" alt="straight leaves bottom" className="w-full h-full object-cover scale-x-125 origin-top" />
+      </div>
+
+      <div className="w-full max-w-sm relative z-10 flex flex-col items-center">
+        {/* LOGO SECTION - COMPACTED & LIFTED */}
+        <div className="mb-0 text-center mt-12">
+            <h2 className="text-[#5D3E3E] text-5xl font-normal mb-2" style={{ fontFamily: '"Great Vibes", cursive' }}>Login</h2>
+            <p className="text-[#5D3E3E]/80 text-[10px] font-bold tracking-[0.2em] uppercase" style={{ fontFamily: '"Outfit", sans-serif' }}>
+               Please enter your credentials
             </p>
+            <div className="mt-2 flex justify-center">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="#5D3E3E">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+            </div>
+        </div>
+
+        {/* INPUT FIELDS - MAX COMPACTED SPACING */}
+        <form onSubmit={handleSubmit} className="w-full space-y-1.5">
+          <div className="space-y-1">
+            <label className="text-[#5D3E3E] text-xs font-bold pl-1" style={{ fontFamily: '"Playfair Display", serif' }}>Username :</label>
+            <input
+              type="text"
+              value={formData.username}
+              onChange={(e) => setFormData({...formData, username: e.target.value})}
+              className="w-full bg-white rounded-xl py-3.5 px-5 text-[#5D3E3E] text-sm font-semibold shadow-sm focus:ring-2 focus:ring-[#5D3E3E]/20 transition-all border-none placeholder-[#BE9B9B]"
+              placeholder="Your username"
+              required
+            />
           </div>
 
-          {/* Error Message */}
-          {error && (
-            <div 
-              className="mb-6 p-4 rounded-xl flex items-start gap-3"
-              style={{ 
-                backgroundColor: '#fee2e2',
-                border: '1px solid #fecaca'
-              }}
-            >
-              <Icon name="alertCircle" size="sm" style={{ color: '#dc2626' }} />
-              <p className="text-sm flex-1" style={{ color: '#dc2626' }}>
-                {error}
-              </p>
-            </div>
-          )}
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5 mb-6">
-            {/* Email Input */}
-            <div>
-              <label 
-                className="block text-sm font-medium mb-2"
-                style={{ color: theme.semantic.text.primary }}
-              >
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                  <Icon name="mail" size="sm" style={{ color: theme.semantic.text.tertiary }} />
-                </div>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter your email"
-                  required
-                  className="w-full pl-12 pr-4 py-3.5 rounded-xl text-sm transition-all"
-                  style={{
-                    backgroundColor: theme.semantic.background.primary,
-                    border: `2px solid ${theme.semantic.border.primary}`,
-                    color: theme.semantic.text.primary
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = theme.colors.primary[500]}
-                  onBlur={(e) => e.target.style.borderColor = theme.semantic.border.primary}
-                />
-              </div>
-            </div>
-
-            {/* Password Input */}
-            <div>
-              <label 
-                className="block text-sm font-medium mb-2"
-                style={{ color: theme.semantic.text.primary }}
-              >
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                  <Icon name="lock" size="sm" style={{ color: theme.semantic.text.tertiary }} />
-                </div>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Enter your password"
-                  required
-                  className="w-full pl-12 pr-12 py-3.5 rounded-xl text-sm transition-all"
-                  style={{
-                    backgroundColor: theme.semantic.background.primary,
-                    border: `2px solid ${theme.semantic.border.primary}`,
-                    color: theme.semantic.text.primary
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = theme.colors.primary[500]}
-                  onBlur={(e) => e.target.style.borderColor = theme.semantic.border.primary}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2"
-                >
-                  <Icon 
-                    name={showPassword ? 'eyeOff' : 'eye'} 
-                    size="sm" 
-                    style={{ color: theme.semantic.text.tertiary }} 
-                  />
-                </button>
-              </div>
-            </div>
-
-            {/* Forgot Password */}
-            <div className="text-right">
+          <div className="space-y-1">
+            <label className="text-[#5D3E3E] text-xs font-bold pl-1" style={{ fontFamily: '"Playfair Display", serif' }}>Password :</label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={formData.password}
+                onChange={(e) => setFormData({...formData, password: e.target.value})}
+                className="w-full bg-white rounded-xl py-3.5 px-5 pr-12 text-[#5D3E3E] text-sm font-semibold shadow-sm focus:ring-2 focus:ring-[#5D3E3E]/20 transition-all border-none placeholder-[#BE9B9B]"
+                placeholder="••••••••"
+                required
+              />
               <button
                 type="button"
-                className="text-sm font-medium"
-                style={{ color: theme.colors.primary[600] }}
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#5D3E3E]/40 hover:text-[#5D3E3E] transition-colors"
               >
-                Forgot Password?
+                {showPassword ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                )}
               </button>
             </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-4 rounded-xl font-semibold text-white transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              style={{
-                background: `linear-gradient(135deg, ${theme.colors.primary[500]}, ${theme.colors.primary[600]})`,
-                boxShadow: `0 4px 16px ${theme.colors.primary[500]}40`
-              }}
-            >
-              {isLoading ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Signing In...</span>
-                </>
-              ) : (
-                'Sign In'
-              )}
-            </button>
-          </form>
-
-          {/* Divider */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="flex-1 h-px" style={{ backgroundColor: theme.semantic.border.light }} />
-            <span className="text-xs" style={{ color: theme.semantic.text.tertiary }}>
-              Or continue with
-            </span>
-            <div className="flex-1 h-px" style={{ backgroundColor: theme.semantic.border.light }} />
           </div>
 
-          {/* Social Login */}
-          <div className="flex gap-3 mb-8">
-            <button
-              className="flex-1 py-3 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
-              style={{
-                backgroundColor: theme.semantic.background.primary,
-                border: `1px solid ${theme.semantic.border.light}`
-              }}
-            >
-              <Icon name="google" size="sm" style={{ color: '#DB4437' }} />
-              <span className="text-sm font-medium" style={{ color: theme.semantic.text.primary }}>
-                Google
-              </span>
-            </button>
+          {/* ACTION BUTTON (Follows the image's "CONFIRM" button style) */}
+          <button
+            type="submit"
+            className="w-full bg-[#5D3E3E] py-4 rounded-2xl text-white font-black text-sm tracking-[0.2em] shadow-xl hover:bg-[#4A3232] transition-colors mt-2 uppercase"
+            style={{ fontFamily: '"Outfit", sans-serif' }}
+          >
+            Sign In
+          </button>
+        </form>
 
-            <button
-              className="flex-1 py-3 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
-              style={{
-                backgroundColor: theme.semantic.background.primary,
-                border: `1px solid ${theme.semantic.border.light}`
-              }}
-            >
-              <Icon name="facebook" size="sm" style={{ color: '#1877F2' }} />
-              <span className="text-sm font-medium" style={{ color: theme.semantic.text.primary }}>
-                Facebook
-              </span>
-            </button>
-          </div>
-
-          {/* Sign Up Link */}
-          <div className="text-center">
-            <p style={{ color: theme.semantic.text.secondary }}>
-              Don't have an account?{' '}
-              <Link 
-                to="/signup" 
-                className="font-semibold"
-                style={{ color: theme.colors.primary[600] }}
-              >
-                Sign Up
-              </Link>
-            </p>
-          </div>
+        {/* FOOTER LINKS - MOVED UP */}
+        <div className="mt-4 flex flex-col items-center gap-4">
+           <button 
+             onClick={() => navigate('/signup')} 
+             className="text-[#5D3E3E] text-[10px] font-black uppercase tracking-widest border-b border-[#5D3E3E]/40"
+             style={{ fontFamily: '"Outfit", sans-serif' }}
+           >
+             Join the Celebration (Sign Up)
+           </button>
+           
+           <div className="flex gap-4 pt-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#5D3E3E]/20" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#5D3E3E]/40" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#5D3E3E]/20" />
+           </div>
         </div>
       </div>
     </div>

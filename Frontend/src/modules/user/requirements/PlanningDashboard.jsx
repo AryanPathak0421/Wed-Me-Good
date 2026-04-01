@@ -325,81 +325,96 @@ const PlanningDashboard = () => {
   if (!eventData) return null;
 
   return (
-    <div className="min-h-screen pb-52" style={{ backgroundColor: theme.semantic.background.primary }}>
-      {/* Header Section */}
-      <div className="px-4 py-6">
-        <div className="flex items-center mb-4">
-          <button
-            onClick={handleBack}
-            className="mr-3 p-2 rounded-full"
-            style={{ backgroundColor: theme.semantic.background.accent }}
-          >
-            <Icon name="chevronDown" size="sm" className="rotate-90" style={{ color: theme.semantic.text.primary }} />
-          </button>
-          <div>
-            <h1
-              className="text-2xl font-bold"
-              style={{ color: theme.semantic.text.primary }}
-            >
-              {getDashboardTitle()}
-            </h1>
-            <p
-              className="text-sm mt-1"
-              style={{ color: theme.semantic.text.secondary }}
-            >
-              Your complete event planning toolkit
-            </p>
+    <div className="min-h-screen relative flex flex-col items-center overflow-x-hidden font-['Outfit'] pb-40" style={{ backgroundColor: '#EAE1D8' }}>
+      
+      {/* HEADER NAVIGATION */}
+      <div className="relative z-20 w-full px-6 pt-4 flex justify-between items-center">
+        <button 
+          onClick={handleBack}
+          className="w-9 h-9 rounded-xl bg-white shadow-sm flex items-center justify-center border border-gray-100 text-[#3D2B2B] hover:bg-gray-50 transition-all active:scale-90"
+        >
+          <Icon name="chevronDown" size="sm" className="rotate-90" />
+        </button>
+        <div className="flex flex-col items-center">
+           <img src="/assets/vendor/logo_theme.png" alt="UtsavChakra Logo" className="h-16 object-contain" />
+        </div>
+        <div className="w-9 h-9 bg-white shadow-sm rounded-xl flex items-center justify-center border border-gray-100 text-[#3D2B2B]">
+           <Icon name="users" size="sm" />
+        </div>
+      </div>
+
+      {/* DASHBOARD HERO */}
+      <div className="relative z-20 w-full max-w-md pt-8 px-8 text-center space-y-1 mb-10">
+        <h1 className="text-[#3D2B2B] text-4xl font-bold leading-tight" style={{ fontFamily: '"Great Vibes", cursive' }}>
+          {getDashboardTitle()}
+        </h1>
+        <p className="text-[#3D2B2B]/40 text-[9px] font-bold tracking-[0.2em] uppercase" style={{ fontFamily: '"Outfit", sans-serif' }}>
+          Your complete event planning toolkit
+        </p>
+      </div>
+
+      <div className="relative z-20 w-full max-w-sm px-4 space-y-12">
+        
+        {/* WHAT WE PROVIDE SECTION */}
+        <div className="text-center space-y-8">
+          <h2 className="text-[#3D2B2B] text-2xl font-bold uppercase tracking-widest" style={{ fontFamily: '"Playfair Display", serif' }}>
+            What We Provide?
+          </h2>
+          
+          <div className="grid grid-cols-2 gap-4">
+            {planningTools.slice(0, 10).map((tool) => (
+              <div
+                key={tool.id}
+                onClick={() => handleToolNavigation(tool)}
+                className="group cursor-pointer space-y-2 transition-transform active:scale-95"
+              >
+                <div className="relative aspect-square rounded-[2rem] overflow-hidden shadow-sm border border-white">
+                  <img 
+                    src={`https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=400&fit=crop&q=80&sig=${tool.id}`} 
+                    alt={tool.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/5 flex items-center justify-center">
+                     <div className="w-8 h-8 rounded-full bg-white/40 backdrop-blur-md border border-white/60 flex items-center justify-center text-[#3D2B2B]">
+                        <Icon name={tool.icon} size="xs" />
+                     </div>
+                  </div>
+                </div>
+                <div className="px-1 text-center">
+                  <h3 className="text-[#3D2B2B] text-[9.5px] font-black uppercase tracking-widest leading-snug" style={{ fontFamily: '"Outfit", sans-serif' }}>
+                    {tool.title}
+                  </h3>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {eventData && (
-          <div className="space-y-6">
-            {/* Planning Tools Grid */}
-            <div className="px-4 mb-8">
-              <h2
-                className="text-xl font-bold mb-4"
-                style={{ color: theme.semantic.text.primary }}
-              >
-                PLANING TOOLS
-              </h2>
+        {/* ABOUT US SECTION (Inspired by Image 2) */}
+        <div className="text-center py-10 space-y-6">
+           <h2 className="text-[#3D2B2B] text-3xl font-bold uppercase tracking-widest border-t border-[#3D2B2B]/10 pt-10" style={{ fontFamily: '"Playfair Display", serif' }}>
+             About Us
+           </h2>
+           
+           <div className="flex justify-center py-2">
+             <div className="w-10 h-10 rounded-full border-2 border-[#3D2B2B]/20 flex items-center justify-center">
+                <svg viewBox="0 0 100 100" className="w-6 h-6 fill-[#3D2B2B]/60">
+                   <path d="M50 85c-2-2-35-25-35-45 0-12 10-20 20-20 6 0 11 3 15 8 4-5 9-8 15-8 10 0 20 8 20 20 0 20-33 43-35 45z"/>
+                </svg>
+             </div>
+           </div>
 
-              <div className="grid grid-cols-3 gap-2">
-                {planningTools.map((tool) => (
-                  <div
-                    key={tool.id}
-                    onClick={() => handleToolNavigation(tool)}
-                    className="planning-tool-card cursor-pointer"
-                  >
-                    <div
-                      className="p-2 py-3 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 flex flex-col items-center justify-between min-h-[100px]"
-                      style={{
-                        backgroundColor: theme.semantic.card.background,
-                        boxShadow: `0 4px 15px -3px ${theme.semantic.card.shadow}40`,
-                        border: `1px solid ${theme.semantic.card.border}`
-                      }}
-                    >
-                      <div
-                        className="w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2"
-                        style={{ backgroundColor: `${tool.color}20` }}
-                      >
-                        <Icon
-                          name={tool.icon}
-                          size="sm"
-                          style={{ color: tool.color }}
-                        />
-                      </div>
+           <p className="text-[#3D2B2B]/70 text-[11px] leading-relaxed font-medium italic" style={{ fontFamily: '"Outfit", sans-serif' }}>
+             At UtsavChakra, we create events where elegance meets emotion. Every story is unique, and we transform yours into a beautifully curated celebration filled with meaning and warmth. We blend refined design, thoughtful details, and seamless coordination to make your day truly unforgettable.
+           </p>
 
-                      <h3
-                        className="font-bold text-[9px] text-center leading-tight line-clamp-3 w-full"
-                        style={{ color: theme.semantic.text.primary }}
-                      >
-                        {tool.title}
-                      </h3>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+           {/* SMALL DECORATIVE STRIP */}
+           <div className="w-20 h-[1px] bg-[#3D2B2B]/20 mx-auto mt-4" />
+        </div>
+
+        {/* ADDITIONAL PLANNING SECTIONS (Original logic kept) */}
+        <div className="space-y-12 pb-20">
+
 
             {/* Enhanced Planning Progress Section */}
             <div
@@ -503,143 +518,27 @@ const PlanningDashboard = () => {
               </p>
             </div>
 
-            {/* Selected Events / Ceremonies Section */}
+            {/* YOUR EVENTS SECTION */}
             {eventData.subcategories && eventData.subcategories.length > 0 && (
-              <div className="px-4 mb-8">
-                <h2
-                  className="text-xl font-bold mb-4"
-                  style={{ color: theme.semantic.text.primary }}
-                >
-                  YOUR EVENTS
-                </h2>
-                <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+              <div className="mb-10">
+                <h2 className="text-[#5D3E3E] text-[11px] font-black uppercase tracking-[0.2em] mb-4 text-center">Your Sacred Ceremonies</h2>
+                <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide px-2">
                   {eventData.subcategories.map((subId, index) => {
-                    const label = eventData.subcategoryLabels[index] || subId;
+                    const label = eventData?.subcategoryLabels?.[index] || subId;
                     const emoji = subcategoryEmojis[subId] || '✨';
 
                     return (
                       <div
                         key={subId}
-                        className="flex flex-col items-center gap-2 p-4 rounded-3xl transition-all active:scale-95 min-w-[120px]"
-                        style={{
-                          backgroundColor: theme.semantic.card.background,
-                          border: `1px solid ${theme.semantic.card.border}`,
-                          boxShadow: `0 4px 12px ${theme.semantic.card.shadow}15`
-                        }}
+                        className="flex flex-col items-center gap-3 p-5 rounded-[2.5rem] bg-white/60 backdrop-blur-xl border border-white/40 shadow-lg min-w-[140px]"
                       >
-                        <div
-                          className="w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-sm mb-1"
-                          style={{
-                            backgroundColor: `${theme.colors.primary[500]}10`,
-                            border: `2px solid ${theme.colors.primary[500]}20`
-                          }}
-                        >
+                        <div className="w-16 h-16 rounded-full bg-[#5D3E3E]/5 border border-[#5D3E3E]/10 flex items-center justify-center text-3xl">
                           {emoji}
                         </div>
-                        <span
-                          className="text-[10px] font-bold text-center uppercase tracking-wider line-clamp-1 w-full"
-                          style={{ color: theme.semantic.text.primary }}
-                        >
-                          {label}
-                        </span>
-                        <div
-                          className="h-1 w-8 rounded-full"
-                          style={{ backgroundColor: theme.colors.primary[500] }}
-                        />
+                        <span className="text-[10px] font-black text-[#5D3E3E] text-center uppercase tracking-widest">{label}</span>
                       </div>
                     );
                   })}
-                </div>
-              </div>
-            )}
-
-            {/* Default Sacred Ceremonies Section if none selected for wedding */}
-            {(!eventData.subcategories || eventData.subcategories.length === 0) && eventData.category === 'wedding' && (
-              <div className="px-4 mb-8">
-                <h2
-                  className="text-xl font-bold mb-4"
-                  style={{ color: theme.semantic.text.primary }}
-                >
-                  SACRED CEREMONIES
-                </h2>
-                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-                  <button
-                    onClick={() => setSelectedCeremony('roka')}
-                    className="flex flex-col items-center gap-1.5 p-2 rounded-2xl transition-all active:scale-95 min-w-[75px]"
-                    style={{
-                      backgroundColor: theme.semantic.card.background,
-                      border: `1px solid ${theme.semantic.card.border}`,
-                      boxShadow: `0 4px 12px ${theme.semantic.card.shadow}10`
-                    }}
-                  >
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-sm mb-0.5" style={{ backgroundColor: '#fff7ed', border: '1.5px solid #ffedd5' }}>
-                      💍
-                    </div>
-                    <span className="text-[9px] font-bold text-center uppercase tracking-wider" style={{ color: theme.semantic.text.primary }}>ROKA</span>
-                  </button>
-
-                  <button
-                    onClick={() => setSelectedCeremony('engagement')}
-                    className="flex flex-col items-center gap-1.5 p-2 rounded-2xl transition-all active:scale-95 min-w-[75px]"
-                    style={{
-                      backgroundColor: theme.semantic.card.background,
-                      border: `1px solid ${theme.semantic.card.border}`,
-                      boxShadow: `0 4px 12px ${theme.semantic.card.shadow}10`
-                    }}
-                  >
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-sm mb-0.5" style={{ backgroundColor: '#fdf2f8', border: '1.5px solid #fce7f3' }}>
-                      💕
-                    </div>
-                    <span className="text-[9px] font-bold text-center uppercase tracking-wider" style={{ color: theme.semantic.text.primary }}>ENGAGEMENT</span>
-                  </button>
-
-                  <button
-                    onClick={() => setSelectedCeremony('mehendi')}
-                    className="flex flex-col items-center gap-1.5 p-2 rounded-2xl transition-all active:scale-95 min-w-[75px]"
-                    style={{
-                      backgroundColor: theme.semantic.card.background,
-                      border: `1px solid ${theme.semantic.card.border}`,
-                      boxShadow: `0 4px 12px ${theme.semantic.card.shadow}10`
-                    }}
-                  >
-                    <div className="relative w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-sm mb-0.5" style={{ backgroundColor: '#f0fdf4', border: '1.5px solid #dcfce7' }}>
-                      🌿
-                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
-                        <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-                      </div>
-                    </div>
-                    <span className="text-[9px] font-bold text-center uppercase tracking-wider" style={{ color: theme.semantic.text.primary }}>MEHENDI</span>
-                  </button>
-
-                  <button
-                    onClick={() => setSelectedCeremony('sangeet')}
-                    className="flex flex-col items-center gap-1.5 p-2 rounded-2xl transition-all active:scale-95 min-w-[75px]"
-                    style={{
-                      backgroundColor: theme.semantic.card.background,
-                      border: `1px solid ${theme.semantic.card.border}`,
-                      boxShadow: `0 4px 12px ${theme.semantic.card.shadow}10`
-                    }}
-                  >
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-sm mb-0.5" style={{ backgroundColor: '#fffbe3', border: '1.5px solid #fef3c7' }}>
-                      🎵
-                    </div>
-                    <span className="text-[9px] font-bold text-center uppercase tracking-wider" style={{ color: theme.semantic.text.primary }}>SANGEET</span>
-                  </button>
-
-                  <button
-                    onClick={() => setSelectedCeremony('haldi')}
-                    className="flex flex-col items-center gap-1.5 p-2 rounded-2xl transition-all active:scale-95 min-w-[75px]"
-                    style={{
-                      backgroundColor: theme.semantic.card.background,
-                      border: `1px solid ${theme.semantic.card.border}`,
-                      boxShadow: `0 4px 12px ${theme.semantic.card.shadow}10`
-                    }}
-                  >
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-sm mb-0.5" style={{ backgroundColor: '#fefce8', border: '1.5px solid #fef08a' }}>
-                      💛
-                    </div>
-                    <span className="text-[9px] font-bold text-center uppercase tracking-wider" style={{ color: theme.semantic.text.primary }}>HALDI</span>
-                  </button>
                 </div>
               </div>
             )}
@@ -724,10 +623,7 @@ const PlanningDashboard = () => {
               </div>
             </div>
 
-            {/* Bottom spacing */}
-            <div className="h-8"></div>
-          </div>
-        )}
+        </div>
       </div>
       {/* Sticky Check List Button */}
       <div

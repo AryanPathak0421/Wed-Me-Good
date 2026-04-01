@@ -98,162 +98,102 @@ const VendorCard = ({ vendor, layout = 'vertical', onToggleSave }) => {
     }, 500);
   };
 
-  // Responsive layout for vendor listings
   if (layout === 'responsive') {
     return (
       <Card 
-        className="transition-all duration-200 hover:shadow-lg card-hover cursor-pointer"
+        className="transition-all duration-300 shadow-sm border-none overflow-hidden"
         style={{
-          backgroundColor: theme.semantic.card.background,
-          borderColor: theme.semantic.card.border,
-          boxShadow: `0 2px 8px -2px ${theme.semantic.card.shadow}`
+          backgroundColor: 'white',
+          borderRadius: '20px',
         }}
         onClick={handleViewDetails}
       >
-        <div className="p-4">
-          {/* Image */}
-          <div className="w-full h-48 sm:h-40 rounded-xl overflow-hidden mb-4">
-            <img
-              src={vendor.image}
-              alt={vendor.name}
-              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-              loading="lazy"
-              onError={(e) => {
-                e.target.src = 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&h=600&fit=crop&q=80';
+        <>
+          <div className="relative group">
+            <div className="w-full aspect-video overflow-hidden">
+              <img
+                src={vendor.image}
+                alt={vendor.name}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                loading="lazy"
+                onError={(e) => {
+                  e.target.src = 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&h=600&fit=crop&q=80';
+                }}
+              />
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2 py-0.5 bg-black/5 backdrop-blur-md rounded-full">
+                  <div className="w-1 h-1 rounded-full bg-white shadow-sm" />
+                  <div className="w-1 h-1 rounded-full bg-white/40" />
+                  <div className="w-1 h-1 rounded-full bg-white/40" />
+              </div>
+            </div>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleSave();
               }}
-            />
+              className="absolute top-3 right-3 w-8 h-8 rounded-lg bg-white/80 backdrop-blur-xl flex items-center justify-center text-[#3D2B2B] shadow-sm active:scale-90 transition-all z-10"
+            >
+              <Icon name={isSaved ? 'checkList' : 'menu'} size="xs" className={isSaved ? 'opacity-100' : 'opacity-40'} />
+            </button>
           </div>
-          
-          {/* Content */}
-          <div className="space-y-3">
+            
+          <div className="p-4 space-y-3">
             <div>
-              <h3 
-                className="font-bold text-lg flex items-center gap-2 mb-2 line-clamp-1"
-                style={{ color: theme.semantic.text.primary }}
-              >
-                {vendor.name}
-                {vendor.verified && (
-                  <Icon name="verified" size="sm" color="accent" />
-                )}
-              </h3>
-              <p 
-                className="text-sm mb-2 line-clamp-2"
-                style={{ color: theme.semantic.text.secondary }}
-              >
-                {vendor.description}
-              </p>
-              <p 
-                className="text-sm flex items-center mb-3"
-                style={{ color: theme.semantic.text.secondary }}
-              >
-                <Icon name="location" size="xs" className="mr-1 flex-shrink-0" />
-                <span className="line-clamp-1">{vendor.location}</span>
-              </p>
+               <div className="flex items-center justify-between mb-1">
+                  <span className="text-[9px] font-bold text-[#3D2B2B]/40 uppercase tracking-widest">{vendor.location}</span>
+                  <div className="flex items-center gap-1">
+                      <span className="text-[#E91E63] text-xs font-black">★ {vendor.rating}</span>
+                      <span className="text-[#3D2B2B]/30 text-[9px] font-bold">({vendor.reviews})</span>
+                  </div>
+               </div>
+               <h3 className="text-[#3D2B2B] text-lg font-bold leading-tight line-clamp-1 mb-1" style={{ fontFamily: '"Playfair Display", serif' }}>
+                 {vendor.name}
+               </h3>
             </div>
 
-            {/* Rating and Price Row */}
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <div className="flex items-center gap-3">
-                <div 
-                  className="flex items-center px-2 py-1 rounded-full gap-1"
-                  style={{ backgroundColor: theme.colors.secondary[100] }}
-                >
-                  <Icon name="star" size="xs" color="secondary" />
-                  <span 
-                    className="font-medium text-sm"
-                    style={{ color: theme.semantic.text.primary }}
-                  >
-                    {vendor.rating}
-                  </span>
-                </div>
-                <span 
-                  className="text-sm"
-                  style={{ color: theme.semantic.text.secondary }}
-                >
-                  {vendor.reviews} reviews
-                </span>
-              </div>
-              
-              <div 
-                className="font-bold text-base"
-                style={{ color: theme.colors.primary[600] }}
-              >
-                {vendor.price}
-              </div>
+            <div className="pt-1.5 border-t border-gray-50 flex items-center justify-between">
+               <div className="flex items-baseline gap-1">
+                  <span className="text-lg font-black text-[#3D2B2B]">{vendor.price}</span>
+                  <span className="text-[9px] font-bold text-[#3D2B2B]/20">/ day avg.</span>
+               </div>
+               <span className="text-[8px] font-black text-[#3D2B2B]/30 uppercase tracking-widest">Est. Quote</span>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-2 pt-2">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleSave();
-                }}
-                className={`p-2 rounded-lg transition-all duration-200 ${
-                  isSaved ? 'opacity-80' : 'hover:scale-105'
-                }`}
-                style={{
-                  backgroundColor: isSaved ? theme.colors.accent[500] : theme.semantic.background.accent,
-                  color: isSaved ? 'white' : theme.semantic.text.primary,
-                  border: `1px solid ${isSaved ? theme.colors.accent[500] : theme.semantic.border.light}`
-                }}
-                title={isSaved ? 'Remove from saved' : 'Save vendor'}
-              >
-                <Icon name="heart" size="sm" />
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAddToCart();
-                }}
-                disabled={isAddingToCart}
-                className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center ${
-                  isInCart(vendor.id) 
-                    ? 'opacity-60' 
-                    : isAddingToCart 
-                      ? 'opacity-80' 
-                      : 'hover:scale-105'
-                }`}
-                style={{
-                  backgroundColor: isInCart(vendor.id) 
-                    ? theme.colors.accent[500] 
-                    : theme.colors.primary[500],
-                  color: 'white'
-                }}
-              >
-                {isAddingToCart ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                ) : isInCart(vendor.id) ? (
-                  <>
-                    <Icon name="heart" size="xs" className="mr-1" />
-                    Shortlisted
-                  </>
-                ) : (
-                  <>
-                    <Icon name="heart" size="xs" className="mr-1" />
-                    Shortlist
-                  </>
-                )}
-              </button>
-              <Button
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleWhatsAppContact();
-                }}
-                className="px-3 py-2 flex items-center justify-center gap-1"
-                style={{
-                  backgroundColor: '#25D366',
-                  borderColor: '#25D366',
-                  color: 'white'
-                }}
-              >
-                <Icon name="whatsapp" size="xs" />
-                <span className="text-xs font-medium">WhatsApp</span>
-              </Button>
+            <div className="flex gap-2.5 pt-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAddToCart();
+                  }}
+                  disabled={isAddingToCart || isInCart(vendor.id)}
+                  className={`flex-1 py-2.5 px-4 rounded-full border-2 font-bold text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95 ${
+                    isInCart(vendor.id) 
+                      ? 'bg-[#E91E63] text-white border-[#E91E63]' 
+                      : 'border-[#E91E63] text-[#E91E63] hover:bg-[#E91E63]/5'
+                  }`}
+                >
+                  {isAddingToCart ? (
+                     <div className="w-3 h-3 border-2 border-current border-t-transparent animate-spin rounded-full" />
+                  ) : (
+                    <>
+                      <Icon name={isInCart(vendor.id) ? 'checkCircle' : 'heart'} size="xs" />
+                      {isInCart(vendor.id) ? 'Shortlisted' : 'Shortlist'}
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.location.href = `tel:${vendor.phone || '9876543210'}`;
+                  }}
+                  className="w-10 h-10 rounded-full bg-[#10B981] flex items-center justify-center text-white shadow-lg active:scale-90 transition-all border-none"
+                >
+                    <Icon name="phone" size="sm" />
+                </button>
             </div>
           </div>
-        </div>
+        </>
       </Card>
     );
   }

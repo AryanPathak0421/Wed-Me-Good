@@ -270,171 +270,120 @@ const Account = () => {
   };
 
   return (
-    <div className="min-h-screen pb-20" style={{ backgroundColor: theme.semantic.background.primary }}>
+    <div className="min-h-screen pb-32 px-6" style={{ backgroundColor: '#EAE1D8' }}>
       
-      {/* User Info Section */}
-      <div className="px-4 py-6">
-        <Card className="p-4">
-          <div className="flex items-center space-x-4">
-            {/* Profile Image */}
-            <div className="relative flex-shrink-0">
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-md">
+      {/* Editorial Profile Section - Compact */}
+      <div className="py-4">
+        <div 
+          className="p-5 rounded-[2rem] shadow-md border border-white relative overflow-hidden"
+          style={{ backgroundColor: 'white' }}
+        >
+          <div className="flex flex-col items-center text-center space-y-3">
+            {/* High-End Profile Image - Slimmed */}
+            <div className="relative group">
+              <div className="w-20 h-20 rounded-full overflow-hidden border-[4px] border-[#EAE1D8]/20 shadow-lg">
                 <img
-                  src={userData.profileImage}
+                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=300&fit=crop&q=80"
                   alt={userData.name}
                   className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=128&h=128&fit=crop&face=center&q=80';
-                  }}
                 />
               </div>
+              <button 
+                onClick={() => handleNavigation('/user/profile/edit')}
+                className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-white shadow-md flex items-center justify-center text-[#3D2B2B] active:scale-90 transition-all border border-gray-100"
+              >
+                 <Icon name="plan" size="xs" />
+              </button>
             </div>
 
-            {/* User Details */}
-            <div className="flex-1 min-w-0">
-              <h1 
-                className="text-lg mb-1"
-                style={{ color: theme.semantic.text.primary }}
-              >
-                {userData.name}
-              </h1>
-              <p 
-                className="text-sm mb-1"
-                style={{ color: theme.semantic.text.secondary }}
-              >
-                {userData.phone}
-              </p>
-              <p 
-                className="text-sm mb-1"
-                style={{ color: theme.semantic.text.secondary }}
-              >
-                {userData.email}
-              </p>
-              <p 
-                className="text-xs"
-                style={{ color: theme.colors.primary[600] }}
-              >
-                Monthly Income: ₹{userData.monthlyIncome.toLocaleString()}
-              </p>
-            </div>
+            {/* Structured User Details - High Density */}
+            <div className="space-y-2 w-full">
+              <div>
+                <h1 
+                  className="text-xl font-bold leading-tight"
+                  style={{ color: '#3D2B2B', fontFamily: '"Playfair Display", serif' }}
+                >
+                  {userData.name}
+                </h1>
+              </div>
+              
+              <div className="flex flex-col items-center gap-1">
+                 <div className="text-[9px] font-black uppercase tracking-[0.2em] text-[#3D2B2B]/40" style={{ fontFamily: '"Outfit", sans-serif' }}>
+                    {userData.phone}
+                 </div>
+                 <div className="text-[9px] font-black uppercase tracking-[0.15em] text-[#3D2B2B]/40 truncate max-w-[200px]" style={{ fontFamily: '"Outfit", sans-serif' }}>
+                    {userData.email}
+                 </div>
+              </div>
 
-            {/* Edit Profile Button */}
-            <Button
-              variant="outline"
-              size="sm"
-              className="px-3 py-2"
-              onClick={() => handleNavigation('/user/profile/edit')}
-            >
-              <Icon name="plan" size="xs" className="mr-1" />
-              Edit
-            </Button>
+              <div className="pt-1">
+                <span className="inline-block px-3 py-1 rounded-full bg-[#EAE1D8]/20 text-[8px] font-black uppercase tracking-widest text-[#3D2B2B]/60 border border-white/50">
+                  Monthly: ₹{userData.monthlyIncome.toLocaleString()}
+                </span>
+              </div>
+            </div>
           </div>
-        </Card>
+        </div>
       </div>
 
-      {/* Budget & Wedding Summary */}
-      <div className="px-4 py-2">
-        <div className="flex items-center space-x-2 mb-4">
-          <div 
-            className="w-2 h-2 rounded-full"
-            style={{ backgroundColor: theme.colors.primary[500] }}
-          />
-          <span 
-            className="text-base"
-            style={{ color: theme.semantic.text.primary }}
-          >
-            Budget & Wedding Summary
-          </span>
+      {/* Boutique Summary Sections - Compact */}
+      <div className="space-y-8">
+        <div className="text-center py-2">
+           <h4 className="text-[#3D2B2B]/30 text-[9px] font-black uppercase tracking-[0.3em] flex items-center gap-3 justify-center">
+              <span className="w-6 h-[1px] bg-[#3D2B2B]/10" />
+              Planning Details
+              <span className="w-6 h-[1px] bg-[#3D2B2B]/10" />
+           </h4>
         </div>
-        
-        {/* Wedding Budget Overview */}
+
+        {/* Wedding Budget Overview - Compact */}
         {userData.hasSetBudget ? (
-          <Card className="p-4 mb-4">
-            <div className="flex items-center justify-between mb-3">
+          <div 
+            className="p-5 rounded-[2rem] bg-white shadow-sm border border-white"
+          >
+            <div className="flex items-center justify-between mb-4">
               <h3 
-                className="font-semibold text-base"
-                style={{ color: theme.semantic.text.primary }}
+                className="text-sm font-bold"
+                style={{ color: '#3D2B2B', fontFamily: '"Playfair Display", serif' }}
               >
                 Wedding Budget
               </h3>
-              <Button
-                variant="outline"
-                size="sm"
+              <button
                 onClick={() => handleNavigation('/user/budget')}
+                className="text-[9px] font-black uppercase tracking-widest text-[#3D2B2B]/40 hover:text-[#3D2B2B]"
               >
                 Manage
-              </Button>
+              </button>
             </div>
             
-            <div className="space-y-2 mb-4">
-              <div className="flex justify-between items-center">
-                <span 
-                  className="text-sm"
-                  style={{ color: theme.semantic.text.secondary }}
-                >
-                  Total Budget
-                </span>
-                <span 
-                  className="font-semibold"
-                  style={{ color: theme.semantic.text.primary }}
-                >
-                  {formatCurrency(budgetData.totalBudget)}
-                </span>
-              </div>
-              
-              <div className="flex justify-between items-center">
-                <span 
-                  className="text-sm"
-                  style={{ color: theme.semantic.text.secondary }}
-                >
-                  Spent
-                </span>
-                <span 
-                  className="font-semibold"
-                  style={{ color: theme.colors.primary[600] }}
-                >
-                  {formatCurrency(budgetData.spent)}
-                </span>
-              </div>
-              
-              <div className="flex justify-between items-center">
-                <span 
-                  className="text-sm"
-                  style={{ color: theme.semantic.text.secondary }}
-                >
-                  Remaining
-                </span>
-                <span 
-                  className="font-semibold"
-                  style={{ color: theme.colors.accent[600] }}
-                >
-                  {formatCurrency(budgetData.remaining)}
-                </span>
-              </div>
+            <div className="grid grid-cols-3 gap-2 mb-4">
+               {[
+                 { label: 'Total', val: formatCurrency(budgetData.totalBudget), color: '#3D2B2B' },
+                 { label: 'Spent', val: formatCurrency(budgetData.spent), color: '#BE185D' },
+                 { label: 'Left', val: formatCurrency(budgetData.remaining), color: '#15803D' }
+               ].map((item, i) => (
+                 <div key={i} className="text-center">
+                    <div className="text-[8px] font-black uppercase text-[#3D2B2B]/30 mb-0.5 tracking-tighter">{item.label}</div>
+                    <div className="text-sm font-black tracking-tight" style={{ color: item.color }}>{item.val}</div>
+                 </div>
+               ))}
             </div>
 
-            {/* Progress Bar */}
-            <div className="mb-2">
+            {/* Progress Bar - Slim */}
+            <div className="relative pt-1">
               <div 
-                className="w-full h-2 rounded-full overflow-hidden"
-                style={{ backgroundColor: theme.semantic.background.accent }}
+                className="w-full h-1 bg-[#EAE1D8] rounded-full overflow-hidden"
               >
                 <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{
-                    width: `${getBudgetProgress()}%`,
-                    background: `linear-gradient(90deg, ${theme.colors.primary[400]} 0%, ${theme.colors.primary[600]} 100%)`
-                  }}
+                  className="h-full bg-[#3D2B2B] rounded-full transition-all duration-500"
+                  style={{ width: `${getBudgetProgress()}%` }}
                 />
               </div>
-              <p 
-                className="text-xs mt-1 text-center"
-                style={{ color: theme.semantic.text.secondary }}
-              >
-                {getBudgetProgress().toFixed(1)}% used
+              <p className="text-[8px] font-black text-[#3D2B2B]/20 text-right mt-1 uppercase tracking-widest">
+                {getBudgetProgress().toFixed(0)}% used
               </p>
             </div>
-          </Card>
+          </div>
         ) : (
           <Card className="p-4 mb-4">
             <EmptyState

@@ -25,11 +25,11 @@ const Header = () => {
   const isDashboard = location.pathname === '/user/dashboard';
 
   const headerStyles = {
-    backgroundColor: theme.semantic.navigation.background,
-    borderBottomColor: theme.semantic.navigation.border,
+    backgroundColor: '#EAE1D8',
+    borderBottomColor: 'rgba(61, 43, 43, 0.08)',
     borderBottomWidth: '1px',
     borderBottomStyle: 'solid',
-    boxShadow: `0 1px 3px 0 ${theme.semantic.card.shadow}`,
+    boxShadow: '0 1px 1px 0 rgba(0, 0, 0, 0.04)',
   };
 
   const logoStyles = {
@@ -54,8 +54,8 @@ const Header = () => {
           <div className="flex items-center">
             <Link
               to="/user/home"
-              className="text-xl sm:text-2xl font-bold"
-              style={logoStyles}
+              className="text-2xl sm:text-3xl font-black uppercase tracking-tighter"
+              style={{ color: '#3D2B2B', fontFamily: '"Playfair Display", serif' }}
             >
               UtsavChakra
             </Link>

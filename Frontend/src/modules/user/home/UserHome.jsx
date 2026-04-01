@@ -38,8 +38,8 @@ const UserHome = () => {
 
   // Data arrays will be added here
   const topCategories = [
-    { id: 'venues', name: 'Wedding Venues', image: 'https://images.unsplash.com/photo-1519167758481-83f29d8ae8e4?w=200&h=200&fit=crop&q=80', route: '/user/vendors/venues' },
-    { id: 'photographers', name: 'Wedding Photographers', image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=200&h=200&fit=crop&q=80', route: '/user/vendors/photographers' },
+    { id: 'venues', name: 'Wedding Venues', image: 'https://images.unsplash.com/photo-1510076857177-7470076d4098?w=200&h=200&fit=crop&q=80', route: '/user/vendors/venues' },
+    { id: 'photographers', name: 'Wedding Photographers', image: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=200&h=200&fit=crop&q=80', route: '/user/vendors/photographers' },
     { id: 'makeup', name: 'Bridal Makeup', image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=200&h=200&fit=crop&q=80', route: '/user/vendors/makeup' },
     { id: 'decorators', name: 'Wedding Decorators', image: 'https://images.unsplash.com/photo-1478146896981-b80fe463b330?w=200&h=200&fit=crop&q=80', route: '/user/vendors/decorators' },
     { id: 'catering', name: 'Catering', image: 'https://images.unsplash.com/photo-1555244162-803834f70033?w=200&h=200&fit=crop&q=80', route: '/user/vendors/catering' },
@@ -49,16 +49,16 @@ const UserHome = () => {
     { id: 'music', name: 'Music & DJ', image: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=200&h=200&fit=crop&q=80', route: '/user/vendors/music' },
     { id: 'choreography', name: 'Choreography', image: 'https://images.unsplash.com/photo-1504609773096-104ff2c73ba4?w=200&h=200&fit=crop&q=80', route: '/user/vendors/choreography' }
   ];
-
+ 
   const planningTools = [
-    { id: 'e-invites', title: 'Build your Digital E-Invites', subtitle: "Let's get started", icon: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=100&h=100&fit=crop&q=80', bgColor: '#F0F9FF', route: '/user/e-invites' },
-    { id: 'shortlist', title: 'Your shortlisted vendors', subtitle: 'Browse vendors', icon: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=100&h=100&fit=crop&q=80', bgColor: '#F5F3FF', route: '/user/shortlist' },
+    { id: 'e-invites', title: 'Build your Digital E-Invites', subtitle: "Let's get started", icon: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=100&h=100&fit=crop&q=80', bgColor: '#F0F9FF', route: '/user/e-invites' },
+    { id: 'shortlist', title: 'Your shortlisted vendors', subtitle: 'Browse vendors', icon: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=100&h=100&fit=crop&q=80', bgColor: '#F5F3FF', route: '/user/shortlist' },
     { id: 'favourites', title: 'Your favourite vendors', subtitle: 'Add a favourite', icon: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=100&h=100&fit=crop&q=80', bgColor: '#FFF1F2', route: '/user/favourites' },
     { id: 'groups', title: 'Family Planning Groups', subtitle: 'Collaborate with family', icon: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=100&h=100&fit=crop&q=80', bgColor: '#F0FDF4', route: '/user/family/groups' }
   ];
-
+ 
   const venues = [
-    { id: 1, name: 'Essentia Luxury Hotel Indore', location: 'Indore', price: '₹ 2,050', priceType: 'per function', image: 'https://images.unsplash.com/photo-1519167758481-83f29d8ae8e4?w=600&h=400&fit=crop&q=80', route: '/user/vendor/1' },
+    { id: 1, name: 'Essentia Luxury Hotel Indore', location: 'Indore', price: '₹ 2,050', priceType: 'per function', image: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=600&h=400&fit=crop&q=80', route: '/user/vendor/1' },
     { id: 2, name: 'Sarai Resort Indore', location: 'Dhar Road', price: '₹ 800', priceType: 'per plate', image: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600&h=400&fit=crop&q=80', route: '/user/vendor/2' },
     { id: 3, name: 'Royal Palace Gardens', location: 'Vijay Nagar', price: '₹ 1,500', priceType: 'per plate', image: 'https://images.unsplash.com/photo-1478146896981-b80fe463b330?w=600&h=400&fit=crop&q=80', route: '/user/vendor/3' },
     { id: 4, name: 'Grand Celebration Banquet', location: 'AB Road', price: '₹ 1,200', priceType: 'per plate', image: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=600&h=400&fit=crop&q=80', route: '/user/vendor/4' },
@@ -234,382 +234,251 @@ const UserHome = () => {
   ];
 
   return (
-    <div className="min-h-screen pb-20 bg-white">
+    <div className="min-h-screen pb-32 px-4 space-y-8" style={{ backgroundColor: '#EAE1D8' }}>
       
-      {/* 1. Top Category Icons Row */}
-      <div className="px-4 py-6">
-        <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2">
+      {/* 1. Top Category Icons - Editorial Circles */}
+      <div className="pt-6">
+        <div className="flex gap-5 overflow-x-auto scrollbar-hide pb-4">
           {topCategories.map((category) => (
             <div
               key={category.id}
               onClick={() => navigate(category.route)}
-              className="flex-shrink-0 cursor-pointer active:scale-95 transition-transform"
+              className="flex-shrink-0 cursor-pointer active:scale-95 transition-all text-center"
             >
-              <div className="w-16 h-16 rounded-full overflow-hidden mb-2 shadow-md">
+              <div className="w-16 h-16 rounded-full overflow-hidden mb-2 p-1 bg-white shadow-sm ring-1 ring-black/5">
                 <img
                   src={category.image}
                   alt={category.name}
                   loading="lazy"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover rounded-full"
                   onError={(e) => {
                     e.target.src = 'https://images.unsplash.com/photo-1519167758481-83f29d8ae8e4?w=64&h=64&fit=crop&q=80';
                   }}
                 />
               </div>
-              <p className="text-xs text-center w-16 font-medium text-gray-700">
-                {category.name}
+              <p 
+                className="text-[9px] w-16 font-black uppercase tracking-wider text-[#3D2B2B]/60"
+                style={{ fontFamily: '"Outfit", sans-serif' }}
+              >
+                {category.name.split(' ')[1] || category.name}
               </p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* 2. Wedding Planning Tools */}
-      <div className="px-4 py-6">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900">
-          Wedding Planning tools
-        </h2>
-        <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+      {/* 2. Wedding Planning Tools - Boutique Arched Cards */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+           <h2 className="text-xl font-bold tracking-tight text-[#3D2B2B]" style={{ fontFamily: '"Playfair Display", serif' }}>
+             Planning Tools
+           </h2>
+           <span className="text-[10px] font-black uppercase tracking-widest text-[#3D2B2B]/30">Editorial Guide</span>
+        </div>
+        
+        <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4">
           {planningTools.map((tool) => (
             <div
               key={tool.id}
               onClick={() => navigate(tool.route)}
-              className="flex-shrink-0 w-36 p-3 cursor-pointer active:scale-95 transition-transform"
-              style={{ backgroundColor: tool.bgColor, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}
+              className="flex-shrink-0 w-40 overflow-hidden cursor-pointer active:scale-95 transition-all"
             >
-              <div className="w-10 h-10 mb-2 rounded-full overflow-hidden">
-                <img 
-                  src={tool.icon} 
-                  alt={tool.title} 
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.src = 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=48&h=48&fit=crop&q=80';
-                  }}
-                />
+              <div className="bg-white rounded-t-[3rem] rounded-b-[1rem] p-4 shadow-sm border border-white/50 aspect-[4/5] flex flex-col items-center text-center justify-center space-y-3">
+                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#EAE1D8]">
+                  <img 
+                    src={tool.icon} 
+                    alt={tool.title} 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-xs font-bold text-[#3D2B2B] leading-tight" style={{ fontFamily: '"Playfair Display", serif' }}>
+                    {tool.title}
+                  </h3>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-[#3D2B2B]/30" style={{ fontFamily: '"Outfit", sans-serif' }}>
+                    {tool.subtitle}
+                  </p>
+                </div>
               </div>
-              <h3 className="text-xs font-semibold mb-1 text-gray-900 leading-tight">
-                {tool.title}
-              </h3>
-              <p className="text-xs text-gray-600 leading-tight">
-                {tool.subtitle}
-              </p>
             </div>
           ))}
         </div>
 
-        {/* Family Planning Groups Actions */}
-        <div className="mt-4 relative">
+        {/* Family Planning Groups Actions - Minimalist Card */}
+        <div className="relative group">
           <div 
-            className="p-4 rounded-xl"
-            style={{ 
-              backgroundColor: theme.semantic.background.primary,
-              border: `1px solid ${theme.semantic.border.primary}`
-            }}
+            className="p-6 rounded-[2rem] bg-white shadow-sm border border-white overflow-hidden relative"
           >
-            <div className="flex items-center gap-2 mb-3">
-              <div 
-                className="w-8 h-8 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: theme.colors.primary[100] }}
-              >
-                <span style={{ color: theme.colors.primary[500], fontSize: '16px' }}>👥</span>
+             {/* Subtle Ornament */}
+             <div className="absolute top-0 right-0 w-16 h-16 bg-[#EAE1D8]/20 rounded-bl-full pointer-events-none" />
+
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#EAE1D8]/30">
+                 <Icon name="plan" size="sm" style={{ color: '#3D2B2B' }} />
               </div>
-              <h3 
-                className="text-sm font-semibold"
-                style={{ color: theme.semantic.text.primary }}
-              >
-                Family Planning Groups
-              </h3>
+              <div>
+                <h3 className="text-lg font-bold text-[#3D2B2B]" style={{ fontFamily: '"Playfair Display", serif' }}>
+                  Family Planning
+                </h3>
+                <p className="text-[10px] font-black uppercase tracking-widest text-[#3D2B2B]/30" style={{ fontFamily: '"Outfit", sans-serif' }}>
+                   Collaborative Dashboard
+                </p>
+              </div>
             </div>
-            <p 
-              className="text-xs mb-3"
-              style={{ color: theme.semantic.text.secondary }}
-            >
-              Collaborate with your family members to plan your wedding together
-            </p>
-            <div className="flex gap-2">
+            
+            <div className="flex gap-3 pt-2">
               <button
                 onClick={() => navigate('/user/family/create-group')}
-                className="flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all active:scale-95"
-                style={{ 
-                  backgroundColor: theme.colors.primary[500],
-                  color: 'white'
-                }}
+                className="flex-1 py-2.5 px-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 bg-[#3D2B2B] text-white"
               >
                 New Group
               </button>
               <button
                 onClick={() => navigate('/user/family/groups')}
-                className="flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all active:scale-95"
-                style={{ 
-                  backgroundColor: theme.colors.secondary[500],
-                  color: 'white'
-                }}
+                className="flex-1 py-2.5 px-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 bg-[#EAE1D8]/40 text-[#3D2B2B] border border-black/5"
               >
-                View Groups
+                View
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 3. Venues in Your City */}
-      <div className="px-4 py-6">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900">
-          Venues in your city
-        </h2>
-        <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 mb-4">
-          {venues.map((venue) => (
-            <div
-              key={venue.id}
-              onClick={() => navigate(venue.route)}
-              className="flex-shrink-0 w-52 cursor-pointer active:scale-95 transition-transform rounded-lg overflow-hidden bg-white"
-              style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}
+      {/* 3. High-Density Vendor Discovery (Venues & Photographers) */}
+      <div className="space-y-10">
+        {/* Venues Section */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-[#3D2B2B]" style={{ fontFamily: '"Playfair Display", serif' }}>
+              Venues Indore
+            </h2>
+            <button 
+              onClick={() => navigate('/user/vendors')}
+              className="text-[10px] font-black uppercase tracking-widest text-[#3D2B2B]/40 hover:text-[#3D2B2B]"
             >
-              <div className="relative overflow-hidden w-full h-36">
-                <img
-                  src={venue.image}
-                  alt={venue.name}
-                  loading="eager"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = 'https://images.unsplash.com/photo-1519167758481-83f29d8ae8e4?w=600&h=400&fit=crop&q=80';
-                  }}
-                />
-              </div>
-              <div className="p-3 bg-white">
-                <h3 className="text-sm font-semibold text-gray-900 mb-1 line-clamp-1">{venue.name}</h3>
-                <p className="text-xs text-gray-600 mb-2">{venue.location}</p>
-                <p className="text-sm font-semibold text-pink-600">
-                  {venue.price} <span className="text-xs font-normal text-gray-600">{venue.priceType}</span>
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-        <button
-          onClick={() => navigate('/user/vendors')}
-          className="w-full py-3 text-center text-sm font-semibold text-orange-500 border border-orange-500 rounded-lg active:scale-95 transition-transform"
-        >
-          View all venues →
-        </button>
-      </div>
-
-      {/* 4. Photographers for you */}
-      <div className="px-4 py-6">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900">
-          Photographers for you
-        </h2>
-        <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 mb-4">
-          {photographers.map((photographer) => (
-            <div
-              key={photographer.id}
-              onClick={() => navigate(photographer.route)}
-              className="flex-shrink-0 w-52 cursor-pointer active:scale-95 transition-transform rounded-lg overflow-hidden bg-white"
-              style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}
-            >
-              <div className="relative overflow-hidden w-full h-36">
-                <img
-                  src={photographer.image}
-                  alt={photographer.name}
-                  loading="eager"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=600&h=400&fit=crop&q=80';
-                  }}
-                />
-              </div>
-              <div className="p-3 bg-white">
-                <h3 className="text-sm font-semibold text-gray-900 mb-1 line-clamp-1">{photographer.name}</h3>
-                <p className="text-xs text-gray-600 mb-2">{photographer.location}</p>
-                <p className="text-sm font-semibold text-pink-600">
-                  {photographer.price} <span className="text-xs font-normal text-gray-600">{photographer.priceType}</span>
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-        <button
-          onClick={() => navigate('/user/photographers')}
-          className="w-full py-3 text-center text-sm font-semibold text-orange-500 border border-orange-500 active:scale-95 transition-transform"
-        >
-          View all photographers →
-        </button>
-      </div>
-
-      {/* 5. Venues Collections in Indore */}
-      <div className="px-4 py-6 bg-gray-50">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900">
-          Venues Collections in Indore
-        </h2>
-        <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
-          {venueCollections.map((collection, index) => (
-            <div
-              key={collection.id}
-              onClick={() => navigate(collection.route)}
-              className="flex-shrink-0 w-36 cursor-pointer active:scale-95 transition-transform overflow-hidden"
-              style={{ 
-                backgroundColor: index === 0 ? theme.colors.primary[500] : index === 1 ? theme.colors.secondary[500] : theme.colors.primary[400],
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-                height: '150px'
-              }}
-            >
-              <div className="relative h-full p-3 flex flex-col">
-                <div className="w-16 h-16 rounded-full overflow-hidden mx-auto mb-2 border-4 border-white/30">
+              See All
+            </button>
+          </div>
+          
+          <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2">
+            {venues.map((venue) => (
+              <div
+                key={venue.id}
+                onClick={() => navigate(venue.route)}
+                className="flex-shrink-0 w-52 cursor-pointer active:scale-95 transition-all group"
+              >
+                <div className="relative overflow-hidden rounded-[2rem] aspect-[4/3] shadow-sm ring-1 ring-black/5">
                   <img
-                    src={collection.image}
-                    alt={collection.title}
-                    loading="lazy"
-                    className="w-full h-full object-cover"
+                    src={venue.image}
+                    alt={venue.name}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute top-3 left-3 px-3 py-1 bg-white/90 backdrop-blur-md rounded-full">
+                     <span className="text-[8px] font-black uppercase tracking-widest text-[#3D2B2B]">{venue.location}</span>
+                  </div>
+                </div>
+                <div className="pt-4 px-2 space-y-1">
+                  <h3 className="text-sm font-bold text-[#3D2B2B] line-clamp-1" style={{ fontFamily: '"Playfair Display", serif' }}>{venue.name}</h3>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-black text-[#BE185D]">{venue.price}</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-[#3D2B2B]/30">{venue.priceType}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Photographers Section */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-[#3D2B2B]" style={{ fontFamily: '"Playfair Display", serif' }}>
+              Photographers
+            </h2>
+            <button 
+              onClick={() => navigate('/user/photographers')}
+              className="text-[10px] font-black uppercase tracking-widest text-[#3D2B2B]/40 hover:text-[#3D2B2B]"
+            >
+              See All
+            </button>
+          </div>
+          
+          <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2">
+            {photographers.map((photographer) => (
+              <div
+                key={photographer.id}
+                onClick={() => navigate(photographer.route)}
+                className="flex-shrink-0 w-52 cursor-pointer active:scale-95 transition-all group"
+              >
+                <div className="relative overflow-hidden rounded-[2rem] aspect-[4/3] shadow-sm ring-1 ring-black/5">
+                  <img
+                    src={photographer.image}
+                    alt={photographer.name}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 </div>
-                <h3 className="text-xs font-semibold text-white text-center mb-1">{collection.title}</h3>
-                <p className="text-xs text-white/90 text-center">{collection.count}</p>
+                <div className="pt-4 px-2 space-y-1">
+                  <h3 className="text-sm font-bold text-[#3D2B2B] line-clamp-1" style={{ fontFamily: '"Playfair Display", serif' }}>{photographer.name}</h3>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-black text-[#BE185D]">{photographer.price}</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-[#3D2B2B]/30">{photographer.priceType}</span>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Traditional Calendar Section */}
-      <div className="px-4 py-6">
+      {/* 4. Wedding Checklist - Premium Editorial Card */}
+      <div className="py-6">
         <div 
-          className="rounded-xl p-4"
-          style={{ 
-            backgroundColor: theme.semantic.background.primary,
-            border: `1px solid ${theme.semantic.border.primary}`,
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
-          }}
+          className="relative overflow-hidden p-8 rounded-[3rem] shadow-xl border border-white"
+          style={{ backgroundColor: 'white' }}
         >
-          <div className="flex items-center gap-3 mb-3">
-            <div 
-              className="w-10 h-10 rounded-full flex items-center justify-center"
-              style={{ backgroundColor: theme.colors.primary[100] }}
-            >
-              <Icon name="calendar" size="md" style={{ color: theme.colors.primary[500] }} />
-            </div>
-            <div>
-              <h2 
-                className="text-base font-semibold"
-                style={{ color: theme.semantic.text.primary }}
-              >
-                Traditional Calendar
-              </h2>
-              <p 
-                className="text-xs"
-                style={{ color: theme.semantic.text.secondary }}
-              >
-                Plan your wedding with auspicious dates
+          {/* Ornamental Background Circle */}
+          <div className="absolute -top-12 -right-12 w-32 h-32 bg-[#EAE1D8]/40 rounded-full blur-3xl opacity-50" />
+          
+          <div className="relative flex justify-between items-center mb-8">
+            <div className="space-y-1">
+              <h3 className="text-2xl font-bold text-[#3D2B2B]" style={{ fontFamily: '"Playfair Display", serif' }}>
+                Your Checklist
+              </h3>
+              <p className="text-[10px] font-black uppercase tracking-widest text-[#3D2B2B]/30" style={{ fontFamily: '"Outfit", sans-serif' }}>
+                 Tasks & Milestones
               </p>
             </div>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => navigate('/user/festivals')}
-              className="p-3 rounded-lg transition-all active:scale-95"
-              style={{ 
-                backgroundColor: theme.colors.primary[500],
-                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)'
-              }}
-            >
-              <div className="text-center">
-                <div 
-                  className="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center"
-                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
-                >
-                  <Icon name="sparkles" size="sm" style={{ color: 'white' }} />
-                </div>
-                <h3 className="text-sm font-semibold text-white mb-1">
-                  View Festivals
-                </h3>
-                <p className="text-xs text-white/90">
-                  Upcoming celebrations
-                </p>
-              </div>
-            </button>
-            
-            <button
-              onClick={() => navigate('/user/horoscope')}
-              className="p-3 rounded-lg transition-all active:scale-95"
-              style={{ 
-                backgroundColor: theme.colors.secondary[500],
-                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)'
-              }}
-            >
-              <div className="text-center">
-                <div 
-                  className="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center"
-                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
-                >
-                  <Icon name="star" size="sm" style={{ color: 'white' }} />
-                </div>
-                <h3 className="text-sm font-semibold text-white mb-1">
-                  Horoscope
-                </h3>
-                <p className="text-xs text-white/90">
-                  Match compatibility
-                </p>
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* 6. Wedding Checklist */}
-      <div className="px-4 py-6">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900">
-          Wedding checklist
-        </h2>
-        <div 
-          className="relative overflow-hidden p-4 transition-all duration-300 hover:shadow-2xl"
-          style={{ 
-            background: `linear-gradient(135deg, ${theme.colors.primary[500]} 0%, ${theme.colors.secondary[500]} 100%)`,
-            boxShadow: `0 8px 16px ${theme.colors.primary[500]}30`,
-            borderRadius: '16px'
-          }}
-        >
-          <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12"></div>
-          <div className="absolute bottom-0 left-0 w-20 h-20 bg-white/10 rounded-full -ml-10 -mb-10"></div>
-          
-          <div className="relative flex justify-between items-start mb-3">
-            <div>
-              <h3 className="text-xl font-bold text-white mb-1 drop-shadow-lg">
-                {checklistStats.completed}/{checklistStats.total}
-              </h3>
-              <p className="text-xs text-white/95 drop-shadow">tasks done</p>
-            </div>
-            <div className="w-12 h-12 rounded-full border-4 border-white/40 flex items-center justify-center shadow-lg bg-white/10">
-              <span className="text-white font-semibold text-xs drop-shadow">
+            <div className="w-16 h-16 rounded-full border-[3px] border-[#EAE1D8] flex items-center justify-center bg-white shadow-soft">
+              <span className="text-[#3D2B2B] font-black text-sm" style={{ fontFamily: '"Outfit", sans-serif' }}>
                 {checklistStats.total > 0 ? Math.round((checklistStats.completed / checklistStats.total) * 100) : 0}%
               </span>
             </div>
           </div>
           
-          <div className="bg-white p-3 mt-3 shadow-xl" style={{ borderRadius: '12px' }}>
-            <div className="flex justify-between items-center mb-2">
-              <h4 className="text-xs font-semibold text-gray-900">Upcoming tasks</h4>
+          <div className="bg-[#EAE1D8]/20 rounded-2xl p-5 border border-[#3D2B2B]/5">
+            <div className="flex justify-between items-center mb-4">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#3D2B2B]/40" style={{ fontFamily: '"Outfit", sans-serif' }}>Focus Items</h4>
               <button
                 onClick={() => navigate('/user/tools/checklist')}
-                className="text-xs font-medium px-2 py-1 rounded"
-                style={{ 
-                  backgroundColor: theme.colors.secondary[100],
-                  color: theme.colors.secondary[700]
-                }}
+                className="text-[9px] font-black uppercase tracking-widest text-[#3D2B2B]"
               >
-                See All
+                OPEN
               </button>
             </div>
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-2 p-1 rounded">
-                <div className="w-3.5 h-3.5 rounded border-2 border-gray-300 flex-shrink-0"></div>
-                <span className="text-xs text-gray-700">Research Wedding Planners</span>
-              </div>
-              <div className="flex items-center gap-2 p-1 rounded">
-                <div className="w-3.5 h-3.5 rounded border-2 border-gray-300 flex-shrink-0"></div>
-                <span className="text-xs text-gray-700">Decide wedding budget</span>
-              </div>
+            <div className="space-y-3">
+              {[
+                { task: 'Research Planners', done: false },
+                { task: 'Set Budget', done: true }
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${item.done ? 'bg-[#3D2B2B] border-[#3D2B2B]' : 'border-[#3D2B2B]/10'}`}>
+                    {item.done && <span className="text-white text-[8px]">✓</span>}
+                  </div>
+                  <span className={`text-[11px] font-bold ${item.done ? 'text-[#3D2B2B]/20 line-through' : 'text-[#3D2B2B]/60'}`}>
+                    {item.task}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>

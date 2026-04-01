@@ -35,11 +35,11 @@ const BottomNav = () => {
   ];
 
   const navStyles = {
-    backgroundColor: theme.semantic.navigation.background,
-    borderTopColor: theme.semantic.border.accent,
+    backgroundColor: '#EAE1D8',
+    borderTopColor: 'rgba(61, 43, 43, 0.1)',
     borderTopWidth: '1px',
     borderTopStyle: 'solid',
-    boxShadow: `0 -1px 3px 0 ${theme.semantic.card.shadow}`,
+    boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.03)',
   };
 
   return (
@@ -72,7 +72,7 @@ const BottomNav = () => {
               size="lg"
               className="mb-1"
             />
-            <span className="text-xs font-medium">{item.label}</span>
+            <span className="text-[9px] font-black uppercase tracking-[0.15em] mt-1" style={{ fontFamily: '"Playfair Display", serif' }}>{item.label}</span>
           </NavLink>
         ))}
       </div>

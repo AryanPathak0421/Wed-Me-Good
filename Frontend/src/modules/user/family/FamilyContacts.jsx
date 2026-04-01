@@ -77,245 +77,164 @@ const FamilyContacts = () => {
 
   return (
     <div 
-      className={`min-h-screen ${isKeyboardOpen ? 'keyboard-open pb-4' : 'pb-20'}`} 
-      style={{ backgroundColor: theme.semantic.background.primary }}
+      className={`min-h-screen ${isKeyboardOpen ? 'keyboard-open pb-4' : 'pb-32'}`} 
+      style={{ backgroundColor: '#EAE1D8' }}
     >
-      {/* Header */}
+      {/* Editorial Header */}
       <div 
-        className="sticky top-0 z-10 px-4 py-4 border-b backdrop-blur-sm"
+        className="sticky top-0 z-20 px-6 py-8 rounded-b-[2.5rem] shadow-sm border-b border-[#3D2B2B]/5"
         style={{ 
-          backgroundColor: `${theme.semantic.background.primary}95`,
-          borderBottomColor: theme.semantic.border.light 
+          backgroundColor: 'white'
         }}
       >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
             <button
               onClick={() => navigate(-1)}
-              className="mr-3 p-2 rounded-full"
-              style={{ backgroundColor: theme.semantic.background.accent }}
+              className="w-10 h-10 rounded-full flex items-center justify-center bg-[#EAE1D8]/30 border border-[#EAE1D8]"
             >
-              <Icon name="chevronDown" size="sm" className="rotate-90" style={{ color: theme.semantic.text.primary }} />
+              <Icon name="arrowLeft" size="sm" style={{ color: '#3D2B2B' }} />
             </button>
             <div>
-              <h1 className="text-lg font-bold" style={{ color: theme.semantic.text.primary }}>
-                Select Family & Friends
+              <h1 className="text-2xl font-bold tracking-tight text-[#3D2B2B]" style={{ fontFamily: '"Playfair Display", serif' }}>
+                Family & Friends
               </h1>
-              <p className="text-xs" style={{ color: theme.semantic.text.secondary }}>
-                Choose people to add to your wedding group
+              <p className="text-[10px] font-black uppercase tracking-widest text-[#3D2B2B]/30" style={{ fontFamily: '"Outfit", sans-serif' }}>
+                 Your Inner Circle
               </p>
             </div>
           </div>
           
           <button
             onClick={handleSelectAll}
-            className="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
-            style={{
-              backgroundColor: theme.colors.primary[100],
-              color: theme.colors.primary[700]
-            }}
+            className="text-[10px] font-black uppercase tracking-widest text-[#BE185D] hover:opacity-80 transition-all px-3 py-2 rounded-full bg-[#FEF2F2] border border-[#FECACA]"
           >
-            {selectedContacts.length === filteredContacts.length ? 'Deselect All' : 'Select All'}
+            {selectedContacts.length === filteredContacts.length ? 'Reset All' : 'Select All'}
           </button>
         </div>
         
-        {/* Search Bar */}
-        <div className="mt-4">
-          <div className="relative">
-            <Icon 
-              name="search" 
-              size="sm" 
-              className="absolute left-3 top-1/2 transform -translate-y-1/2"
-              style={{ color: theme.semantic.text.secondary }}
-            />
-            <input
-              type="text"
-              placeholder="Search by name or relation..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 text-sm"
-              style={{
-                backgroundColor: theme.semantic.card.background,
-                borderColor: theme.semantic.card.border,
-                borderWidth: '1px',
-                color: theme.semantic.text.primary,
-                '--tw-ring-color': theme.colors.primary[500],
-                fontSize: '16px' // Prevent zoom on iOS
-              }}
-            />
+        {/* Editorial Search Bar */}
+        <div className="relative group">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#3D2B2B]/30 transition-colors group-focus-within:text-[#BE185D]">
+            <Icon name="search" size="sm" />
           </div>
+          <input
+            type="text"
+            placeholder="Search name or relation..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-12 pr-6 py-4 rounded-2xl bg-[#EAE1D8]/20 border border-[#EAE1D8] focus:bg-white focus:ring-1 focus:ring-[#BE185D] focus:outline-none transition-all text-sm font-medium text-[#3D2B2B] placeholder:text-[#3D2B2B]/30"
+            style={{ fontFamily: '"Outfit", sans-serif' }}
+          />
         </div>
       </div>
 
-      {/* Selected Count */}
+      {/* Selected Indicator - Floating Badge */}
       {selectedContacts.length > 0 && (
-        <div className="px-4 py-3">
-          <div 
-            className="px-4 py-2 rounded-lg flex items-center justify-between"
-            style={{ backgroundColor: theme.colors.accent[50] }}
-          >
-            <span className="text-sm font-medium" style={{ color: theme.colors.accent[700] }}>
-              {selectedContacts.length} contact{selectedContacts.length !== 1 ? 's' : ''} selected
-            </span>
-            <Icon name="users" size="sm" style={{ color: theme.colors.accent[600] }} />
+        <div className="px-6 py-4">
+          <div className="flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/60 backdrop-blur-md border border-white shadow-sm inline-flex">
+             <div className="w-2 h-2 rounded-full bg-[#BE185D] animate-pulse" />
+             <span className="text-[10px] font-black uppercase tracking-widest text-[#3D2B2B]">
+               {selectedContacts.length} Selected
+             </span>
           </div>
         </div>
       )}
 
-      {/* Contacts List */}
-      <div className={`px-4 space-y-3 ${selectedContacts.length > 0 ? 'pb-24' : 'pb-4'}`}>
+      {/* High-Density Contacts List */}
+      <div className="px-6 mt-4 space-y-4">
         {filteredContacts.map((contact) => {
           const isSelected = selectedContacts.includes(contact.id);
           
           return (
-            <Card 
+            <div 
               key={contact.id}
-              className={`transition-all duration-200 cursor-pointer ${
-                isSelected ? 'ring-2 scale-[1.02]' : 'hover:scale-[1.01]'
-              }`}
-              style={{
-                backgroundColor: isSelected 
-                  ? theme.colors.primary[50] 
-                  : theme.semantic.card.background,
-                borderColor: isSelected 
-                  ? theme.colors.primary[200] 
-                  : theme.semantic.card.border,
-                '--tw-ring-color': theme.colors.primary[500]
-              }}
               onClick={() => handleContactToggle(contact.id)}
+              className={`bg-white rounded-[2rem] p-4 flex items-center justify-between transition-all active:scale-[0.98] border shadow-sm ${
+                isSelected ? 'border-[#3D2B2B] ring-1 ring-[#3D2B2B]' : 'border-white'
+              }`}
             >
-              <div className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    {/* Avatar */}
-                    <div className="relative">
-                      <img
-                        src={contact.avatar}
-                        alt={contact.name}
-                        className="w-12 h-12 rounded-full object-cover"
-                        onError={(e) => {
-                          e.target.src = 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face';
-                        }}
-                      />
-                      {/* Online Status */}
-                      {contact.isOnline && (
-                        <div 
-                          className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white"
-                          style={{ backgroundColor: theme.colors.accent[500] }}
-                        />
-                      )}
-                    </div>
-                    
-                    {/* Contact Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h3 
-                          className="font-semibold text-base truncate"
-                          style={{ color: theme.semantic.text.primary }}
-                        >
-                          {contact.name}
-                        </h3>
-                        {contact.role === 'admin' && (
-                          <div 
-                            className="px-2 py-1 rounded-full text-xs font-medium"
-                            style={{
-                              backgroundColor: theme.colors.accent[100],
-                              color: theme.colors.accent[700]
-                            }}
-                          >
-                            Admin
-                          </div>
-                        )}
-                      </div>
-                      <p 
-                        className="text-sm font-medium"
-                        style={{ color: getRelationColor(contact.relation) }}
-                      >
-                        {contact.relation}
-                      </p>
-                      <p 
-                        className="text-xs"
-                        style={{ color: theme.semantic.text.secondary }}
-                      >
-                        {contact.phone}
-                      </p>
-                    </div>
+              <div className="flex items-center gap-4 flex-1 min-w-0">
+                {/* Profile Image with Selection Border */}
+                <div className={`p-0.5 rounded-full border-2 transition-all duration-300 ${isSelected ? 'border-[#BE185D]' : 'border-transparent'}`}>
+                  <img
+                    src={contact.avatar}
+                    alt={contact.name}
+                    className="w-14 h-14 rounded-full object-cover shadow-inner"
+                    onError={(e) => {
+                      e.target.src = 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face';
+                    }}
+                  />
+                </div>
+                
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <h3 className="text-base font-bold text-[#3D2B2B] truncate" style={{ fontFamily: '"Playfair Display", serif' }}>
+                      {contact.name}
+                    </h3>
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#25D366]" />
                   </div>
-                  
-                  {/* Selection Indicator */}
-                  <div className="flex items-center space-x-2">
-                    {isSelected ? (
-                      <div 
-                        className="w-6 h-6 rounded-full flex items-center justify-center"
-                        style={{ backgroundColor: theme.colors.primary[500] }}
-                      >
-                        <Icon name="check" size="xs" style={{ color: 'white' }} />
-                      </div>
-                    ) : (
-                      <div 
-                        className="w-6 h-6 rounded-full border-2"
-                        style={{ borderColor: theme.semantic.border.primary }}
-                      />
-                    )}
-                  </div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-[#3D2B2B]/40 mb-1" style={{ fontFamily: '"Outfit", sans-serif' }}>
+                    {contact.relation}
+                  </p>
+                  <p className="text-[10px] font-medium text-[#3D2B2B]/60 tabular-nums">
+                    {contact.phone}
+                  </p>
                 </div>
               </div>
-            </Card>
+
+              {/* Selection Checkbox */}
+              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                isSelected ? 'bg-[#3D2B2B] border-[#3D2B2B]' : 'border-[#EAE1D8]'
+              }`}>
+                {isSelected && <Icon name="check" size="xs" color="white" />}
+              </div>
+            </div>
           );
         })}
       </div>
 
       {/* Empty State */}
       {filteredContacts.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-16">
-          <div 
-            className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-            style={{ backgroundColor: theme.semantic.background.accent }}
-          >
-            <Icon name="search" size="xl" style={{ color: theme.semantic.text.secondary }} />
-          </div>
-          <h3 
-            className="text-lg font-semibold mb-2"
-            style={{ color: theme.semantic.text.primary }}
-          >
-            No contacts found
-          </h3>
-          <p 
-            className="text-center max-w-sm"
-            style={{ color: theme.semantic.text.secondary }}
-          >
-            Try adjusting your search terms to find the contacts you're looking for.
-          </p>
+        <div className="flex flex-col items-center justify-center py-24 px-12 text-center">
+            <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-6 shadow-sm border border-[#EAE1D8]/50">
+               <Icon name="search" size="lg" style={{ color: '#3D2B2B/20' }} />
+            </div>
+            <h3 className="text-xl font-bold text-[#3D2B2B] mb-2" style={{ fontFamily: '"Playfair Display", serif' }}>No connections found</h3>
+            <p className="text-[10px] font-black uppercase tracking-wider text-[#3D2B2B]/30 mb-8 leading-loose">
+              "We couldn't find anyone matching your current search criteria."
+            </p>
+            <button 
+              onClick={() => setSearchQuery('')}
+              className="px-8 py-3 rounded-full bg-white border border-[#3D2B2B] text-[9px] font-black uppercase tracking-widest text-[#3D2B2B]"
+            >
+              Clear Search
+            </button>
         </div>
       )}
 
-      {/* Create Group Button */}
+      {/* Premium Create Group Modal Bar */}
       {selectedContacts.length > 0 && (
         <div 
-          className={`${isKeyboardOpen ? 'fixed' : 'fixed'} bottom-0 left-0 right-0 p-4 border-t backdrop-blur-sm z-50`}
-          style={{ 
-            backgroundColor: `${theme.semantic.background.primary}F0`,
-            borderTopColor: theme.semantic.border.light,
-            boxShadow: `0 -4px 20px ${theme.semantic.card.shadow}`,
-            transform: isKeyboardOpen ? 'translateY(-env(keyboard-inset-height, 0px))' : 'none'
-          }}
+          className="fixed bottom-8 left-6 right-6 z-50 animate-in slide-in-from-bottom duration-500"
         >
-          <div className="max-w-md mx-auto">
-            <Button
-              onClick={handleCreateGroup}
-              className="w-full py-4 rounded-xl font-bold text-base flex items-center justify-center gap-3 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-              style={{
-                backgroundColor: theme.colors.primary[500],
-                color: 'white',
-                boxShadow: `0 4px 20px ${theme.colors.primary[500]}40`,
-                minHeight: '56px'
-              }}
-            >
-              <Icon name="users" size="sm" />
-              <span>Create Group ({selectedContacts.length})</span>
-              <Icon name="chevronRight" size="sm" />
-            </Button>
-          </div>
+          <button
+            onClick={handleCreateGroup}
+            className="w-full bg-[#3D2B2B] rounded-full p-2.5 flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.3)] group active:scale-95 transition-all"
+          >
+            <div className="pl-6 flex items-center gap-3">
+               <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/20">
+                  <Icon name="users" size="xs" color="white" />
+               </div>
+               <div className="text-left">
+                  <p className="text-[8px] font-black uppercase tracking-widest text-white/40 leading-none mb-1">New Connection</p>
+                  <p className="text-sm font-bold text-white leading-none" style={{ fontFamily: '"Playfair Display", serif' }}>Create Group ({selectedContacts.length})</p>
+               </div>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center group-hover:translate-x-1 transition-transform shadow-lg">
+               <Icon name="arrowRight" size="sm" style={{ color: '#3D2B2B' }} />
+            </div>
+          </button>
         </div>
       )}
     </div>

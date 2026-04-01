@@ -181,316 +181,160 @@ const EInvites = () => {
 
   return (
     <div 
-      className="min-h-screen pb-20"
-      style={{ backgroundColor: theme.semantic.background.primary }}
+      className="min-h-screen pb-32"
+      style={{ backgroundColor: '#EAE1D8' }}
     >
-      {/* Header */}
+      {/* 1. Editorial Header */}
       <div 
-        className="sticky top-0 z-10 px-4 py-4 border-b"
-        style={{
-          backgroundColor: theme.semantic.background.primary,
-          borderColor: theme.semantic.border.light
-        }}
+        className="sticky top-0 z-20 px-6 py-10 rounded-b-[3rem] shadow-sm bg-white border-b border-[#3D2B2B]/5"
       >
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
             <button
               onClick={() => navigate(-1)}
-              className="p-2 rounded-lg hover:bg-opacity-10 hover:bg-black transition-colors"
+              className="w-12 h-12 rounded-full flex items-center justify-center bg-[#EAE1D8]/30 border border-[#EAE1D8]"
             >
-              <Icon name="chevronLeft" size="md" style={{ color: theme.semantic.text.primary }} />
+              <Icon name="arrowLeft" size="sm" style={{ color: '#3D2B2B' }} />
             </button>
             <div>
-              <h1 
-                className="text-xl font-bold"
-                style={{ color: theme.semantic.text.primary }}
-              >
+              <h1 className="text-3xl font-bold tracking-tight text-[#3D2B2B]" style={{ fontFamily: '"Playfair Display", serif' }}>
                 Digital E-Invites
               </h1>
-              <p 
-                className="text-sm"
-                style={{ color: theme.semantic.text.secondary }}
-              >
-                Create beautiful wedding invitations
+              <p className="text-[10px] font-black uppercase tracking-widest text-[#3D2B2B]/30" style={{ fontFamily: '"Outfit", sans-serif' }}>
+                 Craft Your Legacy
               </p>
             </div>
           </div>
-          <Button
+          <button
             onClick={() => navigate('/user/e-invites/create')}
-            variant="primary"
-            className="flex items-center gap-2"
+            className="w-12 h-12 rounded-full bg-[#3D2B2B] flex items-center justify-center shadow-xl active:scale-95 transition-all"
           >
-            <Icon name="plus" size="sm" />
-            <span className="hidden sm:inline">Create New</span>
-          </Button>
+            <Icon name="plus" size="sm" color="white" />
+          </button>
         </div>
       </div>
 
-      <div className="px-4 py-6 max-w-7xl mx-auto">
-        {/* My Invites Section */}
+      <div className="px-6 py-10 space-y-12">
+        {/* 2. My Invitations - Arched Cards */}
         {myInvites.length > 0 && (
-          <div className="mb-8">
-            <h2 
-              className="text-lg font-semibold mb-4"
-              style={{ color: theme.semantic.text.primary }}
-            >
-              My Invitations
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold text-[#3D2B2B]" style={{ fontFamily: '"Playfair Display", serif' }}>Recent Works</h2>
+              <span className="text-[10px] font-black uppercase tracking-widest text-[#3D2B2B]/30">Manage Invites</span>
+            </div>
+            
+            <div className="space-y-6">
               {myInvites.map((invite) => (
-                <Card key={invite.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <div className="relative h-48 overflow-hidden">
+                <div key={invite.id} className="bg-white rounded-[3rem] overflow-hidden shadow-sm ring-1 ring-black/5 flex flex-col sm:flex-row">
+                  <div className="sm:w-48 h-48 sm:h-auto relative">
                     <img
                       src={invite.thumbnail}
                       alt={invite.name}
                       className="w-full h-full object-cover"
                     />
-                    <div 
-                      className="absolute top-2 right-2 px-2 py-1 rounded text-xs font-semibold"
-                      style={{
-                        backgroundColor: invite.status === 'Published' ? theme.colors.accent[500] : theme.colors.secondary[500],
-                        color: 'white'
-                      }}
-                    >
-                      {invite.status}
+                    <div className="absolute top-4 left-4">
+                       <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${invite.status === 'Published' ? 'bg-[#25D366] text-white' : 'bg-[#EAE1D8] text-[#3D2B2B]'}`}>
+                         {invite.status}
+                       </span>
                     </div>
                   </div>
-                  <div className="p-4">
-                    <h3 
-                      className="font-semibold mb-1"
-                      style={{ color: theme.semantic.text.primary }}
-                    >
-                      {invite.name}
-                    </h3>
-                    <p 
-                      className="text-sm mb-3"
-                      style={{ color: theme.semantic.text.secondary }}
-                    >
-                      {invite.template} • {invite.date}
-                    </p>
-                    <div className="flex items-center gap-4 mb-3 text-sm">
-                      <div className="flex items-center gap-1">
-                        <Icon name="eye" size="sm" style={{ color: theme.semantic.text.secondary }} />
-                        <span style={{ color: theme.semantic.text.secondary }}>{invite.views}</span>
+                  <div className="p-8 flex-1 flex flex-col justify-center space-y-4">
+                    <div>
+                      <h3 className="text-xl font-bold text-[#3D2B2B] mb-1" style={{ fontFamily: '"Playfair Display", serif' }}>
+                        {invite.name}
+                      </h3>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-[#3D2B2B]/30">
+                        {invite.template} • {invite.date}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-6">
+                      <div className="flex items-center gap-2">
+                        <Icon name="eye" size="xs" style={{ color: '#BE185D' }} />
+                        <span className="text-[11px] font-bold text-[#3D2B2B]">{invite.views}</span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Icon name="users" size="sm" style={{ color: theme.semantic.text.secondary }} />
-                        <span style={{ color: theme.semantic.text.secondary }}>{invite.rsvps} RSVPs</span>
+                      <div className="flex items-center gap-2">
+                        <Icon name="users" size="xs" style={{ color: '#BE185D' }} />
+                        <span className="text-[11px] font-bold text-[#3D2B2B]">{invite.rsvps} RSVPs</span>
                       </div>
                     </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1"
+
+                    <div className="flex gap-3 pt-2">
+                      <button
                         onClick={() => navigate(`/user/e-invites/edit/${invite.id}`)}
+                        className="flex-1 py-3 rounded-full bg-[#EAE1D8]/30 border border-[#EAE1D8] text-[9px] font-black uppercase tracking-widest text-[#3D2B2B]"
                       >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        className="flex-1"
+                        Refine
+                      </button>
+                      <button
                         onClick={() => navigate(`/user/e-invites/preview/${invite.id}`)}
+                        className="flex-1 py-3 rounded-full bg-[#3D2B2B] text-white text-[9px] font-black uppercase tracking-widest shadow-lg"
                       >
-                        View
-                      </Button>
+                        Presenter
+                      </button>
                     </div>
                   </div>
-                </Card>
+                </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* Features Section */}
-        <div className="mb-8">
-          <h2 
-            className="text-lg font-semibold mb-4"
-            style={{ color: theme.semantic.text.primary }}
-          >
-            Why Choose Digital Invites?
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {features.map((feature, index) => (
-              <Card key={index} className="p-4 text-center hover:shadow-md transition-shadow">
-                <div 
-                  className="w-12 h-12 rounded-full mx-auto mb-2 flex items-center justify-center"
-                  style={{ backgroundColor: theme.colors.primary[50] }}
+        {/* 3. Browse Templates - Editorial Search */}
+        <div className="space-y-8">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-[#3D2B2B]" style={{ fontFamily: '"Playfair Display", serif' }}>Discovery</h2>
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+              {categories.slice(0, 3).map(c => (
+                <button 
+                  key={c.id}
+                  onClick={() => setSelectedCategory(c.id)}
+                  className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${selectedCategory === c.id ? 'bg-[#3D2B2B] text-white shadow-lg' : 'bg-white text-[#3D2B2B]/40 border border-black/5'}`}
                 >
-                  <Icon name={feature.icon} size="md" style={{ color: theme.colors.primary[500] }} />
-                </div>
-                <h3 
-                  className="text-sm font-semibold mb-1"
-                  style={{ color: theme.semantic.text.primary }}
-                >
-                  {feature.title}
-                </h3>
-                <p 
-                  className="text-xs"
-                  style={{ color: theme.semantic.text.secondary }}
-                >
-                  {feature.description}
-                </p>
-              </Card>
-            ))}
+                  {c.name.split(' ')[0]}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Category Filter */}
-        <div className="mb-6">
-          <h2 
-            className="text-lg font-semibold mb-4"
-            style={{ color: theme.semantic.text.primary }}
-          >
-            Browse Templates
-          </h2>
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap transition-all"
-                style={{
-                  backgroundColor: selectedCategory === category.id 
-                    ? theme.colors.primary[500] 
-                    : theme.semantic.background.accent,
-                  color: selectedCategory === category.id 
-                    ? 'white' 
-                    : theme.semantic.text.primary,
-                  borderWidth: '1px',
-                  borderStyle: 'solid',
-                  borderColor: selectedCategory === category.id 
-                    ? theme.colors.primary[500] 
-                    : theme.semantic.border.light
-                }}
+          <div className="grid grid-cols-2 gap-4">
+            {filteredTemplates.map((template) => (
+              <div 
+                key={template.id} 
+                className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm group active:scale-95 transition-all"
+                onClick={() => navigate(`/user/e-invites/customize/${template.id}`)}
               >
-                <Icon 
-                  name={category.icon} 
-                  size="sm" 
-                  style={{ 
-                    color: selectedCategory === category.id 
-                      ? 'white' 
-                      : theme.semantic.text.secondary 
-                  }} 
-                />
-                <span className="text-sm font-medium">{category.name}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Templates Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filteredTemplates.map((template) => (
-            <Card 
-              key={template.id} 
-              className="overflow-hidden hover:shadow-xl transition-all cursor-pointer group"
-              onClick={() => setSelectedTemplate(template)}
-            >
-              <div className="relative h-64 overflow-hidden">
-                <img
-                  src={template.image}
-                  alt={template.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                {template.isPremium && (
-                  <div 
-                    className="absolute top-2 left-2 px-2 py-1 rounded text-xs font-semibold flex items-center gap-1"
-                    style={{ backgroundColor: theme.colors.accent[500], color: 'white' }}
-                  >
-                    <Icon name="crown" size="xs" />
-                    Premium
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center">
-                  <Button
-                    variant="primary"
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/user/e-invites/customize/${template.id}`);
-                    }}
-                  >
-                    Use Template
-                  </Button>
+                <div className="relative aspect-[3/4] overflow-hidden">
+                  <img
+                    src={template.image}
+                    alt={template.name}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  {template.isPremium && (
+                    <div className="absolute top-4 left-4">
+                       <span className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center shadow-lg">
+                          <Icon name="crown" size="xs" style={{ color: '#F59E0B' }} />
+                       </span>
+                    </div>
+                  )}
                 </div>
-              </div>
-              <div className="p-4">
-                <div className="flex items-start justify-between mb-2">
-                  <h3 
-                    className="font-semibold"
-                    style={{ color: theme.semantic.text.primary }}
-                  >
+                <div className="p-5 space-y-2">
+                  <h3 className="text-sm font-bold text-[#3D2B2B] truncate" style={{ fontFamily: '"Playfair Display", serif' }}>
                     {template.name}
                   </h3>
-                  <span 
-                    className="text-sm font-bold"
-                    style={{ color: template.isPremium ? theme.colors.accent[500] : theme.colors.primary[500] }}
-                  >
-                    {template.price}
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-1 mb-3">
-                  {template.features.map((feature, index) => (
-                    <span
-                      key={index}
-                      className="text-xs px-2 py-1 rounded"
-                      style={{
-                        backgroundColor: theme.colors.primary[50],
-                        color: theme.colors.primary[600]
-                      }}
-                    >
-                      {feature}
-                    </span>
-                  ))}
-                </div>
-                <div className="flex gap-1">
-                  {template.colors.map((color, index) => (
-                    <div
-                      key={index}
-                      className="w-6 h-6 rounded-full border-2"
-                      style={{ 
-                        backgroundColor: color,
-                        borderColor: theme.semantic.border.light
-                      }}
-                    />
-                  ))}
+                  <div className="flex items-center justify-between">
+                     <span className="text-[10px] font-black text-[#BE185D] underline">{template.price}</span>
+                     <div className="flex gap-1">
+                        {template.colors.slice(0, 2).map((c, i) => (
+                          <div key={i} className="w-2.5 h-2.5 rounded-full border border-black/5" style={{ backgroundColor: c }} />
+                        ))}
+                     </div>
+                  </div>
                 </div>
               </div>
-            </Card>
-          ))}
-        </div>
-
-        {/* Empty State */}
-        {filteredTemplates.length === 0 && (
-          <div className="text-center py-12">
-            <div 
-              className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center"
-              style={{ backgroundColor: theme.colors.primary[50] }}
-            >
-              <Icon name="search" size="2xl" style={{ color: theme.colors.primary[500] }} />
-            </div>
-            <h3 
-              className="text-lg font-semibold mb-2"
-              style={{ color: theme.semantic.text.primary }}
-            >
-              No templates found
-            </h3>
-            <p 
-              className="text-sm mb-4"
-              style={{ color: theme.semantic.text.secondary }}
-            >
-              Try selecting a different category
-            </p>
-            <Button
-              variant="outline"
-              onClick={() => setSelectedCategory('all')}
-            >
-              View All Templates
-            </Button>
+            ))}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

@@ -4,32 +4,37 @@ export const themeConfig = {
   colors: {
     // Primary brand colors (Pink/Rose)
     primary: {
-      50: '#fdf2f8',
-      100: '#fce7f3',
-      200: '#fbcfe8',
-      300: '#f9a8d4',
-      400: '#f472b6',
-      500: '#ec4899', // Main primary
-      600: '#db2777',
-      700: '#be185d',
-      800: '#9d174d',
-      900: '#831843',
-      950: '#500724',
+      50: '#fdf3f3',
+      100: '#fbe9e9',
+      200: '#f7d5d5',
+      300: '#efb4b4',
+      400: '#e18989',
+      500: '#d16262', // Main Designer Pink
+      600: '#be4d4d',
+      700: '#9f3d3d',
+      800: '#833434',
+      900: '#6f2f2f',
+      950: '#3b1515',
+    },
+    lilac: {
+      light: '#BE9B9B', // Dusty Rose from image
+      dark: '#5D3E3E',  // Plum Brown from image
+      floral: '#E2D1D1',
     },
     
     // Secondary colors (Amber/Gold)
     secondary: {
-      50: '#fffbeb',
-      100: '#fef3c7',
-      200: '#fde68a',
-      300: '#fcd34d',
-      400: '#fbbf24',
-      500: '#f59e0b', // Main secondary
-      600: '#d97706',
-      700: '#b45309',
-      800: '#92400e',
-      900: '#78350f',
-      950: '#451a03',
+      50: '#fffcf0',
+      100: '#fef9c3',
+      200: '#fef08a',
+      300: '#fde047',
+      400: '#facc15',
+      500: '#eab308', // Elegant Gold
+      600: '#ca8a04',
+      700: '#a16207',
+      800: '#854d0e',
+      900: '#713f12',
+      950: '#422006',
     },
     
     // Accent colors (Emerald/Green)
@@ -78,9 +83,9 @@ export const themeConfig = {
       tertiary: '#f3f4f6',
       accent: '#fdf2f8',
       gradient: {
-        primary: 'linear-gradient(135deg, #fdf2f8 0%, #fef3c7 100%)',
-        hero: 'linear-gradient(135deg, #ec4899 0%, #f59e0b 100%)',
-        card: 'linear-gradient(135deg, #fdf2f8 0%, #fffbeb 100%)',
+        primary: 'linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%)',
+        hero: 'linear-gradient(135deg, #f43f5e 0%, #fb7185 100%)',
+        card: 'linear-gradient(135deg, #ffffff 0%, #fff1f2 100%)',
       },
     },
     

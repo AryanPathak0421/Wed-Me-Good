@@ -1,346 +1,147 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useTheme } from '../../../hooks/useTheme';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
-import Icon from '../../../components/ui/Icon';
+import { useTheme } from '../../../hooks/useTheme';
 
 const Signup = () => {
-  const { theme } = useTheme();
-  const { login } = useAuth();
   const navigate = useNavigate();
+  const { login } = useAuth();
+  const { theme } = useTheme();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: ''
   });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [agreed, setAgreed] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-    if (error) setError('');
-  };
+  useEffect(() => {
+    // Add Designer fonts for the Lilac theme
+    const link = document.createElement('link');
+    link.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Great+Vibes&family=Outfit:wght@300;400;600&display=swap';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
-
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1200));
-      
-      if (formData.name && formData.email && formData.password) {
-        // Clear wedding details to force form
-        localStorage.removeItem('weddingDetails');
-        
-        const result = await login(formData.email, formData.password);
-        
-        if (result.success) {
-          console.log('Signup successful, navigating to wedding-details');
-          setTimeout(() => {
-            navigate('/user/wedding-details', { replace: true });
-          }, 100);
-        } else {
-          setError('Account created but login failed. Please try logging in.');
-        }
-      } else {
-        setError('Please fill in all fields');
-      }
-    } catch (error) {
-      console.error('Signup error:', error);
-      setError('Signup failed. Please try again.');
-    } finally {
-      setIsLoading(false);
+    if (!agreed) return;
+    
+    const result = await login(formData.email, formData.password);
+    if (result.success) {
+      navigate('/user/wedding-details');
     }
   };
 
   return (
-    <div 
-      className="min-h-screen flex flex-col"
-      style={{ backgroundColor: theme.semantic.background.secondary }}
-    >
-      {/* Header with Image */}
-      <div className="relative h-64 overflow-hidden">
-        <img
-          src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&h=400&fit=crop&q=80"
-          alt="Join Us"
-          className="w-full h-full object-cover"
-        />
-        <div 
-          className="absolute inset-0"
-          style={{
-            background: `linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, ${theme.semantic.background.secondary} 100%)`
-          }}
-        />
-        
-        {/* Back Button */}
-        <button
-          onClick={() => navigate('/')}
-          className="absolute top-4 left-4 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm transition-all active:scale-95"
-          style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
-        >
-          <Icon name="chevronLeft" size="sm" className="text-white" />
-        </button>
-
-        {/* Brand Name */}
-        <div className="absolute bottom-6 left-0 right-0 text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Icon name="rings" size="lg" className="text-white drop-shadow-lg" />
-            <h1 className="text-2xl font-bold text-white drop-shadow-lg">
-              UtsavChakra
-            </h1>
-          </div>
-          <p className="text-white/90 text-sm drop-shadow">
-            Your Wedding Planning Partner
-          </p>
-        </div>
+    <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden" style={{ backgroundColor: '#BE9B9B' }}>
+      
+      {/* EDGE-TO-EDGE LEAF DECORATION */}
+      <div className="absolute top-0 left-0 w-full h-40 opacity-90 pointer-events-none" style={{ mixBlendMode: 'multiply' }}>
+         <img src="/assets/vendor/straight_leaves.png" alt="straight leaves top" className="w-full h-full object-cover scale-x-125 origin-top" />
       </div>
 
-      {/* Form Content */}
-      <div className="flex-1 px-6 pt-8 pb-8">
-        <div className="max-w-md mx-auto">
-          {/* Title */}
-          <div className="text-center mb-8">
-            <h1 
-              className="text-3xl font-bold mb-2"
-              style={{ color: theme.semantic.text.primary }}
-            >
-              Create Account
-            </h1>
-            <p 
-              className="text-sm"
-              style={{ color: theme.semantic.text.secondary }}
-            >
-              Start planning your dream wedding today
+      <div className="absolute bottom-0 left-0 w-full h-40 opacity-90 pointer-events-none rotate-180 -mb-16" style={{ mixBlendMode: 'multiply' }}>
+         <img src="/assets/vendor/straight_leaves.png" alt="straight leaves bottom" className="w-full h-full object-cover scale-x-125 origin-top" />
+      </div>
+
+      <div className="w-full max-w-sm relative z-10 flex flex-col items-center">
+        {/* LOGO SECTION - COMPACTED & LIFTED */}
+        <div className="mb-0 text-center mt-12">
+            <h2 className="text-[#5D3E3E] text-5xl font-normal mb-2" style={{ fontFamily: '"Great Vibes", cursive' }}>Join Us</h2>
+            <p className="text-[#5D3E3E]/80 text-[10px] font-bold tracking-[0.2em] uppercase" style={{ fontFamily: '"Outfit", sans-serif' }}>
+               Create your dream wedding account
             </p>
+            <div className="mt-2 flex justify-center">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="#5D3E3E">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+            </div>
+        </div>
+
+        {/* INPUT FIELDS - MAX COMPACTED SPACING */}
+        <form onSubmit={handleSubmit} className="w-full space-y-1.5">
+          <div className="space-y-1">
+            <label className="text-[#5D3E3E] text-xs font-bold pl-1" style={{ fontFamily: '"Playfair Display", serif' }}>Full Name :</label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              className="w-full bg-white rounded-xl py-3.5 px-5 text-[#5D3E3E] text-sm font-semibold shadow-sm focus:ring-2 focus:ring-[#5D3E3E]/20 transition-all border-none placeholder-[#BE9B9B]"
+              placeholder="Your full name"
+              required
+            />
           </div>
 
-          {/* Error Message */}
-          {error && (
-            <div 
-              className="mb-6 p-4 rounded-xl flex items-start gap-3"
-              style={{ 
-                backgroundColor: '#fee2e2',
-                border: '1px solid #fecaca'
-              }}
-            >
-              <Icon name="alertCircle" size="sm" style={{ color: '#dc2626' }} />
-              <p className="text-sm flex-1" style={{ color: '#dc2626' }}>
-                {error}
-              </p>
-            </div>
-          )}
+          <div className="space-y-1">
+            <label className="text-[#5D3E3E] text-xs font-bold pl-1" style={{ fontFamily: '"Playfair Display", serif' }}>Email Address :</label>
+            <input
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              className="w-full bg-white rounded-xl py-3.5 px-5 text-[#5D3E3E] text-sm font-semibold shadow-sm focus:ring-2 focus:ring-[#5D3E3E]/20 transition-all border-none placeholder-[#BE9B9B]"
+              placeholder="Your email address"
+              required
+            />
+          </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5 mb-6">
-            {/* Name Input */}
-            <div>
-              <label 
-                className="block text-sm font-medium mb-2"
-                style={{ color: theme.semantic.text.primary }}
-              >
-                Full Name
-              </label>
-              <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                  <Icon name="user" size="sm" style={{ color: theme.semantic.text.tertiary }} />
-                </div>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Enter your full name"
-                  required
-                  className="w-full pl-12 pr-4 py-3.5 rounded-xl text-sm transition-all"
-                  style={{
-                    backgroundColor: theme.semantic.background.primary,
-                    border: `2px solid ${theme.semantic.border.primary}`,
-                    color: theme.semantic.text.primary
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = theme.colors.primary[500]}
-                  onBlur={(e) => e.target.style.borderColor = theme.semantic.border.primary}
-                />
-              </div>
-            </div>
-
-            {/* Email Input */}
-            <div>
-              <label 
-                className="block text-sm font-medium mb-2"
-                style={{ color: theme.semantic.text.primary }}
-              >
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                  <Icon name="mail" size="sm" style={{ color: theme.semantic.text.tertiary }} />
-                </div>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter your email"
-                  required
-                  className="w-full pl-12 pr-4 py-3.5 rounded-xl text-sm transition-all"
-                  style={{
-                    backgroundColor: theme.semantic.background.primary,
-                    border: `2px solid ${theme.semantic.border.primary}`,
-                    color: theme.semantic.text.primary
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = theme.colors.primary[500]}
-                  onBlur={(e) => e.target.style.borderColor = theme.semantic.border.primary}
-                />
-              </div>
-            </div>
-
-            {/* Password Input */}
-            <div>
-              <label 
-                className="block text-sm font-medium mb-2"
-                style={{ color: theme.semantic.text.primary }}
-              >
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                  <Icon name="lock" size="sm" style={{ color: theme.semantic.text.tertiary }} />
-                </div>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Create a password"
-                  required
-                  className="w-full pl-12 pr-12 py-3.5 rounded-xl text-sm transition-all"
-                  style={{
-                    backgroundColor: theme.semantic.background.primary,
-                    border: `2px solid ${theme.semantic.border.primary}`,
-                    color: theme.semantic.text.primary
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = theme.colors.primary[500]}
-                  onBlur={(e) => e.target.style.borderColor = theme.semantic.border.primary}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2"
-                >
-                  <Icon 
-                    name={showPassword ? 'eyeOff' : 'eye'} 
-                    size="sm" 
-                    style={{ color: theme.semantic.text.tertiary }} 
-                  />
-                </button>
-              </div>
-              <p className="text-xs mt-2" style={{ color: theme.semantic.text.tertiary }}>
-                Must be at least 8 characters
-              </p>
-            </div>
-
-            {/* Terms Checkbox */}
-            <div className="flex items-start gap-3">
+          <div className="space-y-1">
+            <label className="text-[#5D3E3E] text-xs font-bold pl-1" style={{ fontFamily: '"Playfair Display", serif' }}>Password :</label>
+            <div className="relative">
               <input
-                type="checkbox"
-                id="terms"
+                type={showPassword ? "text" : "password"}
+                value={formData.password}
+                onChange={(e) => setFormData({...formData, password: e.target.value})}
+                className="w-full bg-white rounded-xl py-3.5 px-5 pr-12 text-[#5D3E3E] text-sm font-semibold shadow-sm focus:ring-2 focus:ring-[#5D3E3E]/20 transition-all border-none placeholder-[#BE9B9B]"
+                placeholder="••••••••"
                 required
-                className="mt-1"
-                style={{ accentColor: theme.colors.primary[500] }}
               />
-              <label 
-                htmlFor="terms"
-                className="text-xs"
-                style={{ color: theme.semantic.text.secondary }}
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#5D3E3E]/40 hover:text-[#5D3E3E] transition-colors"
               >
-                I agree to the{' '}
-                <button type="button" className="font-medium" style={{ color: theme.colors.primary[600] }}>
-                  Terms of Service
-                </button>
-                {' '}and{' '}
-                <button type="button" className="font-medium" style={{ color: theme.colors.primary[600] }}>
-                  Privacy Policy
-                </button>
-              </label>
+                {showPassword ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88L14.12 14.12"/><path d="M22 17a2.22 2.22 0 0 0-2-2 15.36 15.36 0 0 0-3-1.3l-1.3-.4c-.5-.2-1.1-.1-1.5.3L12 15.7a10.65 10.65 0 0 1-5.7-5.7l2.1-2.1c.4-.4.5-1 .3-1.5l-.4-1.3A15.36 15.36 0 0 0 7 2a2.22 2.22 0 0 0-2 2v1"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                )}
+              </button>
             </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-4 rounded-xl font-semibold text-white transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              style={{
-                background: `linear-gradient(135deg, ${theme.colors.primary[500]}, ${theme.colors.primary[600]})`,
-                boxShadow: `0 4px 16px ${theme.colors.primary[500]}40`
-              }}
-            >
-              {isLoading ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Creating Account...</span>
-                </>
-              ) : (
-                'Create Account'
-              )}
-            </button>
-          </form>
-
-          {/* Divider */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="flex-1 h-px" style={{ backgroundColor: theme.semantic.border.light }} />
-            <span className="text-xs" style={{ color: theme.semantic.text.tertiary }}>
-              Or sign up with
-            </span>
-            <div className="flex-1 h-px" style={{ backgroundColor: theme.semantic.border.light }} />
           </div>
 
-          {/* Social Signup */}
-          <div className="flex gap-3 mb-8">
-            <button
-              className="flex-1 py-3 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
-              style={{
-                backgroundColor: theme.semantic.background.primary,
-                border: `1px solid ${theme.semantic.border.light}`
-              }}
-            >
-              <Icon name="google" size="sm" style={{ color: '#DB4437' }} />
-              <span className="text-sm font-medium" style={{ color: theme.semantic.text.primary }}>
-                Google
-              </span>
-            </button>
-
-            <button
-              className="flex-1 py-3 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
-              style={{
-                backgroundColor: theme.semantic.background.primary,
-                border: `1px solid ${theme.semantic.border.light}`
-              }}
-            >
-              <Icon name="facebook" size="sm" style={{ color: '#1877F2' }} />
-              <span className="text-sm font-medium" style={{ color: theme.semantic.text.primary }}>
-                Facebook
-              </span>
-            </button>
+          <div className="flex items-center gap-2 pl-1 py-1">
+            <input 
+              type="checkbox" 
+              id="terms" 
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+              className="w-4 h-4 accent-[#5D3E3E] rounded border-none shadow-sm cursor-pointer"
+            />
+            <label htmlFor="terms" className="text-[10px] text-[#5D3E3E]/70 font-semibold cursor-pointer select-none" style={{ fontFamily: '"Outfit", sans-serif' }}>
+              I agree to the <span className="text-[#5D3E3E] border-b border-[#5D3E3E]/40">Terms of Service</span> and <span className="text-[#5D3E3E] border-b border-[#5D3E3E]/40">Privacy Policy</span>
+            </label>
           </div>
 
-          {/* Login Link */}
-          <div className="text-center">
-            <p style={{ color: theme.semantic.text.secondary }}>
-              Already have an account?{' '}
-              <Link 
-                to="/login" 
-                className="font-semibold"
-                style={{ color: theme.colors.primary[600] }}
-              >
-                Sign In
-              </Link>
-            </p>
-          </div>
+          {/* ACTION BUTTON (Follows the image's "CONFIRM" button style) */}
+          <button
+            type="submit"
+            className="w-full bg-[#5D3E3E] py-4 rounded-2xl text-white font-black text-sm tracking-[0.2em] shadow-xl hover:bg-[#4A3232] transition-colors mt-2 uppercase"
+            style={{ fontFamily: '"Outfit", sans-serif' }}
+          >
+            Create Account
+          </button>
+        </form>
+
+        {/* FOOTER LINKS - MOVED UP */}
+        <div className="mt-4 flex flex-col items-center gap-4">
+           <button 
+             onClick={() => navigate('/login')} 
+             className="text-[#5D3E3E] text-[10px] font-black uppercase tracking-widest border-b border-[#5D3E3E]/40"
+             style={{ fontFamily: '"Outfit", sans-serif' }}
+           >
+             Go to Login Page
+           </button>
         </div>
       </div>
     </div>
