@@ -134,8 +134,28 @@ app.get('/health', (req, res) => {
     success: true,
     message: 'Server is running',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    db_state: mongoose.connection.readyState
   });
+});
+
+// Seed trigger for production (TEMPORARY - PLEASE DELETE AFTER USE)
+const Category = require('./modules/admin/Category');
+app.get('/api/seed-categories-secure-xyz', async (req, res) => {
+    try {
+        const categories = [
+            { name: 'Venues', description: 'Banquets, Farmhouses, and Hotels', slug: 'venues' },
+            { name: 'Photographers', description: 'Wedding photography and videography', slug: 'photographers' },
+            { name: 'Makeup Artists', description: 'Bridal makeup and hair styling', slug: 'makeup-artists' },
+            { name: 'Decorators', description: 'Event decor and floral arrangements', slug: 'decorators' },
+            { name: 'Catering', description: 'Food and beverage services', slug: 'catering' }
+        ];
+        await Category.deleteMany({});
+        await Category.insertMany(categories);
+        res.json({ success: true, message: "Categories seeded successfully" });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
 });
 
 // API routes
