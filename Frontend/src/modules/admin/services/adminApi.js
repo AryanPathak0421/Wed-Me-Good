@@ -108,5 +108,41 @@ export const adminApi = {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         return await res.json();
+    },
+
+    getReviews: async (token) => {
+        const res = await fetch(`${API_URL}/reviews`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        return await res.json();
+    },
+
+    deleteReview: async (id, token) => {
+        const res = await fetch(`${API_URL}/reviews/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        return await res.json();
+    },
+
+    getAnalytics: async (token) => {
+        const res = await fetch(`${API_URL}/analytics`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        return await res.json();
+    },
+
+    getBookings: async (token) => {
+        const res = await fetch(`${API_URL}/bookings`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        return await res.json();
+    },
+
+    getPayments: async (token) => {
+        const res = await fetch(`${API_URL}/payments`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        return await res.json();
     }
 };

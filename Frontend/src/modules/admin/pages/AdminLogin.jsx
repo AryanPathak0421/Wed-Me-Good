@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../../../components/ui/Icon';
+import '../adminTheme.css';
 
 const AdminLogin = () => {
     const [credentials, setCredentials] = useState({ username: '', masterKey: '' });
@@ -44,14 +45,14 @@ const AdminLogin = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#FFF9F9] flex items-center justify-center p-6 selection:bg-primary-400/20">
+        <div className="min-h-screen bg-[#FFF9F9] flex items-center justify-center p-6 selection:bg-primary-400/20 admin-theme">
             <div className="w-full max-w-sm">
                 {/* Brand Identity */}
                 <div className="flex flex-col items-center mb-10 text-center">
                     <div className="h-14 w-14 rounded-2xl bg-[#1A0F0F] flex items-center justify-center shadow-2xl mb-4 group hover:scale-105 transition-all duration-500">
                         <Icon name="sparkles" size="sm" color="#F9AEAF" />
                     </div>
-                    <h1 className="text-2xl font-black text-slate-900 tracking-tighter uppercase leading-none">Admin<span className="text-primary-400">Core</span></h1>
+                    <h1 className="text-2xl font-black text-slate-900 tracking-tighter uppercase leading-none">Utsav<span className="text-primary-400">Chakra</span></h1>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-2">UtsavChakra Master Access</p>
                 </div>
 

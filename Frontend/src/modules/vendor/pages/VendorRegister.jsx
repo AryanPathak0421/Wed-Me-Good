@@ -170,7 +170,10 @@ const VendorRegister = () => {
                     className="w-full rounded-2xl pl-11 pr-4 py-3.5 text-sm font-semibold transition-all focus:ring-2 focus:ring-rose-500/20 outline-none"
                     style={{ border: '1px solid rgba(237, 100, 143, 0.15)', background: 'rgba(255, 255, 255, 0.95)' }}
                     value={formState.phone}
-                    onChange={(event) => handleChange('phone', event.target.value)}
+                    onChange={(event) => {
+                        const val = event.target.value.replace(/\D/g, '').slice(0, 10);
+                        handleChange('phone', val);
+                    }}
                     placeholder="9876543210"
                   />
                 </div>

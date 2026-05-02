@@ -24,6 +24,14 @@ exports.register = async (req, res, next) => {
     try {
         const { fullName, businessName, email, phone, city, category, password } = req.body;
 
+        // Phone validation
+        if (!phone || phone.length !== 10) {
+            return res.status(400).json({
+                success: false,
+                message: 'Phone number must be exactly 10 digits'
+            });
+        }
+
         // Check if vendor exists
         const vendorExists = await Vendor.findOne({ $or: [{ email }, { phone }] });
 

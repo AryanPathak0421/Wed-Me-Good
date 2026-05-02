@@ -9,30 +9,27 @@ export const useVendorState = () => {
   const fetchAllData = useCallback(async (token) => {
     setLoading(true);
     try {
-      const [profileRes, statsRes, leadsRes, bookingsRes, notesRes] = await Promise.all([
-        vendorApi.getProfile(token),
-        vendorApi.getStats(token),
-        vendorApi.getLeads(token),
-        vendorApi.getBookings(token),
-        vendorApi.getNotifications(token)
-      ]);
-
+      // Always fetch profile first to check status
+      const profileRes = await vendorApi.getProfile(token);
+      
       const newState = { ...defaultVendorState };
-
       if (profileRes.success) {
         Object.assign(newState, profileRes.data);
-      }
-      if (statsRes.success) {
-        newState.analytics = statsRes.data;
-      }
-      if (leadsRes.success) {
-        newState.leads = leadsRes.data;
-      }
-      if (bookingsRes.success) {
-        newState.bookings = bookingsRes.data;
-      }
-      if (notesRes.success) {
-        newState.notifications = notesRes.data;
+        
+        // Only fetch restricted data if vendor is Approved
+        if (profileRes.data.status === 'Approved') {
+          const [statsRes, leadsRes, bookingsRes, notesRes] = await Promise.all([
+            vendorApi.getStats(token),
+            vendorApi.getLeads(token),
+            vendorApi.getBookings(token),
+            vendorApi.getNotifications(token)
+          ]);
+
+          if (statsRes.success) newState.analytics = statsRes.data;
+          if (leadsRes.success) newState.leads = leadsRes.data;
+          if (bookingsRes.success) newState.bookings = bookingsRes.data;
+          if (notesRes.success) newState.notifications = notesRes.data;
+        }
       }
 
       setVendorState(newState);

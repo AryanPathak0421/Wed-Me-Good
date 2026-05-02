@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
 /* Full Salmon Theme for Admin Panel */
 .admin-theme {
     --color-primary-50: #FFF5F5;
@@ -16,6 +18,8 @@
     /* Very subtle pinkish white */
     --color-text-primary: #4A2B2B;
     /* Deep warm brown-gray instead of harsh black */
+
+    font-family: 'Playfair Display', serif !important;
 }
 
 /* Custom Scrollbar for Admin Components */

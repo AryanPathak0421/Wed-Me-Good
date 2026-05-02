@@ -32,4 +32,4 @@ categorySchema.pre('save', function() {
     this.slug = this.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
 });
 
-module.exports = mongoose.model('Category', categorySchema);
+module.exports = mongoose.models.Category || mongoose.model('Category', categorySchema);

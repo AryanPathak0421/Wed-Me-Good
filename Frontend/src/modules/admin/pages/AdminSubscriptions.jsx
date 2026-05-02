@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../../../components/ui/Icon';
 import { adminApi } from '../services/adminApi';
+import { useToast } from '../../../components/ui/Toast';
 
 const AdminSubscriptions = () => {
     const [plans, setPlans] = useState([]);
@@ -11,6 +12,7 @@ const AdminSubscriptions = () => {
     const [subs, setSubs] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
+    const { showToast, ToastComponent } = useToast();
 
     const token = localStorage.getItem('adminToken');
     const navigate = useNavigate();
@@ -76,7 +78,7 @@ const AdminSubscriptions = () => {
 
     const handleUpdatePlan = async () => {
         if (!editData.name || !editData.price) {
-            alert('Please provide Plan Name and Price');
+            showToast('Please provide Plan Name and Price', 'warning');
             return;
         }
 
@@ -92,14 +94,14 @@ const AdminSubscriptions = () => {
             if (res.success) {
                 setIsEditing(false);
                 setEditingPlanId(null);
-                alert(editingPlanId ? 'Plan updated successfully! ✨' : 'New plan initialized successfully! 🚀');
+                showToast(editingPlanId ? 'Plan updated successfully' : 'New plan initialized successfully', 'success');
                 fetchData();
             } else {
-                alert(res.message || 'Operation failed. Please check server logs.');
+                showToast(res.message || 'Operation failed', 'error');
             }
         } catch (err) {
             console.error('Update error:', err);
-            alert('Network error or server is down.');
+            showToast('Network error or server failure', 'error');
         } finally {
             setSubLoading(false);
         }
@@ -112,15 +114,15 @@ const AdminSubscriptions = () => {
             setSubLoading(true);
             const res = await adminApi.deleteSubscriptionPlan(id, token);
             if (res.success) {
-                alert('Plan deleted successfully! 🗑️');
+                showToast('Plan deleted successfully', 'success');
                 fetchData();
                 if (editingPlanId === id) setIsEditing(false);
             } else {
-                alert(res.message || 'Failed to delete plan');
+                showToast(res.message || 'Failed to delete plan', 'error');
             }
         } catch (err) {
             console.error('Delete error:', err);
-            alert('Failed to delete plan due to network error.');
+            showToast('Failed to delete plan due to network error', 'error');
         } finally {
             setSubLoading(false);
         }
@@ -321,6 +323,7 @@ const AdminSubscriptions = () => {
                     </div>
                 </div>
             </div>
+            <ToastComponent />
         </div>
     );
 };

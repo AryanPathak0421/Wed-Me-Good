@@ -227,6 +227,14 @@ const VendorOnboarding = () => {
   };
 
   const handleNext = async () => {
+    if (stepId === 'business') {
+      const desc = vendorState.businessDetails.description || '';
+      if (desc.length < 100) {
+        showToast(`Description too short (${desc.length}/100). Please provide more detail about your services.`, 'error');
+        return;
+      }
+    }
+
     const check = canNavigateTo(currentStepIndex + 1);
     const token = localStorage.getItem('vendorToken');
 
@@ -408,6 +416,11 @@ const VendorOnboarding = () => {
                   })}
                   placeholder="Describe your journey, specialized skills, and what makes your service exceptional..."
                 />
+                <div className="flex justify-end mt-1 px-2">
+                  <span className={`text-[9px] font-black uppercase tracking-widest ${vendorState.businessDetails.description?.length >= 100 ? 'text-emerald-500' : 'text-rose-400'}`}>
+                    {vendorState.businessDetails.description?.length || 0} / 100 Characters
+                  </span>
+                </div>
               </div>
 
               {/* 2. Experience & Team - Reveal when description has content */}
@@ -954,7 +967,7 @@ const VendorOnboarding = () => {
                 <p className="text-slate-400 text-xs font-black uppercase tracking-widest">Choose the acceleration path that fits your growth</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {activePlans.map((plan) => (
                   <div 
                     key={plan._id}
@@ -962,45 +975,57 @@ const VendorOnboarding = () => {
                       setSelectedPlanId(plan._id);
                       updateVendorState({ subscription: { ...vendorState.subscription, planId: plan._id } });
                     }}
-                    className={`relative p-8 rounded-[2.5rem] border-2 transition-all duration-500 cursor-pointer overflow-hidden ${selectedPlanId === plan._id ? 'border-primary-400 bg-primary-50/10 shadow-2xl shadow-primary-400/20' : 'border-slate-100 hover:border-primary-400/40 bg-white/50'}`}
+                    className={`group relative p-8 rounded-[2.5rem] border-2 transition-all duration-500 cursor-pointer overflow-hidden flex flex-col ${
+                      selectedPlanId === plan._id 
+                      ? 'border-[#ed648f] bg-white shadow-[0_20px_50px_rgba(237,100,143,0.2)]' 
+                      : 'border-slate-200 bg-white/70 hover:border-[#ed648f]/40 hover:shadow-xl'
+                    }`}
                   >
+                    {/* Decorative Background Element */}
+                    <div className={`absolute -top-12 -right-12 w-32 h-32 rounded-full transition-all duration-700 ${selectedPlanId === plan._id ? 'bg-[#ed648f]/10 scale-150' : 'bg-slate-50 group-hover:bg-[#ed648f]/5 group-hover:scale-110'}`}></div>
+
                     {selectedPlanId === plan._id && (
-                      <div className="absolute top-0 right-0 p-4">
-                        <div className="h-6 w-6 rounded-full bg-primary-400 text-white flex items-center justify-center shadow-lg">
-                          <Icon name="sparkles" size="xs" color="current" />
+                      <div className="absolute top-6 right-6">
+                        <div className="h-7 w-7 rounded-full bg-[#ed648f] text-white flex items-center justify-center shadow-lg animate-in zoom-in duration-300">
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
                         </div>
                       </div>
                     )}
 
-                    <div className="space-y-6 relative z-10">
-                      <div>
-                        <h4 className="text-[10px] font-black text-primary-400 uppercase tracking-[0.2em]">{plan.name}</h4>
-                        <div className="flex items-baseline gap-1 mt-2">
-                          <span className="text-3xl font-black text-slate-900">₹{plan.price.toLocaleString()}</span>
-                          <span className="text-[10px] font-black text-slate-400 uppercase">/ {plan.durationValue} {plan.durationUnit}(s)</span>
+                    <div className="relative z-10 flex-1 flex flex-col">
+                      <div className="mb-8">
+                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full ${selectedPlanId === plan._id ? 'bg-[#ed648f] text-white' : 'bg-slate-100 text-slate-500'}`}>
+                          {plan.name}
+                        </span>
+                        <div className="flex items-baseline gap-1 mt-6">
+                          <span className="text-4xl font-black text-slate-900">₹{plan.price.toLocaleString()}</span>
+                          <span className="text-xs font-bold text-slate-400">/ {plan.durationValue} {plan.durationUnit}(s)</span>
                         </div>
                       </div>
 
-                      <div className="space-y-3 py-6 border-y border-slate-100">
+                      <div className="space-y-4 py-8 border-y border-slate-100 flex-1">
                         {(plan.features || []).map((feature, i) => (
-                          <div key={i} className="flex items-center gap-3">
-                            <div className="h-4 w-4 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center flex-shrink-0">
-                              <Icon name="sparkles" size="xs" color="current" />
+                          <div key={i} className="flex items-start gap-3">
+                            <div className="h-5 w-5 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
                             </div>
-                            <span className="text-[11px] font-bold text-slate-600">{feature}</span>
+                            <span className="text-sm font-semibold text-slate-700 leading-tight">{feature}</span>
                           </div>
                         ))}
                       </div>
 
                       <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedPlanId(plan._id);
-                          updateVendorState({ subscription: { ...vendorState.subscription, planId: plan._id } });
-                        }}
-                        className={`w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${selectedPlanId === plan._id ? 'bg-primary-400 text-white shadow-lg shadow-primary-400/30' : 'bg-slate-100 text-slate-500 group-hover:bg-primary-400/10'}`}
+                        className={`w-full mt-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all duration-300 transform active:scale-95 ${
+                          selectedPlanId === plan._id 
+                          ? 'bg-[#ed648f] text-white shadow-[0_10px_25px_rgba(237,100,143,0.3)]' 
+                          : 'bg-slate-900 text-white hover:bg-slate-800'
+                        }`}
                       >
-                        {selectedPlanId === plan._id ? 'Plan Selected' : `Select ${plan.name}`}
+                        {selectedPlanId === plan._id ? 'Current Selection' : 'Choose This Plan'}
                       </button>
                     </div>
                   </div>
@@ -1014,14 +1039,23 @@ const VendorOnboarding = () => {
           )}
         </div>
 
-        <div className="mt-6 pt-4 border-t flex justify-end" style={{ borderColor: 'rgba(237, 100, 143, 0.15)' }}>
+        <div className="mt-10 pt-8 border-t flex flex-col sm:flex-row items-center justify-between gap-6" style={{ borderColor: 'rgba(237, 100, 143, 0.1)' }}>
+          <div className="flex items-center gap-2 text-[#ed648f]">
+            <svg className="w-4 h-4 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+            <span className="text-[10px] font-black uppercase tracking-widest">Progress is saved automatically</span>
+          </div>
           <button
             type="button"
-            className="vendor-cta rounded-2xl px-12 py-4 text-base font-bold tracking-wide shadow-xl transition-all active:scale-95"
-            style={{ boxShadow: '0 8px 30px rgba(210, 138, 140, 0.25)' }}
+            className="w-full sm:w-auto rounded-2xl px-16 py-4 text-sm font-black uppercase tracking-[0.15em] text-white shadow-2xl transition-all active:scale-95 hover:shadow-[#ed648f]/40 hover:-translate-y-0.5"
+            style={{ 
+              background: 'linear-gradient(135deg, #ed648f 0%, #d84d77 100%)',
+              boxShadow: '0 12px 35px -8px rgba(237, 100, 143, 0.4)'
+            }}
             onClick={handleNext}
           >
-            {(currentStepIndex === steps.length - 1 ? 'Finish Profile Setup' : 'Save & Continue')}
+            {(currentStepIndex === steps.length - 1 ? 'Complete Setup ✨' : 'Continue to Next Step →')}
           </button>
         </div>
 

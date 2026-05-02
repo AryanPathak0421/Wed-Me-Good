@@ -23,7 +23,9 @@ const vendorSchema = new mongoose.Schema({
     phone: {
         type: String,
         required: [true, 'Please provide your phone number'],
-        unique: true
+        unique: true,
+        minlength: [10, 'Phone number must be exactly 10 digits'],
+        maxlength: [10, 'Phone number must be exactly 10 digits']
     },
     city: {
         type: String,
@@ -146,4 +148,4 @@ vendorSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
 
-module.exports = mongoose.model('Vendor', vendorSchema);
+module.exports = mongoose.models.Vendor || mongoose.model('Vendor', vendorSchema);

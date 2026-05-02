@@ -1,13 +1,31 @@
+import { useState, useEffect } from 'react';
 import Icon from '../../../components/ui/Icon';
 
-const bookingsData = [
-    { id: 'B-2901', customer: 'Amit Verma', vendor: 'Royal Photography', date: '2024-11-20', amount: '₹12,400', status: 'Confirmed' },
-    { id: 'B-2902', customer: 'Priya C.', vendor: 'Floral Dreams', date: '2024-12-15', amount: '₹8,500', status: 'Pending' },
-    { id: 'B-2903', customer: 'Vikram S.', vendor: 'Indore Caterers', date: '2025-01-10', amount: '₹15,000', status: 'Completed' },
-    { id: 'B-2904', customer: 'Neha G.', vendor: 'Style & Blush', date: '2024-10-05', amount: '₹4,200', status: 'Cancelled' },
-];
-
 const AdminBookings = () => {
+    const [bookings, setBookings] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        fetchBookings();
+    }, []);
+
+    const fetchBookings = async () => {
+        try {
+            const token = localStorage.getItem('adminToken');
+            const res = await fetch('/api/admin/bookings', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const result = await res.json();
+            if (result.success) {
+                setBookings(result.data);
+            }
+        } catch (err) {
+            console.error('Error fetching bookings:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
             <div className="flex items-center justify-between">
@@ -19,9 +37,9 @@ const AdminBookings = () => {
                 <div className="flex items-center gap-2">
                     <div className="h-8 rounded-lg border border-slate-200 bg-white px-3 flex items-center gap-2">
                         <Icon name="calendar" size="xs" color="#94a3b8" />
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Date Range</span>
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Live Monitor</span>
                     </div>
-                    <button className="h-8 px-4 rounded-lg bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest">
+                    <button className="h-8 px-4 rounded-lg bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest shadow-lg hover:bg-slate-800 transition-all">
                         Export XML
                     </button>
                 </div>
@@ -41,21 +59,35 @@ const AdminBookings = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
-                            {bookingsData.map((booking) => (
-                                <tr key={booking.id} className="hover:bg-primary-50/10 transition-colors group">
-                                    <td className="px-6 py-3 text-[11px] font-black text-slate-900">{booking.id}</td>
-                                    <td className="px-5 py-3 text-[11px] font-bold text-slate-600">{booking.customer}</td>
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan="6" className="px-6 py-20 text-center text-slate-400 text-xs font-bold uppercase tracking-widest animate-pulse">Synchronizing Ledger Data...</td>
+                                </tr>
+                            ) : bookings.length === 0 ? (
+                                <tr>
+                                    <td colSpan="6" className="px-6 py-20 text-center text-slate-400 text-xs font-bold uppercase tracking-widest">No transaction records detected</td>
+                                </tr>
+                            ) : bookings.map((booking) => (
+                                <tr key={booking._id} className="hover:bg-primary-50/10 transition-colors group">
+                                    <td className="px-6 py-3 text-[10px] font-black text-slate-400 uppercase">#{booking._id.slice(-6)}</td>
                                     <td className="px-5 py-3">
-                                        <p className="text-[11px] font-black text-slate-800">{booking.vendor}</p>
+                                        <p className="text-[11px] font-black text-slate-900">{booking.userId?.fullName || 'Anonymous'}</p>
+                                        <p className="text-[9px] font-bold text-slate-400">{booking.userId?.email}</p>
                                     </td>
-                                    <td className="px-5 py-3 text-[11px] font-black text-primary-500 tracking-tight">{booking.amount}</td>
-                                    <td className="px-5 py-3 text-[10px] font-bold text-slate-500 uppercase">{booking.date}</td>
+                                    <td className="px-5 py-3">
+                                        <p className="text-[11px] font-black text-slate-800">{booking.vendorId?.businessName || 'Platform Service'}</p>
+                                    </td>
+                                    <td className="px-5 py-3 text-[11px] font-black text-emerald-600 tracking-tight">₹{booking.totalPrice?.toLocaleString()}</td>
+                                    <td className="px-5 py-3 text-[10px] font-bold text-slate-500 uppercase">
+                                        {new Date(booking.eventDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                    </td>
                                     <td className="px-6 py-3">
-                                        <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border ${booking.status === 'Confirmed' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                                                booking.status === 'Pending' ? 'bg-amber-50 text-amber-600 border-amber-100' :
-                                                    booking.status === 'Cancelled' ? 'bg-rose-50 text-rose-600 border-rose-100' :
-                                                        'bg-primary-50 text-primary-500 border-primary-100'
-                                            }`}>{booking.status}</span>
+                                        <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border ${
+                                            booking.status === 'Confirmed' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                                            booking.status === 'Completed' ? 'bg-primary-50 text-primary-500 border-primary-100' :
+                                            booking.status === 'Cancelled' ? 'bg-rose-50 text-rose-600 border-rose-100' :
+                                            'bg-slate-50 text-slate-400 border-slate-100'
+                                        }`}>{booking.status}</span>
                                     </td>
                                 </tr>
                             ))}

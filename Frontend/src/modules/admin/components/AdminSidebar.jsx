@@ -24,6 +24,7 @@ const navigation = [
             { path: '/admin/vendors', icon: 'user', label: 'Partners Console' },
             { path: '/admin/users', icon: 'users', label: 'Client Directory' },
             { path: '/admin/bookings', icon: 'calendar', label: 'Global Bookings' },
+            { path: '/admin/reviews', icon: 'shield', label: 'Review Hub' },
         ]
     },
     {
@@ -65,7 +66,7 @@ const AdminSidebar = ({ onClose }) => {
                         <Icon name="sparkles" size="xs" color="white" />
                     </div>
                     <div className="flex flex-col">
-                        <h1 className="text-[14px] font-black text-white tracking-widest leading-none uppercase">Admin<span className="text-primary-400">Core</span></h1>
+                        <h1 className="text-[14px] font-black text-white tracking-widest leading-none uppercase">Utsav<span className="text-primary-400">Chakra</span></h1>
                     </div>
                 </div>
             </div>
@@ -114,8 +115,8 @@ const AdminSidebar = ({ onClose }) => {
             <div className="p-3 flex-shrink-0 mt-auto border-t border-white/5">
                 <div className="bg-white/5 rounded-xl p-2.5 flex items-center justify-between border border-white/5 transition-all group">
                     <div className="flex items-center gap-2.5">
-                        <div className="h-8 w-8 rounded-lg bg-white/5 p-0.5 border border-white/10 overflow-hidden">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Admin" alt="Admin" className="w-full h-full object-cover rounded-md" />
+                        <div className="h-8 w-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/10 text-white/40">
+                            <Icon name="user" size="xs" color="currentColor" />
                         </div>
                         <div className="min-w-0">
                             <p className="text-[10px] font-black text-white truncate leading-tight">Super Admin</p>

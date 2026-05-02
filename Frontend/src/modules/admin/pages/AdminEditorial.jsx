@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import Icon from '../../../components/ui/Icon';
+import { useToast } from '../../../components/ui/Toast';
 
 const AdminEditorial = () => {
     const [isDeploying, setIsDeploying] = useState(false);
+    const { showToast, ToastComponent } = useToast();
 
     const categories = [
         { name: 'Photography', vendors: 42, growth: '+12%', color: 'bg-primary-400' },
@@ -17,7 +19,7 @@ const AdminEditorial = () => {
         setIsDeploying(true);
         setTimeout(() => {
             setIsDeploying(false);
-            alert('Node Sync Successful: Catalog structure updated.');
+            showToast('Node Sync Successful: Catalog structure updated.', 'success');
         }, 1200);
     };
 
@@ -58,7 +60,7 @@ const AdminEditorial = () => {
                     </div>
                 ))}
                 <button
-                    onClick={() => alert('Opening Node Creation Wizard...')}
+                    onClick={() => showToast('Node Creation Wizard Offline', 'info')}
                     className="p-5 rounded-2xl border-2 border-dashed border-slate-100 text-slate-400 hover:border-primary-400/30 hover:text-primary-500 transition-all text-[9px] font-black uppercase tracking-widest flex flex-col items-center justify-center gap-2 min-h-[120px]"
                 >
                     <div className="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center">
@@ -67,6 +69,7 @@ const AdminEditorial = () => {
                     Append Category
                 </button>
             </div>
+            <ToastComponent />
         </div>
     );
 };

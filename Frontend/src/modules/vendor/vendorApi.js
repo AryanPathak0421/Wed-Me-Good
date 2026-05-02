@@ -124,5 +124,37 @@ export const vendorApi = {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         return response.json();
+    },
+
+    getSubscriptionPlans: async (token) => {
+        const response = await fetch(`${BASE_URL}/subscription/plans`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        return response.json();
+    },
+
+    createSubscriptionOrder: async (data, token) => {
+        const response = await fetch(`${BASE_URL}/subscription/order`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        });
+        return response.json();
+    },
+
+    verifySubscriptionPayment: async (data, token) => {
+        const response = await fetch(`${BASE_URL}/subscription/verify`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        });
+        return response.json();
     }
 };
