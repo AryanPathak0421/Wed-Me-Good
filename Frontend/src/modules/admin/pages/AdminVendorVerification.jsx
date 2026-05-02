@@ -87,43 +87,82 @@ const AdminVendorVerification = () => {
                     </div>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {vendors.map((vendor) => (
-                        <div key={vendor._id} className="group bg-white rounded-[2.5rem] border border-slate-200 p-6 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
-                                <Icon name="shield" size="lg" color="#ed648f" />
+                        <div key={vendor._id} className="group bg-white rounded-[2rem] border border-slate-200/60 p-6 shadow-sm hover:shadow-2xl hover:shadow-primary-100/20 transition-all duration-500 hover:-translate-y-1 relative flex flex-col">
+                            {/* Status Badge */}
+                            <div className="absolute top-6 right-6 px-3 py-1 rounded-full bg-amber-50 border border-amber-100 flex items-center gap-1.5">
+                                <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                                <span className="text-[8px] font-black text-amber-600 uppercase tracking-widest">Awaiting Review</span>
                             </div>
 
-                            <div className="space-y-6 relative z-10">
-                                <div className="flex items-center gap-4">
-                                    <div className="h-14 w-14 rounded-2xl bg-slate-50 border border-slate-100 p-1 flex-shrink-0">
-                                        <img src={`https://api.dicebear.com/7.x/identicon/svg?seed=${vendor.businessName}`} alt="" className="w-full h-full object-cover rounded-xl" />
+                            <div className="flex-1 space-y-6">
+                                {/* Partner Identity */}
+                                <div className="flex items-start gap-4">
+                                    <div className="h-16 w-16 rounded-[1.25rem] bg-slate-50 border border-slate-100 p-1 flex-shrink-0 group-hover:scale-105 transition-transform duration-500 overflow-hidden shadow-inner">
+                                        <img 
+                                            src={vendor.portfolio?.[0]?.url || `https://api.dicebear.com/7.x/identicon/svg?seed=${vendor.businessName}`} 
+                                            alt="" 
+                                            className="w-full h-full object-cover rounded-2xl" 
+                                        />
                                     </div>
-                                    <div>
-                                        <h3 className="text-base font-black text-slate-900 leading-tight">{vendor.businessName}</h3>
-                                        <p className="text-[10px] font-black text-primary-400 uppercase tracking-widest mt-1">{vendor.category}</p>
+                                    <div className="pt-1 min-w-0">
+                                        <h3 className="text-base font-black text-slate-900 leading-tight truncate pr-16">{vendor.businessName}</h3>
+                                        <div className="flex items-center gap-2 mt-1.5">
+                                            <span className="px-2 py-0.5 rounded bg-primary-50 text-primary-500 text-[8px] font-black uppercase tracking-wider border border-primary-100/50">
+                                                {vendor.category}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1">
-                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Location</p>
-                                        <p className="text-[11px] font-bold text-slate-700">{vendor.city}</p>
+                                {/* Quick Info Grid */}
+                                <div className="grid grid-cols-2 gap-px bg-slate-100 rounded-2xl border border-slate-100 overflow-hidden shadow-sm">
+                                    <div className="bg-slate-50/50 p-3 flex items-center gap-3">
+                                        <div className="h-7 w-7 rounded-lg bg-white flex items-center justify-center shadow-sm">
+                                            <Icon name="search" size="xs" color="#94a3b8" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Location</p>
+                                            <p className="text-[10px] font-bold text-slate-700">{vendor.city}</p>
+                                        </div>
                                     </div>
-                                    <div className="space-y-1">
-                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Contact</p>
-                                        <p className="text-[11px] font-bold text-slate-700">{vendor.phone}</p>
+                                    <div className="bg-slate-50/50 p-3 flex items-center gap-3">
+                                        <div className="h-7 w-7 rounded-lg bg-white flex items-center justify-center shadow-sm">
+                                            <Icon name="user" size="xs" color="#94a3b8" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Contact</p>
+                                            <p className="text-[10px] font-bold text-slate-700 truncate">{vendor.phone}</p>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <button 
-                                    onClick={() => openDetails(vendor)}
-                                    className="w-full py-4 rounded-2xl bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center justify-center gap-2 group-hover:gap-3"
-                                >
-                                    Review Documents
-                                    <Icon name="eye" size="xs" color="white" />
-                                </button>
+                                {/* Preview Portfolio Row (if any) */}
+                                {vendor.portfolio && vendor.portfolio.length > 0 && (
+                                    <div className="flex items-center gap-2">
+                                        {vendor.portfolio.slice(0, 4).map((img, i) => (
+                                            <div key={i} className="h-8 w-8 rounded-lg overflow-hidden border border-slate-100 shadow-sm">
+                                                <img src={img.url} className="h-full w-full object-cover" alt="" />
+                                            </div>
+                                        ))}
+                                        {vendor.portfolio.length > 4 && (
+                                            <div className="h-8 w-8 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center">
+                                                <span className="text-[8px] font-black text-slate-400">+{vendor.portfolio.length - 4}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
+
+                            {/* Action Button */}
+                            <button 
+                                onClick={() => openDetails(vendor)}
+                                className="w-full mt-8 py-4 rounded-2xl bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center justify-center gap-2 group-hover:gap-3 group-hover:bg-[#F9AEAF] group-hover:text-white group-hover:shadow-lg group-hover:shadow-[#F9AEAF]/20"
+                            >
+                                Detailed Review
+                                <Icon name="eye" size="xs" color="currentColor" />
+                            </button>
                         </div>
                     ))}
                 </div>
@@ -137,8 +176,12 @@ const AdminVendorVerification = () => {
                         {/* Modal Header */}
                         <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                             <div className="flex items-center gap-4">
-                                <div className="h-12 w-12 rounded-2xl bg-white border border-slate-200 p-1">
-                                    <img src={`https://api.dicebear.com/7.x/identicon/svg?seed=${selectedVendor.businessName}`} alt="" className="w-full h-full object-cover rounded-xl" />
+                                <div className="h-12 w-12 rounded-2xl bg-white border border-slate-200 p-0.5 overflow-hidden shadow-sm">
+                                    <img 
+                                        src={selectedVendor.portfolio?.[0]?.url || `https://api.dicebear.com/7.x/identicon/svg?seed=${selectedVendor.businessName}`} 
+                                        alt="" 
+                                        className="w-full h-full object-cover rounded-xl" 
+                                    />
                                 </div>
                                 <div>
                                     <h2 className="text-xl font-black text-slate-900 tracking-tight">{selectedVendor.businessName}</h2>

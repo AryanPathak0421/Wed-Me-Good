@@ -7,6 +7,7 @@ const AdminVendors = () => {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedVendor, setSelectedVendor] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [actionLoading, setActionLoading] = useState(false);
 
@@ -190,14 +191,34 @@ const AdminVendors = () => {
                                      </td>
                                      <td className="px-6 py-3 text-right">
                                          <div className="flex items-center justify-end gap-1 opacity-20 group-hover:opacity-100 transition-opacity">
+                                             {vendor.status === 'Pending' && (
+                                                 <>
+                                                     <button 
+                                                         onClick={() => handleAction(vendor._id, 'Approved')}
+                                                         title="Approve Partner"
+                                                         className="h-7 w-7 flex items-center justify-center rounded-lg bg-emerald-50 border border-emerald-100 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all"
+                                                     >
+                                                         <Icon name="check" size="xs" color="current" />
+                                                     </button>
+                                                     <button 
+                                                         onClick={() => handleAction(vendor._id, 'Rejected')}
+                                                         title="Reject Partner"
+                                                         className="h-7 w-7 flex items-center justify-center rounded-lg bg-rose-50 border border-rose-100 text-rose-500 hover:bg-rose-500 hover:text-white transition-all"
+                                                     >
+                                                         <Icon name="close" size="xs" color="current" />
+                                                     </button>
+                                                 </>
+                                             )}
                                              <button 
                                                  onClick={() => openDetails(vendor)}
+                                                 title="View Full Details"
                                                  className="h-7 w-7 flex items-center justify-center rounded-lg bg-white border border-slate-200 hover:border-primary-400 hover:text-primary-400 transition-all"
                                              >
                                                  <Icon name="eye" size="xs" />
                                              </button>
                                              <button
                                                  onClick={() => deleteVendor(vendor._id)}
+                                                 title="Decouple Node"
                                                  className="h-7 w-7 flex items-center justify-center rounded-lg bg-white border border-slate-200 hover:border-rose-500 hover:text-rose-500 transition-all"
                                              >
                                                  <Icon name="logout" size="xs" />
