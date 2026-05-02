@@ -1,4 +1,4 @@
-const API_URL = '/api/admin';
+const API_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/admin` : '/api/admin';
 
 export const adminApi = {
     getVendors: async (token) => {
