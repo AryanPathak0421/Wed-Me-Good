@@ -4,6 +4,10 @@
     "outputDirectory": "dist",
     "rewrites": [
         {
+            "source": "/api/:path*",
+            "destination": "https://wed-me-good.onrender.com/api/:path*"
+        },
+        {
             "source": "/vendor/(.*)",
             "destination": "/index.html"
         },
