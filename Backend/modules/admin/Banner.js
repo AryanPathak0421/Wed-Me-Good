@@ -6,6 +6,10 @@ const bannerSchema = new mongoose.Schema({
         required: [true, 'Banner title is required'],
         trim: true
     },
+    description: {
+        type: String,
+        trim: true
+    },
     imageUrl: {
         type: String,
         required: [true, 'Banner image URL is required']
@@ -22,6 +26,15 @@ const bannerSchema = new mongoose.Schema({
     platform: {
         type: String,
         enum: ['All', 'Web', 'Mobile'],
+        default: 'All'
+    },
+    target: {
+        type: String,
+        enum: ['All', 'Vendor', 'User'],
+        default: 'All'
+    },
+    category: {
+        type: String,
         default: 'All'
     },
     status: {

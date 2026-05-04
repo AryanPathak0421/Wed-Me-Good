@@ -1,227 +1,394 @@
 import { useState, useEffect } from 'react';
 import Icon from '../../../components/ui/Icon';
+import { useVendorState } from '../useVendorState';
+import { vendorApi } from '../vendorApi';
 
 const VendorSettings = () => {
-  const [activeTab, setActiveTab] = useState('account');
-  const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState(''); 
+    const { vendorState, refreshData } = useVendorState();
+    const [activeTab, setActiveTab] = useState('account');
+    const [isSaving, setIsSaving] = useState(false);
+    const [message, setMessage] = useState({ type: '', text: '' });
+    const [token] = useState(localStorage.getItem('vendorToken'));
 
-  const [settings, setSettings] = useState({
-    email: 'contact@emeraldstudio.com',
-    phone: '+91 98765 43210',
-    language: 'English (India)',
-    notifications: {
-      push: true,
-      email: true,
-      whatsapp: true,
-      marketing: false
-    },
-    privacy: {
-      profilePublic: true,
-      showPricing: true,
-      showContact: true
-    }
-  });
+    const [settings, setSettings] = useState({
+        email: '',
+        phone: '',
+        fullName: '',
+        businessName: '',
+        language: 'English (India)',
+        notifications: {
+            push: true,
+            email: true,
+            whatsapp: true
+        }
+    });
 
-  const toggleSetting = (category, key) => {
-    setSettings(prev => ({
-      ...prev,
-      [category]: {
-        ...prev[category],
-        [key]: !prev[category][key]
-      }
-    }));
-  };
+    const [passwordForm, setPasswordForm] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+    });
 
-  return (
-    <div className="space-y-4 sm:space-y-5 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-      
-      {/* Compact Header */}
-      <div className="vendor-surface rounded-xl p-4 sm:p-5 relative overflow-hidden bg-[#FFF5F7] border border-rose-100 shadow-sm">
-        <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-10" style={{
-          background: 'radial-gradient(circle, #9D174D, transparent 70%)'
-        }}></div>
-        <div className="relative z-10 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-             <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center text-[#9D174D] shadow-sm">
-                <Icon name="settings" size="sm" />
-             </div>
-             <div>
-                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#9D174D]">Preferences</p>
-                <h2 className="text-xl font-black text-slate-900 tracking-tight leading-none">Account Settings</h2>
-             </div>
-          </div>
-          <p className="text-[9px] font-black text-rose-400 uppercase tracking-widest hidden sm:block">Configuration Hub</p>
-        </div>
-      </div>
+    useEffect(() => {
+        if (vendorState) {
+            setSettings({
+                email: vendorState.email || '',
+                phone: vendorState.phone || '',
+                fullName: vendorState.fullName || '',
+                businessName: vendorState.businessName || '',
+                language: vendorState.language || 'English (India)',
+                notifications: vendorState.notifications || {
+                    push: true,
+                    email: true,
+                    whatsapp: true
+                }
+            });
+        }
+    }, [vendorState]);
 
-      <div className="grid gap-4 lg:grid-cols-[240px_1fr]">
+    const showMessage = (type, text) => {
+        setMessage({ type, text });
+        setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+    };
+
+    const handleUpdate = async (updateObj) => {
+        setIsSaving(true);
+        try {
+            const res = await vendorApi.updateProfile(updateObj, token);
+            if (res.success) {
+                showMessage('success', 'Intelligence records updated successfully');
+                refreshData();
+            } else {
+                showMessage('error', res.message || 'Update protocol failed');
+            }
+        } catch (err) {
+            console.error('Update failed:', err);
+            showMessage('error', 'Transmission failure');
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleNotificationToggle = (type) => {
+        const updatedNotifications = {
+            ...settings.notifications,
+            [type]: !settings.notifications[type]
+        };
+        setSettings({ ...settings, notifications: updatedNotifications });
+        handleUpdate({ notifications: updatedNotifications });
+    };
+
+    const handlePasswordChange = async (e) => {
+        e.preventDefault();
+        const activeToken = localStorage.getItem('vendorToken');
         
-        {/* Sidebar Tabs - Compact High Density */}
-        <div className="flex lg:flex-col gap-1.5 overflow-x-auto pb-1 lg:pb-0 no-scrollbar">
-          {[
-            { id: 'account', label: 'General', icon: 'account' },
-            { id: 'notifications', label: 'Alerts', icon: 'clock' },
-            { id: 'privacy', label: 'Privacy', icon: 'checkList' },
-            { id: 'security', label: 'Security', icon: 'mail' }
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-3 px-4 h-11 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all whitespace-nowrap lg:w-full border ${
-                activeTab === tab.id 
-                  ? 'bg-[#9D174D] text-white border-[#9D174D] shadow-lg shadow-rose-100' 
-                  : 'bg-white text-slate-400 border-rose-50 hover:bg-[#FFF5F7] hover:text-[#9D174D]'
-              }`}
-            >
-              <Icon name={tab.icon} size="xs" />
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+            alert('Passwords do not match');
+            return showMessage('error', 'Passwords do not match');
+        }
+        if (passwordForm.newPassword.length < 8) {
+            alert('Minimum security requirement: 8 characters');
+            return showMessage('error', 'Minimum security requirement: 8 characters');
+        }
 
-        {/* Content Area */}
-        <div className="space-y-4">
-          
-          {activeTab === 'account' && (
-            <div className="grid gap-3 animate-in fade-in duration-300">
-               {/* Personal Info Card */}
-               <div className="vendor-surface rounded-2xl p-5 bg-white border border-rose-50 shadow-sm">
-                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Personal Information</h3>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                     <div className="space-y-1">
-                        <label className="text-[8px] font-black text-slate-300 uppercase px-1">Email Address</label>
-                        <div className="flex gap-2">
-                           <input 
-                             className="flex-1 rounded-xl px-4 py-2.5 text-xs font-bold bg-slate-50 border-0 text-slate-500"
-                             value={settings.email}
-                             readOnly
-                           />
-                           <button className="h-9 w-9 rounded-xl bg-[#FFF5F7] text-[#9D174D] flex items-center justify-center shadow-sm">
-                              <Icon name="edit" size="xs" />
-                           </button>
+        setIsSaving(true);
+        try {
+            console.log('Initiating security key rotation...');
+            const res = await vendorApi.changePassword(passwordForm.currentPassword, passwordForm.newPassword, activeToken);
+            console.log('Rotation response:', res);
+            
+            if (res.success) {
+                alert('Security keys rotated successfully!');
+                showMessage('success', 'Security keys rotated successfully');
+                setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+            } else {
+                alert(`Security Error: ${res.message || 'Protocol rejection'}`);
+                showMessage('error', res.message || 'Security protocol rejection');
+            }
+        } catch (err) {
+            console.error('Password change error:', err);
+            alert('Authentication node error. Check console.');
+            showMessage('error', 'Authentication node error');
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleDeactivate = async () => {
+        const confirmMsg = vendorState?.isActive ? 'Deactivate your business node? You will go offline.' : 'Reactivate your business node?';
+        if (!window.confirm(confirmMsg)) return;
+
+        setIsSaving(true);
+        try {
+            const res = await vendorApi.deactivateAccount(token);
+            if (res.success) {
+                alert(res.message);
+                showMessage('success', res.message);
+                refreshData();
+            } else {
+                showMessage('error', res.message || 'Operation failed');
+            }
+        } catch (err) {
+            showMessage('error', 'Transmission error');
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+
+    return (
+        <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in duration-700 pb-12">
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-2 border-slate-50 pb-6">
+                <div>
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="h-12 w-12 rounded-2xl bg-[#9D174D] flex items-center justify-center text-white shadow-xl">
+                            <Icon name="settings" size="sm" />
                         </div>
-                     </div>
-                     <div className="space-y-1">
-                        <label className="text-[8px] font-black text-slate-300 uppercase px-1">Phone Number</label>
-                        <div className="flex gap-2">
-                           <input 
-                             className="flex-1 rounded-xl px-4 py-2.5 text-xs font-bold bg-slate-50 border-0 text-slate-500"
-                             value={settings.phone}
-                             readOnly
-                           />
-                           <button className="h-9 w-9 rounded-xl bg-[#FFF5F7] text-[#9D174D] flex items-center justify-center shadow-sm">
-                              <Icon name="edit" size="xs" />
-                           </button>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-
-               {/* App Preferences Card */}
-               <div className="vendor-surface rounded-2xl p-5 bg-[#FDF2F8] border border-rose-50 shadow-sm">
-                  <h3 className="text-[10px] font-black text-[#ed648f] uppercase tracking-widest mb-4">Platform Config</h3>
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 border border-white">
-                     <div>
-                        <p className="text-xs font-black text-slate-900 uppercase tracking-tight">Display Language</p>
-                        <p className="text-[10px] font-bold text-slate-400 mt-0.5">Application default localization</p>
-                     </div>
-                     <button className="text-[10px] font-black text-[#9D174D] flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg shadow-sm border border-rose-50 uppercase tracking-widest">
-                        {settings.language}
-                        <Icon name="chevronDown" size="xs" />
-                     </button>
-                  </div>
-               </div>
-            </div>
-          )}
-
-          {activeTab === 'notifications' && (
-            <div className="vendor-surface rounded-2xl p-5 bg-white border border-rose-50 shadow-sm space-y-2 animate-in fade-in duration-300">
-               <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Alert Preferences</h3>
-               {[
-                  { id: 'push', label: 'Push Notifications', desc: 'New leads and direct messages alerts' },
-                  { id: 'email', label: 'Email Reports', desc: 'Weekly summaries and account updates' },
-                  { id: 'whatsapp', label: 'WhatsApp Direct', desc: 'Instant lead alerts on mobile' }
-               ].map(item => (
-                  <div key={item.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50/50 hover:bg-[#FFF5F7] transition-all group border border-transparent hover:border-rose-100">
-                     <div>
-                        <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{item.label}</p>
-                        <p className="text-[9px] font-bold text-slate-400 mt-0.5">{item.desc}</p>
-                     </div>
-                     <button 
-                       onClick={() => toggleSetting('notifications', item.id)}
-                       className={`w-10 h-5 rounded-full relative transition-all duration-300 ${
-                         settings.notifications[item.id] ? 'bg-[#9D174D]' : 'bg-slate-200'
-                       }`}
-                     >
-                       <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all duration-300 ${
-                         settings.notifications[item.id] ? 'left-5.5' : 'left-0.5'
-                       }`}></div>
-                     </button>
-                  </div>
-               ))}
-            </div>
-          )}
-
-          {activeTab === 'privacy' && (
-            <div className="vendor-surface rounded-2xl p-5 bg-white border border-rose-50 shadow-sm space-y-2 animate-in fade-in duration-300">
-               <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Privacy & Visibility</h3>
-               {[
-                  { id: 'profilePublic', label: 'Public Visibility', desc: 'Show your profile in search results' },
-                  { id: 'showPricing', label: 'Price Transparency', desc: 'Show starting prices to clients' }
-               ].map(item => (
-                  <div key={item.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50/50 hover:bg-[#FFF5F7] transition-all border border-transparent hover:border-rose-100">
-                     <div>
-                        <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{item.label}</p>
-                        <p className="text-[9px] font-bold text-slate-400 mt-0.5">{item.desc}</p>
-                     </div>
-                     <button 
-                       onClick={() => toggleSetting('privacy', item.id)}
-                       className={`w-10 h-5 rounded-full relative transition-all duration-300 ${
-                         settings.privacy[item.id] ? 'bg-[#9D174D]' : 'bg-slate-200'
-                       }`}
-                     >
-                       <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all duration-300 ${
-                         settings.privacy[item.id] ? 'left-5.5' : 'left-0.5'
-                       }`}></div>
-                     </button>
-                  </div>
-               ))}
-            </div>
-          )}
-
-          {activeTab === 'security' && (
-            <div className="space-y-4 animate-in fade-in duration-300">
-               <div className="vendor-surface rounded-2xl p-5 bg-white border border-rose-50 shadow-sm">
-                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Security Access</h3>
-                  <div className="space-y-2">
-                     <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50/50">
                         <div>
-                           <p className="text-xs font-black text-slate-900 uppercase tracking-tight">Account Password</p>
-                           <p className="text-[9px] font-bold text-slate-400">Last updated 90 days ago</p>
+                            <p className="text-[10px] font-black text-[#9D174D] uppercase tracking-[0.25em]">Core Configuration</p>
+                            <h1 className="text-2xl font-black text-slate-900 tracking-tight leading-none mt-1">Vendor Settings</h1>
                         </div>
-                        <button className="text-[9px] font-black text-[#9D174D] uppercase tracking-widest bg-white px-4 py-2 rounded-lg shadow-sm border border-rose-50 hover:bg-[#9D174D] hover:text-white transition-all">Change</button>
-                     </div>
-                  </div>
-               </div>
+                    </div>
+                    <p className="text-slate-400 text-xs font-bold ml-1">Manage your business credentials, notification protocols, and security layers.</p>
+                </div>
 
-               <div className="vendor-surface rounded-2xl p-5 bg-[#FFF1F2] border border-rose-100 shadow-sm">
-                  <h3 className="text-[10px] font-black text-rose-600 uppercase tracking-widest mb-4">Danger Zone</h3>
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 border border-white">
-                     <div>
-                        <p className="text-xs font-black text-rose-900 uppercase tracking-tight">Delete Account</p>
-                        <p className="text-[9px] font-bold text-rose-400 mt-0.5">Permanently remove all business data</p>
-                     </div>
-                     <button className="text-[9px] font-black text-white uppercase tracking-widest bg-rose-600 px-4 py-2 rounded-lg shadow-lg shadow-rose-100 hover:bg-rose-700 transition-all">Terminate</button>
-                  </div>
-               </div>
+                {message.text && (
+                    <div className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest animate-in slide-in-from-right-4 duration-300 ${
+                        message.type === 'success' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-rose-50 text-rose-600 border border-rose-100'
+                    }`}>
+                        {message.text}
+                    </div>
+                )}
             </div>
-          )}
 
+            <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
+                {/* Side Navigation */}
+                <div className="space-y-2">
+                    {[
+                        { id: 'account', label: 'Identity & Profile', icon: 'account', desc: 'Business & Contact info' },
+                        { id: 'notifications', label: 'Neural Alerts', icon: 'clock', desc: 'Notification protocols' },
+                        { id: 'security', label: 'Security Access', icon: 'lock', desc: 'Password & Auth keys' }
+                    ].map(tab => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`w-full text-left p-4 rounded-3xl transition-all duration-300 group border-2 ${
+                                activeTab === tab.id 
+                                    ? 'bg-white border-rose-100 shadow-xl shadow-rose-50/50' 
+                                    : 'bg-transparent border-transparent hover:bg-slate-50 hover:border-slate-100'
+                            }`}
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className={`h-10 w-10 rounded-2xl flex items-center justify-center transition-colors ${
+                                    activeTab === tab.id ? 'bg-[#9D174D] text-white' : 'bg-slate-100 text-slate-400 group-hover:bg-white'
+                                }`}>
+                                    <Icon name={tab.icon} size="xs" />
+                                </div>
+                                <div>
+                                    <p className={`text-[12px] font-black uppercase tracking-tight ${activeTab === tab.id ? 'text-slate-900' : 'text-slate-400'}`}>{tab.label}</p>
+                                    <p className="text-[10px] font-bold text-slate-300 mt-0.5">{tab.desc}</p>
+                                </div>
+                            </div>
+                        </button>
+                    ))}
+                </div>
+
+                {/* Content Panel */}
+                <div className="bg-white rounded-[2.5rem] border-2 border-slate-50 p-8 shadow-sm relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-slate-50 rounded-full -translate-y-1/2 translate-x-1/2 -z-0 opacity-50" />
+                    
+                    <div className="relative z-10">
+                        {activeTab === 'account' && (
+                            <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                                <section>
+                                    <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-[#9D174D]" />
+                                        Identity Profile
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Identity Name</label>
+                                            <input 
+                                                type="text" 
+                                                value={settings.fullName}
+                                                onChange={e => setSettings({...settings, fullName: e.target.value})}
+                                                onBlur={() => handleUpdate({ fullName: settings.fullName })}
+                                                className="w-full px-5 py-3.5 bg-slate-50 border-2 border-transparent rounded-2xl text-xs font-black focus:bg-white focus:border-rose-100 outline-none transition-all"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Business Designation</label>
+                                            <input 
+                                                type="text" 
+                                                value={settings.businessName}
+                                                onChange={e => setSettings({...settings, businessName: e.target.value})}
+                                                onBlur={() => handleUpdate({ businessName: settings.businessName })}
+                                                className="w-full px-5 py-3.5 bg-slate-50 border-2 border-transparent rounded-2xl text-xs font-black focus:bg-white focus:border-rose-100 outline-none transition-all"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Encrypted Email (ReadOnly)</label>
+                                            <input 
+                                                type="email" 
+                                                value={settings.email}
+                                                readOnly
+                                                className="w-full px-5 py-3.5 bg-slate-100 border-2 border-transparent rounded-2xl text-xs font-black text-slate-400 cursor-not-allowed outline-none"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Communication Frequency (Phone)</label>
+                                            <input 
+                                                type="text" 
+                                                value={settings.phone}
+                                                onChange={e => setSettings({...settings, phone: e.target.value})}
+                                                onBlur={() => handleUpdate({ phone: settings.phone })}
+                                                className="w-full px-5 py-3.5 bg-slate-50 border-2 border-transparent rounded-2xl text-xs font-black focus:bg-white focus:border-rose-100 outline-none transition-all"
+                                            />
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <section>
+                                    <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-[#9D174D]" />
+                                        Localization
+                                    </h3>
+                                    <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 flex items-center justify-between">
+                                        <div>
+                                            <p className="text-xs font-black text-slate-900 uppercase">System Interface Language</p>
+                                            <p className="text-[10px] font-bold text-slate-400 mt-1">Select your preferred neural translation</p>
+                                        </div>
+                                        <select 
+                                            value={settings.language}
+                                            onChange={e => {
+                                                setSettings({...settings, language: e.target.value});
+                                                handleUpdate({ language: e.target.value });
+                                            }}
+                                            className="bg-white border-2 border-slate-100 rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest outline-none focus:border-[#9D174D]/20 transition-all cursor-pointer"
+                                        >
+                                            <option value="English (India)">English (India)</option>
+                                            <option value="Hindi">Hindi (Beta)</option>
+                                            <option value="Marathi">Marathi (Beta)</option>
+                                        </select>
+                                    </div>
+                                </section>
+                            </div>
+                        )}
+
+                        {activeTab === 'notifications' && (
+                            <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                                <section>
+                                    <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-[#9D174D]" />
+                                        Alert Configuration
+                                    </h3>
+                                    <div className="space-y-3">
+                                        {[
+                                            { id: 'push', label: 'Neural Push Alerts', desc: 'Real-time dashboard notifications for new leads', icon: 'bell' },
+                                            { id: 'email', label: 'SMTP Transmission', desc: 'Critical alerts and weekly intelligence reports via email', icon: 'mail' },
+                                            { id: 'whatsapp', label: 'Tactical WhatsApp', desc: 'Instant transmission of lead data to your mobile device', icon: 'whatsapp' }
+                                        ].map(item => (
+                                            <div key={item.id} className="group p-5 rounded-[2rem] bg-slate-50 hover:bg-white border border-transparent hover:border-rose-100 transition-all flex items-center justify-between">
+                                                <div className="flex items-center gap-5">
+                                                    <div className="h-10 w-10 rounded-2xl bg-white flex items-center justify-center text-slate-400 group-hover:text-[#9D174D] shadow-sm transition-colors">
+                                                        <Icon name={item.icon} size="xs" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{item.label}</p>
+                                                        <p className="text-[10px] font-bold text-slate-400 mt-1">{item.desc}</p>
+                                                    </div>
+                                                </div>
+                                                <button 
+                                                    onClick={() => handleNotificationToggle(item.id)}
+                                                    className={`w-12 h-6 rounded-full relative transition-all duration-500 ${
+                                                        settings.notifications[item.id] ? 'bg-[#9D174D] shadow-lg shadow-rose-100' : 'bg-slate-200'
+                                                    }`}
+                                                >
+                                                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-500 shadow-sm ${
+                                                        settings.notifications[item.id] ? 'left-7' : 'left-1'
+                                                    }`} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+                            </div>
+                        )}
+
+                        {activeTab === 'security' && (
+                            <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                                <section>
+                                    <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-[#9D174D]" />
+                                        Rotate Security Keys
+                                    </h3>
+                                    <form onSubmit={handlePasswordChange} className="space-y-6 max-w-md">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Current Password</label>
+                                            <input 
+                                                required
+                                                type="password" 
+                                                placeholder="••••••••"
+                                                value={passwordForm.currentPassword}
+                                                onChange={e => setPasswordForm({...passwordForm, currentPassword: e.target.value})}
+                                                className="w-full px-5 py-3.5 bg-slate-50 border-2 border-transparent rounded-2xl text-xs font-black focus:bg-white focus:border-rose-100 outline-none transition-all"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">New Security Phrase</label>
+                                            <input 
+                                                required
+                                                type="password" 
+                                                placeholder="••••••••"
+                                                value={passwordForm.newPassword}
+                                                onChange={e => setPasswordForm({...passwordForm, newPassword: e.target.value})}
+                                                className="w-full px-5 py-3.5 bg-slate-50 border-2 border-transparent rounded-2xl text-xs font-black focus:bg-white focus:border-rose-100 outline-none transition-all"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Confirm New Phrase</label>
+                                            <input 
+                                                required
+                                                type="password" 
+                                                placeholder="••••••••"
+                                                value={passwordForm.confirmPassword}
+                                                onChange={e => setPasswordForm({...passwordForm, confirmPassword: e.target.value})}
+                                                className="w-full px-5 py-3.5 bg-slate-50 border-2 border-transparent rounded-2xl text-xs font-black focus:bg-white focus:border-rose-100 outline-none transition-all"
+                                            />
+                                        </div>
+                                        <button 
+                                            disabled={isSaving}
+                                            type="submit"
+                                            className="w-full py-4 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:bg-[#9D174D] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            {isSaving ? 'Processing...' : 'Rotate Security Keys'}
+                                        </button>
+                                    </form>
+                                </section>
+
+                                <section className="pt-8 border-t-2 border-slate-50">
+                                    <div className="p-6 rounded-[2rem] bg-rose-50 border border-rose-100 flex items-center justify-between">
+                                        <div>
+                                            <p className="text-xs font-black text-rose-900 uppercase">{vendorState?.isActive ? 'Account Deactivation' : 'Account Reactivation'}</p>
+                                            <p className="text-[10px] font-bold text-rose-400 mt-1">{vendorState?.isActive ? 'Temporarily offline your business node' : 'Bring your business node back online'}</p>
+                                        </div>
+                                        <button 
+                                            onClick={handleDeactivate}
+                                            className="px-6 py-2.5 bg-rose-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-rose-700 transition-all shadow-lg shadow-rose-100"
+                                        >
+                                            {vendorState?.isActive ? 'Initialize' : 'Activate'}
+                                        </button>
+
+                                    </div>
+                                </section>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default VendorSettings;

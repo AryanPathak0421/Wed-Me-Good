@@ -24,8 +24,26 @@ const {
     changePassword,
     getAllBookings,
     getAnalytics,
-    getPayments
+    getPayments,
+    deleteVendor,
+    deleteUser,
+    getAllUsers,
+    getVendorLedger,
+    getPolicy,
+    updatePolicy,
+    getAllTickets,
+    updateTicketStatus,
+    replyToTicket,
+    deleteTicket,
+    getAllFAQs,
+    createFAQ,
+    updateFAQ,
+    deleteFAQ,
+    getSupportConfig,
+    updateSupportConfig
 } = require('./adminController');
+
+
 
 const router = express.Router();
 
@@ -33,13 +51,19 @@ const { protect, authorize } = require('../../middleware/auth.middleware');
 const { upload } = require('../../utils/cloudinary');
 
 // Public Category Route (for vendor registration)
+// Public Support Routes
 router.get('/categories', getAllCategories);
+router.get('/faqs', getAllFAQs);
+router.get('/support-config', getSupportConfig);
+
 
 // Protect all admin routes
 router.use(protect);
 router.use(authorize('admin'));
 
+
 router.get('/vendors', getAllVendors);
+router.get('/users', getAllUsers);
 router.put('/vendors/:id/status', updateVendorStatus);
 router.get('/stats', getStats);
 router.get('/subscription-plans', getAllSubscriptionPlans);
@@ -73,7 +97,33 @@ router.put('/profile/password', changePassword);
 
 // Admin Global Bookings
 router.get('/bookings', getAllBookings);
+router.get('/vendor-ledger', getVendorLedger);
 router.get('/analytics', getAnalytics);
 router.get('/payments', getPayments);
 
+// Admin Deletion Protocol
+router.delete('/vendors/:id', deleteVendor);
+router.delete('/users/:id', deleteUser);
+
+// Admin Legal Policy Management
+router.get('/policies/:type', getPolicy);
+router.put('/policies/:type', updatePolicy);
+
+// Admin Support Ticket Management
+router.get('/tickets', getAllTickets);
+router.put('/tickets/:id/status', updateTicketStatus);
+router.post('/tickets/:id/reply', replyToTicket);
+router.delete('/tickets/:id', deleteTicket);
+
+// Admin FAQ Management
+router.post('/faqs', createFAQ);
+router.put('/faqs/:id', updateFAQ);
+router.delete('/faqs/:id', deleteFAQ);
+
+// Admin Support Config
+router.put('/support-config', updateSupportConfig);
+
+
 module.exports = router;
+
+

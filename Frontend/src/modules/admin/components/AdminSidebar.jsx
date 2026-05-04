@@ -22,6 +22,9 @@ const navigation = [
         items: [
             { path: '/admin/verification', icon: 'shield', label: 'Verification Desk' },
             { path: '/admin/vendors', icon: 'user', label: 'Partners Console' },
+            { path: '/admin/vendor-ledger', icon: 'calendar', label: 'Partner Ledger' },
+            { path: '/admin/vendor-services', icon: 'sparkles', label: 'Service Index' },
+            { path: '/admin/vendor-portfolios', icon: 'image', label: 'Portfolio Gallery' },
             { path: '/admin/users', icon: 'users', label: 'Client Directory' },
             { path: '/admin/bookings', icon: 'calendar', label: 'Global Bookings' },
             { path: '/admin/reviews', icon: 'shield', label: 'Review Hub' },
@@ -34,6 +37,20 @@ const navigation = [
             { path: '/admin/banners', icon: 'sparkles', label: 'Banners' },
         ]
     },
+    {
+        title: 'Legal',
+        items: [
+            { path: '/admin/policies', icon: 'shield', label: 'Compliance' },
+        ]
+    },
+    {
+        title: 'Support',
+        items: [
+            { path: '/admin/support', icon: 'shield', label: 'Help & Support' },
+        ]
+    },
+
+
     {
         title: 'System',
         items: [

@@ -10,22 +10,76 @@ const VendorEarnings = () => {
     currency: 'INR'
   });
   const [loading, setLoading] = useState(true);
+  const [showBankModal, setShowBankModal] = useState(false);
+  const [bankDetails, setBankDetails] = useState({
+    accountName: '',
+    accountNumber: '',
+    ifsc: '',
+    upiId: ''
+  });
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState('');
 
   useEffect(() => {
     fetchEarnings();
   }, []);
 
   const fetchEarnings = async () => {
-    const token = localStorage.getItem('vendorToken');
-    const res = await vendorApi.getEarnings(token);
-    if (res.success) {
-      setEarnings(res.data);
+    try {
+      const token = localStorage.getItem('vendorToken');
+      const res = await vendorApi.getEarnings(token);
+      if (res.success) {
+        setEarnings(res.data);
+      }
+    } catch (err) {
+      console.error('Error fetching earnings:', err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
+  const handleBankUpdate = async (e) => {
+    e.preventDefault();
+    setIsSaving(true);
+    setSaveStatus('');
+    try {
+      const token = localStorage.getItem('vendorToken');
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/vendor/settings`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ bank: bankDetails })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSaveStatus('success');
+        setTimeout(() => {
+           setShowBankModal(false);
+           setSaveStatus('');
+        }, 2000);
+      } else {
+        setSaveStatus('error');
+      }
+    } catch (err) {
+      setSaveStatus('error');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <div className="animate-spin h-8 w-8 border-4 border-rose-400 border-t-transparent rounded-full"></div>
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Calculating your success...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-3 sm:space-y-4 max-w-7xl mx-auto">
+    <div className="space-y-3 sm:space-y-4 max-w-7xl mx-auto animate-in fade-in duration-500">
       {/* Compact Header */}
       <div className="vendor-surface rounded-xl p-4 sm:p-5 relative overflow-hidden bg-[#FDF2F8] border border-rose-100 shadow-sm">
         <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-10" style={{
@@ -45,16 +99,16 @@ const VendorEarnings = () => {
       {/* High Density Stats Grid */}
       <div className="grid gap-3 sm:grid-cols-3">
         {[
-          { label: 'Total Earnings', value: `₹${earnings.totalEarnings.toLocaleString()}`, sub: '+18% growth', icon: 'money', bg: '#FFF1F2', text: '#E11D48' },
-          { label: 'Pending Payout', value: `₹${earnings.pendingPayments.toLocaleString()}`, sub: 'Next 48h', icon: 'clock', bg: '#FFFBEB', text: '#D97706' },
-          { label: 'Commission', value: `₹${earnings.platformCommission.toLocaleString()}`, sub: '10% Flat', icon: 'chart', bg: '#F5F3FF', text: '#7C3AED' }
+          { label: 'Total Earnings', value: `₹${(earnings.totalEarnings || 0).toLocaleString()}`, sub: 'Lifetime Profit', icon: 'money', bg: '#FFF1F2', text: '#E11D48' },
+          { label: 'Pending Payout', value: `₹${(earnings.pendingPayments || 0).toLocaleString()}`, sub: 'In Processing', icon: 'clock', bg: '#FFFBEB', text: '#D97706' },
+          { label: 'Platform Fee', value: `₹${(earnings.platformCommission || 0).toLocaleString()}`, sub: '10% Service Charge', icon: 'chart', bg: '#F5F3FF', text: '#7C3AED' }
         ].map((stat) => (
           <div key={stat.label} className="vendor-surface rounded-2xl p-4 border border-black/5 shadow-sm transition-all hover:scale-[1.01]" style={{ backgroundColor: stat.bg }}>
             <div className="flex items-center justify-between mb-3">
               <div className="h-8 w-8 rounded-lg bg-white/60 flex items-center justify-center shadow-sm" style={{ color: stat.text }}>
                 <Icon name={stat.icon} size="xs" />
               </div>
-              <span className="text-[8px] font-black uppercase tracking-widest text-slate-900/20">Active</span>
+              <span className="text-[8px] font-black uppercase tracking-widest text-slate-900/20">Realtime</span>
             </div>
             <div>
               <p className="text-[9px] font-black text-slate-900/40 uppercase tracking-widest mb-0.5">{stat.label}</p>
@@ -68,43 +122,104 @@ const VendorEarnings = () => {
         ))}
       </div>
 
-      {/* Compact Payout Schedule */}
-      <div className="vendor-surface rounded-2xl p-4 sm:p-5 bg-[#F0F9FF] border border-blue-100 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-           <div className="flex items-center gap-2">
-              <div className="h-7 w-7 rounded-lg bg-white flex items-center justify-center text-blue-500 shadow-sm">
-                <Icon name="calendar" size="xs" />
-              </div>
-              <h3 className="text-xs font-black text-slate-900 uppercase tracking-tight">Payout Schedule</h3>
-           </div>
-           <button className="text-[9px] font-black text-blue-600 uppercase tracking-widest bg-white/40 px-3 py-1 rounded-lg border border-blue-50 hover:bg-white transition-all">History</button>
-        </div>
-        
-        <div className="space-y-2">
-          {[
-            { title: 'Advance Payment', date: 'Apr 15', amount: '₹12,450', status: 'Completed' },
-            { title: 'Final Settlement', date: 'May 20', amount: '₹45,000', status: 'Scheduled' }
-          ].map((item, i) => (
-            <div key={i} className="flex items-center justify-between bg-white/40 rounded-xl p-3 border border-blue-50 transition-all hover:bg-white/60">
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-lg bg-blue-500 text-white flex items-center justify-center text-[10px] font-black shadow-md shadow-blue-100">
-                  {i + 1}
-                </div>
-                <div>
-                   <span className="text-xs font-black text-slate-900 uppercase tracking-tight block leading-none">{item.title}</span>
-                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1 block">{item.date}</span>
-                </div>
-              </div>
-              <div className="flex flex-col items-end gap-1">
-                 <span className="text-sm font-black text-slate-900 tracking-tight">{item.amount}</span>
-                 <span className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-md border ${item.status === 'Completed' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-blue-50 text-blue-600 border-blue-100'}`}>
-                    {item.status}
-                 </span>
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* Info Card */}
+      <div className="vendor-surface rounded-2xl p-6 bg-slate-900 text-white border border-slate-800 shadow-xl relative overflow-hidden">
+         <div className="absolute top-0 right-0 p-8 opacity-10">
+            <Icon name="chart" size="3xl" />
+         </div>
+         <div className="relative z-10">
+            <h3 className="text-sm font-black uppercase tracking-widest mb-2">Payout Policy</h3>
+            <p className="text-xs text-slate-400 font-medium leading-relaxed max-w-md">
+               Earnings are processed every Tuesday. A standard 10% platform commission is deducted from each successful booking. Ensure your bank details are verified in the profile section to avoid payment delays.
+            </p>
+            <button 
+               onClick={() => setShowBankModal(true)}
+               className="mt-6 bg-rose-500 hover:bg-rose-600 text-white text-[10px] font-black uppercase tracking-widest px-6 py-3 rounded-xl transition-all active:scale-95 shadow-lg shadow-rose-900/20"
+            >
+               Verify Bank Account
+            </button>
+         </div>
       </div>
+
+      {/* Bank Verification Modal */}
+      {showBankModal && (
+         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+            <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl border border-slate-100 animate-in zoom-in-95 duration-300">
+               <div className="p-6 border-b border-slate-50 flex items-center justify-between">
+                  <h3 className="text-xs font-black uppercase tracking-widest text-slate-900">Verify Bank Account</h3>
+                  <button onClick={() => setShowBankModal(false)} className="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-all">
+                     <Icon name="plus" className="rotate-45" size="xs" />
+                  </button>
+               </div>
+               <form onSubmit={handleBankUpdate} className="p-6 space-y-4">
+                  <div className="space-y-1.5">
+                     <label className="text-[9px] font-black uppercase tracking-widest text-slate-400">Account Holder Name</label>
+                     <input 
+                        required
+                        type="text" 
+                        value={bankDetails.accountName}
+                        onChange={(e) => setBankDetails({...bankDetails, accountName: e.target.value})}
+                        className="w-full h-11 rounded-xl bg-slate-50 border-0 px-4 text-[11px] font-bold focus:ring-1 ring-rose-200 transition-all"
+                        placeholder="e.g. John Doe"
+                     />
+                  </div>
+                  <div className="space-y-1.5">
+                     <label className="text-[9px] font-black uppercase tracking-widest text-slate-400">Account Number</label>
+                     <input 
+                        required
+                        type="text" 
+                        value={bankDetails.accountNumber}
+                        onChange={(e) => setBankDetails({...bankDetails, accountNumber: e.target.value})}
+                        className="w-full h-11 rounded-xl bg-slate-50 border-0 px-4 text-[11px] font-bold focus:ring-1 ring-rose-200 transition-all"
+                        placeholder="0000 0000 0000"
+                     />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                     <div className="space-y-1.5">
+                        <label className="text-[9px] font-black uppercase tracking-widest text-slate-400">IFSC Code</label>
+                        <input 
+                           required
+                           type="text" 
+                           value={bankDetails.ifsc}
+                           onChange={(e) => setBankDetails({...bankDetails, ifsc: e.target.value.toUpperCase()})}
+                           className="w-full h-11 rounded-xl bg-slate-50 border-0 px-4 text-[11px] font-bold focus:ring-1 ring-rose-200 transition-all"
+                           placeholder="SBIN0000..."
+                        />
+                     </div>
+                     <div className="space-y-1.5">
+                        <label className="text-[9px] font-black uppercase tracking-widest text-slate-400">UPI ID (Optional)</label>
+                        <input 
+                           type="text" 
+                           value={bankDetails.upiId}
+                           onChange={(e) => setBankDetails({...bankDetails, upiId: e.target.value})}
+                           className="w-full h-11 rounded-xl bg-slate-50 border-0 px-4 text-[11px] font-bold focus:ring-1 ring-rose-200 transition-all"
+                           placeholder="name@upi"
+                        />
+                     </div>
+                  </div>
+
+                  <div className="pt-4">
+                     {saveStatus === 'success' ? (
+                        <div className="w-full h-12 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-[11px] font-black uppercase tracking-widest animate-in slide-in-from-bottom-2">
+                           Verification Initiated!
+                        </div>
+                     ) : (
+                        <button 
+                           disabled={isSaving}
+                           type="submit"
+                           className="w-full h-12 bg-[#9D174D] hover:bg-[#831843] text-white rounded-xl text-[11px] font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                        >
+                           {isSaving ? 'Connecting to Node...' : 'Submit for Verification'}
+                        </button>
+                     )}
+                     {saveStatus === 'error' && (
+                        <p className="text-[9px] font-bold text-rose-500 text-center mt-2 uppercase">Packet delivery failed. Try again.</p>
+                     )}
+                  </div>
+               </form>
+            </div>
+         </div>
+      )}
     </div>
   );
 };

@@ -1,268 +1,252 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useVendorState } from '../useVendorState';
+import { vendorApi } from '../vendorApi';
 import Icon from '../../../components/ui/Icon';
 
 const VendorPortfolio = () => {
-  const { vendorState, updateVendorState } = useVendorState();
+  const { vendorState, refreshData } = useVendorState();
+  const [portfolio, setPortfolio] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [newItem, setNewItem] = useState({
     title: '',
-    tag: 'Decor',
-    type: 'Image',
+    tag: 'Wedding',
+    type: 'Photo',
     url: ''
   });
 
-  // Fallback sample data if portfolio is empty
-  const samplePortfolio = [
-    {
-      id: 'p1',
-      url: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80',
-      title: 'Grand Palace Decor',
-      tag: 'Wedding',
-      type: 'Image'
-    },
-    {
-      id: 'p2',
-      url: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=800&q=80',
-      title: 'Elegant Reception Hall',
-      tag: 'Reception',
-      type: 'Image'
-    },
-    {
-      id: 'p3',
-      url: 'https://www.w3schools.com/html/mov_bbb.mp4',
-      title: 'Cinematic Highlights',
-      tag: 'Video',
-      type: 'Video'
+  useEffect(() => {
+    if (vendorState.portfolio) {
+      setPortfolio(vendorState.portfolio);
+      setLoading(false);
+    } else {
+      // If not in global state, it might still be loading or needs a refresh
+      const fetchProfile = async () => {
+        const token = localStorage.getItem('vendorToken');
+        const res = await vendorApi.getProfile(token);
+        if (res.success) {
+          setPortfolio(res.data.portfolio || []);
+        }
+        setLoading(false);
+      };
+      fetchProfile();
     }
-  ];
+  }, [vendorState.portfolio]);
 
-  const portfolio = vendorState.portfolio?.length > 0 ? vendorState.portfolio : samplePortfolio;
+  const handleImageUpload = async (file) => {
+    setIsUploading(true);
+    try {
+      const token = localStorage.getItem('vendorToken');
+      const res = await vendorApi.uploadMedia(file, token);
+      if (res.success) {
+        setNewItem(prev => ({ ...prev, url: res.url }));
+      }
+    } catch (err) {
+      console.error('Upload failed:', err);
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
-  const handleUpload = (e) => {
+  const handleSavePortfolio = async (e) => {
     e.preventDefault();
     if (!newItem.title || !newItem.url) return;
 
-    const itemToAdd = {
-      ...newItem,
-      id: Date.now().toString()
-    };
-
-    updateVendorState({
-      portfolio: [...(vendorState.portfolio || []), itemToAdd]
-    });
-
-    setNewItem({ title: '', tag: 'Decor', type: 'Image', url: '' });
-    setIsModalOpen(false);
+    const updatedPortfolio = [...portfolio, { ...newItem }];
+    
+    try {
+      const token = localStorage.getItem('vendorToken');
+      const res = await vendorApi.updatePortfolio(updatedPortfolio, token);
+      if (res.success) {
+        setPortfolio(res.data);
+        setIsModalOpen(false);
+        setNewItem({ title: '', tag: 'Wedding', type: 'Photo', url: '' });
+        refreshData();
+      }
+    } catch (err) {
+      console.error('Failed to save portfolio:', err);
+    }
   };
 
-  const removeItem = (id) => {
-    const updated = (vendorState.portfolio || []).filter(item => item.id !== id);
-    updateVendorState({ portfolio: updated });
+  const removeItem = async (index) => {
+    const updatedPortfolio = portfolio.filter((_, i) => i !== index);
+    try {
+      const token = localStorage.getItem('vendorToken');
+      const res = await vendorApi.updatePortfolio(updatedPortfolio, token);
+      if (res.success) {
+        setPortfolio(res.data);
+        refreshData();
+      }
+    } catch (err) {
+      console.error('Failed to remove item:', err);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <div className="animate-spin h-8 w-8 border-4 border-rose-400 border-t-transparent rounded-full"></div>
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Exhibiting your work...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Header Card */}
-      <div className="vendor-surface rounded-xl p-3 sm:p-5 relative overflow-hidden bg-[#FDF2F8] border border-rose-100">
+      {/* Header */}
+      <div className="vendor-surface rounded-xl p-4 sm:p-6 relative overflow-hidden bg-[#FDF2F8] border border-rose-100 shadow-sm">
         <div className="absolute -top-20 -right-20 w-44 h-44 rounded-full opacity-15" style={{
-          background: 'radial-gradient(circle, #D28A8C, transparent 70%)'
+          background: 'radial-gradient(circle, #ed648f, transparent 70%)'
         }}></div>
-        <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 relative z-10">
+        <div className="flex flex-wrap items-center justify-between gap-4 relative z-10">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#D28A8C]">Showcase</p>
-            <h2 className="text-lg sm:text-xl font-bold text-slate-900 mt-0.5">Portfolio & Media</h2>
-            <p className="text-[11px] sm:text-xs font-medium text-slate-500 mt-0.5">High-quality work attracts 3x more bookings.</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#ed648f]">Showcase</p>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1">Portfolio & Media</h2>
+            <p className="text-xs font-bold text-slate-500 mt-1">Stunning visuals attract 3x more premium clients.</p>
           </div>
           <button 
-            type="button" 
-            className="vendor-cta rounded-lg px-4 sm:px-6 py-2 sm:py-2.5 text-[11px] sm:text-xs font-bold tracking-wide active:scale-95 transition-all flex items-center gap-2"
             onClick={() => setIsModalOpen(true)}
+            className="vendor-cta rounded-xl px-6 py-3 text-xs font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-rose-100 active:scale-95 transition-all"
           >
-            <Icon name="plus" size="xs" /> Upload media
+            <Icon name="plus" size="xs" /> Add Work
           </button>
         </div>
       </div>
 
-      {/* Stats Mini Row */}
-      <div className="grid grid-cols-3 gap-3">
-        {[
-          { label: 'Total Items', value: portfolio.length, bg: '#FDF2F8', border: '#FCE7F3' },
-          { label: 'Verified', value: '100%', bg: '#F0FDF4', border: '#DCFCE7' },
-          { label: 'Storage', value: '15%', bg: '#FFFBEB', border: '#FEF3C7' }
-        ].map((stat, i) => (
-          <div key={i} className="vendor-surface rounded-xl p-2 sm:p-3 border shadow-none flex flex-col items-center justify-center text-center" style={{ background: stat.bg, borderColor: stat.border }}>
-            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter mb-0.5">{stat.label}</p>
-            <p className="text-sm sm:text-lg font-black text-slate-900 tracking-tight">{stat.value}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Portfolio Grid */}
-      <div className="grid gap-3 sm:gap-4 grid-cols-2 xl:grid-cols-3 pb-10">
-        {portfolio.map((item, i) => (
+      {/* Grid */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {portfolio.length === 0 ? (
           <div 
-            key={item.id} 
-            className="vendor-surface rounded-xl overflow-hidden group cursor-pointer transition-all duration-300 hover:shadow-xl hover:translate-y-[-4px] border border-white/50 relative"
-            style={{ animationDelay: `${i * 0.08}s` }}
+            className="col-span-full vendor-surface rounded-2xl p-20 text-center bg-slate-50 border border-dashed border-slate-200 cursor-pointer group"
+            onClick={() => setIsModalOpen(true)}
           >
-            <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
-              {item.type === 'Video' || item.url.includes('.mp4') || item.url.includes('data:video') ? (
-                <video 
-                  src={item.url} 
-                  className="absolute inset-0 h-full w-full object-cover"
-                  muted
-                  onMouseOver={e => e.target.play()}
-                  onMouseOut={e => { e.target.pause(); e.target.currentTime = 0; }}
-                />
-              ) : (
-                <img 
-                  src={item.url} 
-                  alt={item.title} 
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                />
-              )}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent flex items-end p-2.5">
-                <div className="flex w-full items-center justify-between">
-                   <div className="text-white">
-                      <p className="text-[10px] font-bold uppercase tracking-wider opacity-80">{item.tag}</p>
-                      <p className="text-xs font-bold leading-tight truncate max-w-[120px]">{item.title}</p>
-                   </div>
-                   <button 
-                    onClick={(e) => { e.stopPropagation(); removeItem(item.id); }}
-                    className="h-7 w-7 rounded-lg bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-rose-500 transition-colors"
-                   >
-                     <Icon name="close" size="xs" />
-                   </button>
-                </div>
-              </div>
+            <div className="flex justify-center mb-4 text-slate-300 group-hover:scale-110 transition-transform">
+              <Icon name="image" size="3xl" color="current" />
             </div>
-            <div className="p-2 sm:p-3 bg-white">
-              <div className="flex items-center justify-between">
-                <p className="text-xs font-bold text-slate-900 truncate">{item.title}</p>
-                <div className="flex items-center gap-1">
-                  <span className="text-[8px] font-black uppercase px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-500">{item.type}</span>
-                </div>
-              </div>
+            <p className="text-sm font-black text-slate-400 uppercase tracking-widest">No Portfolio Items</p>
+            <p className="text-xs font-bold text-slate-300 mt-1">Upload your best work to get started.</p>
+          </div>
+        ) : (
+          portfolio.map((item, index) => (
+            <div key={index} className="vendor-surface rounded-2xl overflow-hidden group border border-slate-100 shadow-sm relative">
+               <div className="aspect-[4/3] bg-slate-100 relative overflow-hidden">
+                  {item.type === 'Video' ? (
+                    <video src={item.url} className="w-full h-full object-cover" />
+                  ) : (
+                    <img src={item.url} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                     <button 
+                       onClick={() => removeItem(index)}
+                       className="absolute top-3 right-3 h-8 w-8 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg active:scale-90 transition-all"
+                     >
+                        <Icon name="close" size="xs" />
+                     </button>
+                     <p className="text-[10px] font-black text-white uppercase tracking-widest opacity-70">{item.tag}</p>
+                     <p className="text-xs font-black text-white uppercase">{item.title}</p>
+                  </div>
+               </div>
+               <div className="p-3 bg-white flex items-center justify-between">
+                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{item.type}</span>
+                  <div className="h-2 w-2 rounded-full bg-emerald-400"></div>
+               </div>
             </div>
-          </div>
-        ))}
-
-        {/* Empty State / Add Card */}
-        <div 
-          className="vendor-surface rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center p-6 bg-slate-50/50 hover:bg-slate-50 transition-colors cursor-pointer group"
-          onClick={() => setIsModalOpen(true)}
-        >
-          <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:scale-110 transition-transform">
-            <Icon name="plus" size="md" />
-          </div>
-          <p className="text-xs font-bold text-slate-500 mt-2">Add New Work</p>
-        </div>
+          ))
+        )}
       </div>
 
-      {/* Upload Modal */}
+      {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
-          <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 overflow-hidden animate-in fade-in zoom-in duration-300">
-             <div className="flex items-center justify-between mb-6">
+          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-6 sm:p-8 overflow-hidden animate-in fade-in zoom-in duration-300">
+             <div className="flex items-center justify-between mb-8">
                 <div>
-                  <h3 className="text-lg font-black text-slate-900 tracking-tight">Upload New Media</h3>
-                  <p className="text-xs font-bold text-slate-500">Add a stunning project to your portfolio</p>
+                  <h3 className="text-xl font-black text-slate-900 tracking-tight">New Showcase</h3>
+                  <p className="text-xs font-bold text-slate-500">Add a stunning piece to your gallery</p>
                 </div>
-                <button onClick={() => setIsModalOpen(false)} className="h-8 w-8 rounded-full hover:bg-slate-100 flex items-center justify-center transition-colors">
-                  <Icon name="close" size="sm" />
+                <button onClick={() => setIsModalOpen(false)} className="h-9 w-9 rounded-full bg-slate-100 flex items-center justify-center hover:bg-rose-50 hover:text-rose-500 transition-all">
+                   <Icon name="close" size="sm" />
                 </button>
              </div>
 
-             <form onSubmit={handleUpload} className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Project Title</label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Dreamy Garden Wedding"
-                    className="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold focus:outline-none focus:border-rose-400 focus:ring-4 focus:ring-rose-400/10 transition-all"
-                    value={newItem.title}
-                    onChange={(e) => setNewItem({ ...newItem, title: e.target.value })}
-                  />
+             <form onSubmit={handleSavePortfolio} className="space-y-6">
+                <div className="space-y-2">
+                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Title</label>
+                   <input 
+                     type="text" 
+                     className="w-full h-12 px-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-black focus:outline-none focus:border-rose-400"
+                     placeholder="e.g. Dreamy Garden Wedding"
+                     value={newItem.title}
+                     onChange={(e) => setNewItem({ ...newItem, title: e.target.value })}
+                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                   <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Category</label>
+                   <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Type</label>
                       <select 
-                        className="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold focus:outline-none focus:border-rose-400 transition-all"
-                        value={newItem.tag}
-                        onChange={(e) => setNewItem({ ...newItem, tag: e.target.value })}
-                      >
-                        <option>Wedding</option>
-                        <option>Decor</option>
-                        <option>Reception</option>
-                        <option>Pre-Wedding</option>
-                        <option>Other</option>
-                      </select>
-                   </div>
-                   <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Media Type</label>
-                      <select 
-                        className="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold focus:outline-none focus:border-rose-400 transition-all"
+                        className="w-full h-12 px-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-black focus:outline-none focus:border-rose-400"
                         value={newItem.type}
                         onChange={(e) => setNewItem({ ...newItem, type: e.target.value })}
                       >
-                        <option>Image</option>
-                        <option>Video Link</option>
+                         <option value="Photo">Photo</option>
+                         <option value="Video">Video</option>
+                      </select>
+                   </div>
+                   <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tag</label>
+                      <select 
+                        className="w-full h-12 px-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-black focus:outline-none focus:border-rose-400"
+                        value={newItem.tag}
+                        onChange={(e) => setNewItem({ ...newItem, tag: e.target.value })}
+                      >
+                         <option>Wedding</option>
+                         <option>Reception</option>
+                         <option>Pre-Wedding</option>
+                         <option>Corporate</option>
+                         <option>Other</option>
                       </select>
                    </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Upload Media</label>
-                  <div className="relative group">
-                    <div className="w-full min-h-[140px] border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 hover:bg-slate-100/50 hover:border-rose-300 transition-all cursor-pointer flex flex-col items-center justify-center p-4 relative overflow-hidden">
+                <div className="space-y-2">
+                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Media</label>
+                   <div className="relative h-40 w-full bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200 overflow-hidden group cursor-pointer">
                       {newItem.url ? (
-                        <div className="absolute inset-0 group/preview bg-black">
-                          {newItem.type === 'Video' || (newItem.url && newItem.url.startsWith('data:video')) ? (
-                             <video src={newItem.url} className="w-full h-full object-contain" autoPlay muted loop />
-                          ) : (
+                        <div className="absolute inset-0">
+                           {newItem.type === 'Video' ? (
+                             <video src={newItem.url} className="w-full h-full object-cover" />
+                           ) : (
                              <img src={newItem.url} alt="Preview" className="w-full h-full object-cover" />
-                          )}
-                          <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover/preview:opacity-100 transition-opacity flex items-center justify-center">
-                            <p className="text-[10px] font-bold text-white uppercase tracking-widest">Change Media</p>
-                          </div>
+                           )}
+                           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <p className="text-[10px] font-black text-white uppercase tracking-widest">Change</p>
+                           </div>
                         </div>
                       ) : (
-                        <>
-                          <div className="h-10 w-10 rounded-full bg-white shadow-sm flex items-center justify-center text-rose-400 mb-2">
-                             <Icon name={newItem.type === 'Video' ? 'video' : 'image'} size="sm" />
-                          </div>
-                          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Click to Upload {newItem.type}</p>
-                          <p className="text-[9px] font-medium text-slate-400 mt-1">Images or MP4 Videos</p>
-                        </>
+                        <div className="h-full flex flex-col items-center justify-center text-slate-400">
+                           <Icon name={newItem.type === 'Video' ? 'video' : 'image'} size="lg" />
+                           <p className="text-[10px] font-black uppercase tracking-widest mt-2">{isUploading ? 'Uploading...' : 'Click to upload'}</p>
+                        </div>
                       )}
                       <input 
                         type="file" 
-                        accept={newItem.type === 'Video' ? 'video/mp4,video/x-m4v,video/*' : 'image/*'}
+                        accept={newItem.type === 'Video' ? 'video/*' : 'image/*'}
                         className="absolute inset-0 opacity-0 cursor-pointer"
-                        onChange={(e) => {
-                          const file = e.target.files[0];
-                          if (file) {
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                              setNewItem({ ...newItem, url: reader.result });
-                            };
-                            reader.readAsDataURL(file);
-                          }
-                        }}
+                        onChange={(e) => handleImageUpload(e.target.files[0])}
                       />
-                    </div>
-                  </div>
+                   </div>
                 </div>
 
-                <div className="pt-2">
-                   <button type="submit" className="w-full vendor-cta h-11 rounded-lg text-xs font-black uppercase tracking-widest shadow-lg shadow-rose-200">
-                      Confirm Upload
-                   </button>
-                </div>
+                <button 
+                  type="submit"
+                  disabled={isUploading || !newItem.url || !newItem.title}
+                  className="w-full vendor-cta h-14 rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-rose-200 active:scale-95 transition-all disabled:opacity-50"
+                >
+                   {isUploading ? 'Processing...' : 'Add to Portfolio'}
+                </button>
              </form>
           </div>
         </div>

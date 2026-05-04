@@ -1,6 +1,12 @@
 const Vendor = require('../vendor/Vendor');
 const User = require('../user/user.model');
 const SubscriptionPlan = require('./SubscriptionPlan');
+const Policy = require('./Policy');
+const SupportTicket = require('../vendor/SupportTicket');
+const FAQ = require('./FAQ');
+const SupportConfig = require('./SupportConfig');
+
+
 
 // @desc    Get all subscription plans
 // @route   GET /api/admin/subscription-plans
@@ -174,6 +180,18 @@ const createAdminLog = async ({ user, action, target, level, ip, adminId }) => {
     }
 };
 
+// @desc    Get all users
+// @route   GET /api/admin/users
+// @access  Private/Admin
+exports.getAllUsers = async (req, res, next) => {
+    try {
+        const users = await User.find().sort('-createdAt');
+        res.status(200).json({ success: true, data: users });
+    } catch (err) {
+        next(err);
+    }
+};
+
 // @desc    Get all audit logs
 // @route   GET /api/admin/logs
 // @access  Private/Admin
@@ -215,12 +233,14 @@ exports.getAllBanners = async (req, res, next) => {
 // @access  Private/Admin
 exports.createBanner = async (req, res, next) => {
     try {
+        console.log('Incoming Banner Data:', req.body);
+        console.log('Incoming Banner File:', req.file);
         const bannerData = { ...req.body };
         if (req.file) {
             bannerData.imageUrl = req.file.path; // Cloudinary URL
         }
         const banner = await Banner.create(bannerData);
-        
+
         // Log action
         await createAdminLog({
             user: req.user?.fullName || 'Admin',
@@ -434,7 +454,7 @@ exports.changePassword = async (req, res, next) => {
         }
 
         const admin = await User.findById(req.user.id);
-        
+
         // Verify current password
         const isMatch = await admin.matchPassword(currentPassword);
         if (!isMatch) {
@@ -453,6 +473,8 @@ exports.changePassword = async (req, res, next) => {
 
 // @desc    Get all bookings
 // @route   GET /api/admin/bookings
+// @desc    Get all bookings
+// @route   GET /api/admin/bookings
 // @access  Private/Admin
 exports.getAllBookings = async (req, res, next) => {
     try {
@@ -466,6 +488,41 @@ exports.getAllBookings = async (req, res, next) => {
             success: true,
             count: bookings.length,
             data: bookings
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Get detailed vendor ledger (Vendors with their bookings)
+// @route   GET /api/admin/vendor-ledger
+// @access  Private/Admin
+exports.getVendorLedger = async (req, res, next) => {
+    try {
+        const Vendor = require('../vendor/Vendor');
+        const Booking = require('../vendor/Booking');
+
+        const vendors = await Vendor.find().select('businessName fullName email phone portfolio category city status');
+        const bookings = await Booking.find().populate('userId', 'fullName email');
+
+        const ledger = vendors.map(vendor => {
+            const vendorBookings = bookings.filter(b =>
+                (b.vendorId && b.vendorId.toString() === vendor._id.toString())
+            );
+            const totalRevenue = vendorBookings.reduce((acc, b) => acc + (b.totalPrice || 0), 0);
+
+            return {
+                ...vendor._doc,
+                bookings: vendorBookings,
+                bookingCount: vendorBookings.length,
+                totalRevenue
+            };
+        });
+
+        res.status(200).json({
+            success: true,
+            count: ledger.length,
+            data: ledger
         });
     } catch (err) {
         next(err);
@@ -516,14 +573,14 @@ exports.getAnalytics = async (req, res, next) => {
         const Booking = require('../vendor/Booking');
         const Vendor = require('../vendor/Vendor');
         const User = require('../user/user.model');
-        
+
         // 1. Revenue Trajectory (Last 15 days)
         const trajectory = [];
         for (let i = 14; i >= 0; i--) {
             const date = new Date();
             date.setDate(date.getDate() - i);
-            const start = new Date(date.setHours(0,0,0,0));
-            const end = new Date(date.setHours(23,59,59,999));
+            const start = new Date(date.setHours(0, 0, 0, 0));
+            const end = new Date(date.setHours(23, 59, 59, 999));
 
             const dayBookings = await Booking.find({
                 createdAt: { $gte: start, $lte: end },
@@ -593,7 +650,7 @@ exports.getAnalytics = async (req, res, next) => {
 exports.getPayments = async (req, res, next) => {
     try {
         const Booking = require('../vendor/Booking');
-        
+
         const bookings = await Booking.find()
             .populate('vendorId', 'businessName')
             .sort('-createdAt');
@@ -631,3 +688,285 @@ exports.getPayments = async (req, res, next) => {
         next(err);
     }
 };
+// @desc    Delete vendor
+// @route   DELETE /api/admin/vendors/:id
+// @access  Private/Admin
+exports.deleteVendor = async (req, res, next) => {
+    try {
+        const vendor = await Vendor.findById(req.params.id);
+        if (!vendor) {
+            return res.status(404).json({ success: false, message: 'Vendor not found' });
+        }
+
+        await vendor.deleteOne();
+
+        // Log action
+        await createAdminLog({
+            user: req.user?.fullName || 'Admin',
+            adminId: req.user?.id,
+            action: `Deleted vendor: ${vendor.businessName}`,
+            target: 'Vendors',
+            level: 'Warning',
+            ip: req.ip || 'Local'
+        });
+
+        res.status(200).json({ success: true, message: 'Vendor removed' });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Delete user
+// @route   DELETE /api/admin/users/:id
+// @access  Private/Admin
+exports.deleteUser = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        await user.deleteOne();
+
+        // Log action
+        await createAdminLog({
+            user: req.user?.fullName || 'Admin',
+            adminId: req.user?.id,
+            action: `Deleted user: ${user.fullName}`,
+            target: 'Users',
+            level: 'Warning',
+            ip: req.ip || 'Local'
+        });
+
+        res.status(200).json({ success: true, message: 'User removed' });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Get policy by type
+// @route   GET /api/admin/policies/:type
+// @access  Private/Admin
+exports.getPolicy = async (req, res, next) => {
+    try {
+        const { type } = req.params;
+        let policy = await Policy.findOne({ type });
+
+        if (!policy) {
+            // Create default policy if it doesn't exist
+            const defaults = {
+                'privacy-policy': { title: 'Privacy Policy', content: 'Initial Privacy Policy content.' },
+                'terms-conditions': { title: 'Terms & Conditions', content: 'Initial Terms & Conditions content.' }
+            };
+
+            if (defaults[type]) {
+                policy = await Policy.create({
+                    type,
+                    title: defaults[type].title,
+                    content: defaults[type].content
+                });
+            } else {
+                return res.status(400).json({ success: false, message: 'Invalid policy type' });
+            }
+        }
+
+        res.status(200).json({
+            success: true,
+            data: policy
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Update policy by type
+// @route   PUT /api/admin/policies/:type
+// @access  Private/Admin
+exports.updatePolicy = async (req, res, next) => {
+    try {
+        const { type } = req.params;
+        const { content, title } = req.body;
+
+        const policy = await Policy.findOneAndUpdate(
+            { type },
+            { content, title, lastUpdated: Date.now() },
+            { new: true, runValidators: true, upsert: true }
+        );
+
+        // Log action
+        await createAdminLog({
+            user: req.user?.fullName || 'Admin',
+            adminId: req.user?.id,
+            action: `Updated legal document: ${policy.title}`,
+            target: 'Legal',
+            level: 'Info',
+            ip: req.ip || 'Local'
+        });
+
+        res.status(200).json({
+            success: true,
+            data: policy
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Get all support tickets
+// @route   GET /api/admin/tickets
+// @access  Private/Admin
+exports.getAllTickets = async (req, res, next) => {
+    try {
+        const tickets = await SupportTicket.find()
+            .populate('vendorId', 'businessName email')
+            .sort('-createdAt');
+        res.status(200).json({ success: true, data: tickets });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Update ticket status
+// @route   PUT /api/admin/tickets/:id/status
+// @access  Private/Admin
+exports.updateTicketStatus = async (req, res, next) => {
+    try {
+        const { status } = req.body;
+        const ticket = await SupportTicket.findByIdAndUpdate(req.params.id, { status }, { new: true });
+        if (!ticket) {
+            return res.status(404).json({ success: false, message: 'Ticket not found' });
+        }
+        res.status(200).json({ success: true, data: ticket });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Reply to ticket
+// @route   POST /api/admin/tickets/:id/reply
+// @access  Private/Admin
+exports.replyToTicket = async (req, res, next) => {
+    try {
+        const { message } = req.body;
+        const ticket = await SupportTicket.findById(req.params.id);
+        if (!ticket) {
+            return res.status(404).json({ success: false, message: 'Ticket not found' });
+        }
+
+        ticket.replies.push({
+            senderId: req.user.id,
+            senderRole: 'Admin',
+            message
+        });
+
+        if (ticket.status === 'Open') {
+            ticket.status = 'In-Progress';
+        }
+
+        await ticket.save();
+
+        res.status(200).json({ success: true, data: ticket });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Delete ticket
+// @route   DELETE /api/admin/tickets/:id
+// @access  Private/Admin
+exports.deleteTicket = async (req, res, next) => {
+    try {
+        const ticket = await SupportTicket.findByIdAndDelete(req.params.id);
+        if (!ticket) {
+            return res.status(404).json({ success: false, message: 'Ticket not found' });
+        }
+        res.status(200).json({ success: true, message: 'Ticket purged' });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Get all FAQs
+// @route   GET /api/admin/faqs
+// @access  Public/Admin
+exports.getAllFAQs = async (req, res, next) => {
+    try {
+        const faqs = await FAQ.find().sort('order');
+        res.status(200).json({ success: true, data: faqs });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Create FAQ
+// @route   POST /api/admin/faqs
+// @access  Private/Admin
+exports.createFAQ = async (req, res, next) => {
+    try {
+        const faq = await FAQ.create(req.body);
+        res.status(201).json({ success: true, data: faq });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Update FAQ
+// @route   PUT /api/admin/faqs/:id
+// @access  Private/Admin
+exports.updateFAQ = async (req, res, next) => {
+    try {
+        const faq = await FAQ.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+        if (!faq) return res.status(404).json({ success: false, message: 'FAQ not found' });
+        res.status(200).json({ success: true, data: faq });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Delete FAQ
+// @route   DELETE /api/admin/faqs/:id
+// @access  Private/Admin
+exports.deleteFAQ = async (req, res, next) => {
+    try {
+        const faq = await FAQ.findByIdAndDelete(req.params.id);
+        if (!faq) return res.status(404).json({ success: false, message: 'FAQ not found' });
+        res.status(200).json({ success: true, message: 'FAQ deleted' });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Get support config
+// @route   GET /api/admin/support-config
+// @access  Public/Admin
+exports.getSupportConfig = async (req, res, next) => {
+    try {
+        let config = await SupportConfig.findOne();
+        if (!config) {
+            config = await SupportConfig.create({});
+        }
+        res.status(200).json({ success: true, data: config });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Update support config
+// @route   PUT /api/admin/support-config
+// @access  Private/Admin
+exports.updateSupportConfig = async (req, res, next) => {
+    try {
+        let config = await SupportConfig.findOne();
+        if (!config) {
+            config = await SupportConfig.create(req.body);
+        } else {
+            config = await SupportConfig.findOneAndUpdate({}, req.body, { new: true, runValidators: true });
+        }
+        res.status(200).json({ success: true, data: config });
+    } catch (err) {
+        next(err);
+    }
+};
+
+
+

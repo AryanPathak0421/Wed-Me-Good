@@ -12,6 +12,15 @@ export const adminApi = {
         return await res.json();
     },
 
+    getUsers: async (token) => {
+        const res = await fetch(`${API_URL}/users`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return await res.json();
+    },
+
     updateVendorStatus: async (vendorId, status, token) => {
         const res = await fetch(`${API_URL}/vendors/${vendorId}/status`, {
             method: 'PUT',
@@ -141,10 +150,150 @@ export const adminApi = {
         return await res.json();
     },
 
+    getVendorLedger: async (token) => {
+        const res = await fetch(`${API_URL}/vendor-ledger`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        return await res.json();
+    },
+
     getPayments: async (token) => {
         const res = await fetch(`${API_URL}/payments`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         return await res.json();
+    },
+
+    deleteVendor: async (id, token) => {
+        const res = await fetch(`${API_URL}/vendors/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        return await res.json();
+    },
+
+    deleteUser: async (id, token) => {
+        const res = await fetch(`${API_URL}/users/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        return await res.json();
+    },
+
+    getPolicy: async (type, token) => {
+        const res = await fetch(`${API_URL}/policies/${type}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        return await res.json();
+    },
+
+    updatePolicy: async (type, data, token) => {
+        const res = await fetch(`${API_URL}/policies/${type}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        });
+        return await res.json();
+    },
+
+    getTickets: async (token) => {
+        const res = await fetch(`${API_URL}/tickets`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        return await res.json();
+    },
+
+    updateTicketStatus: async (id, status, token) => {
+        const res = await fetch(`${API_URL}/tickets/${id}/status`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ status })
+        });
+        return await res.json();
+    },
+
+    replyToTicket: async (id, message, token) => {
+        const res = await fetch(`${API_URL}/tickets/${id}/reply`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ message })
+        });
+        return await res.json();
+    },
+
+    deleteTicket: async (id, token) => {
+        const res = await fetch(`${API_URL}/tickets/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        return await res.json();
+    },
+
+    // FAQ Management
+    getFAQs: async () => {
+        const res = await fetch(`${API_URL}/faqs`);
+        return await res.json();
+    },
+
+    createFAQ: async (data, token) => {
+        const res = await fetch(`${API_URL}/faqs`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        });
+        return await res.json();
+    },
+
+    updateFAQ: async (id, data, token) => {
+        const res = await fetch(`${API_URL}/faqs/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        });
+        return await res.json();
+    },
+
+    deleteFAQ: async (id, token) => {
+        const res = await fetch(`${API_URL}/faqs/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        return await res.json();
+    },
+
+    // Support Config
+    getSupportConfig: async () => {
+        const res = await fetch(`${API_URL}/support-config`);
+        return await res.json();
+    },
+
+    updateSupportConfig: async (data, token) => {
+        const res = await fetch(`${API_URL}/support-config`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        });
+        return await res.json();
     }
 };
+
+
+

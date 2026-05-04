@@ -7,14 +7,20 @@ const initializeAdmin = async () => {
         const adminEmail = 'a@gmail.com';
         const adminPass = '1234';
 
-        console.log('⏳ Re-initializing admin user (Force Fresh)...');
-        await User.deleteOne({ email: adminEmail });
+        const existingAdmin = await User.findOne({ email: adminEmail });
+        
+        if (existingAdmin) {
+            console.log('✅ Admin user already exists. Skipping initialization.');
+            return;
+        }
+
+        console.log('⏳ Initializing admin user...');
         
         const admin = new User({
             name: 'Admin',
             email: adminEmail,
             phone: '9999999999',
-            password: adminPass, // Model handles hashing automatically
+            password: adminPass,
             city: 'Admin City',
             role: 'admin',
             isEmailVerified: true,
@@ -22,7 +28,7 @@ const initializeAdmin = async () => {
         });
 
         await admin.save();
-        console.log('✅ Fresh admin user created (a@gmail.com / 1234)');
+        console.log('✅ Admin user created (a@gmail.com / 1234)');
     } catch (error) {
         console.error('❌ Admin initialization failed:', error.message);
     }

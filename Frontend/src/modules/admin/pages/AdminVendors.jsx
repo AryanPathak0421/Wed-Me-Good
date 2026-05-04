@@ -73,10 +73,20 @@ const AdminVendors = () => {
         setModalOpen(true);
     };
 
-    const deleteVendor = (id) => {
-        if (window.confirm('Are you sure you want to decouple this vendor node?')) {
-            // Delete logic can be added later
-            setVendors(prev => prev.filter(v => v._id !== id));
+    const deleteVendor = async (id) => {
+        if (window.confirm('Are you sure you want to permanently delete this vendor and all their associated data? This action cannot be undone.')) {
+            try {
+                const res = await adminApi.deleteVendor(id, token);
+                if (res.success) {
+                    setVendors(prev => prev.filter(v => v._id !== id));
+                    alert('Vendor node successfully decoupled from system.');
+                } else {
+                    alert(res.message || 'Failed to delete vendor');
+                }
+            } catch (err) {
+                console.error('Delete error:', err);
+                alert('A system error occurred during deletion.');
+            }
         }
     };
 

@@ -90,6 +90,18 @@ export const vendorApi = {
         return response.json();
     },
 
+    updateBookingStatus: async (id, status, token) => {
+        const response = await fetch(`${BASE_URL}/bookings/${id}/status`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ status })
+        });
+        return response.json();
+    },
+
     getReviews: async (token) => {
         const response = await fetch(`${BASE_URL}/reviews`, {
             method: 'GET',
@@ -156,5 +168,132 @@ export const vendorApi = {
             body: JSON.stringify(data)
         });
         return response.json();
+    },
+
+    updateProfile: async (data, token) => {
+        const response = await fetch(`${BASE_URL}/settings`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        });
+        return response.json();
+    },
+
+    changePassword: async (currentPassword, newPassword, token) => {
+        const response = await fetch(`${BASE_URL}/settings/password`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ currentPassword, newPassword })
+        });
+        return response.json();
+    },
+
+    deactivateAccount: async (token) => {
+        const response = await fetch(`${BASE_URL}/settings/deactivate`, {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        return response.json();
+    },
+
+
+
+    getQuotes: async (token) => {
+        const response = await fetch(`${BASE_URL}/quotes`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        return response.json();
+    },
+
+    createQuote: async (data, token) => {
+        const response = await fetch(`${BASE_URL}/quotes`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        });
+        return response.json();
+    },
+
+    updateQuote: async (id, data, token) => {
+        const response = await fetch(`${BASE_URL}/quotes/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        });
+        return response.json();
+    },
+
+    createBooking: async (data, token) => {
+        const response = await fetch(`${BASE_URL}/bookings`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        });
+        return response.json();
+    },
+
+    deleteQuote: async (id, token) => {
+        const response = await fetch(`${BASE_URL}/quotes/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return response.json();
+    },
+
+    getEarnings: async (token) => {
+        const response = await fetch(`${BASE_URL}/earnings`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        return response.json();
+    },
+
+    updatePortfolio: async (data, token) => {
+        const response = await fetch(`${BASE_URL}/portfolio`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ portfolio: data })
+        });
+        return response.json();
+    },
+
+    getDashboardBanners: async (token) => {
+        const response = await fetch(`${BASE_URL}/banners`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        return response.json();
+    },
+
+    getFAQs: async () => {
+        const response = await fetch(`${BASE_URL.replace('/vendor', '/admin')}/faqs`);
+        return response.json();
+    },
+
+    getSupportConfig: async () => {
+        const response = await fetch(`${BASE_URL.replace('/vendor', '/admin')}/support-config`);
+        return response.json();
     }
 };
+

@@ -79,3 +79,12 @@
 .admin-theme .border-slate-100 {
     border-color: rgba(249, 174, 175, 0.15);
 }
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}

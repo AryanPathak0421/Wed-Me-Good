@@ -19,12 +19,12 @@ const quoteSchema = new mongoose.Schema({
     items: [{
         service: { type: String, required: true },
         description: String,
-        price: { type: Number, required: true },
+        price: { type: Number, default: 0 },
         quantity: { type: Number, default: 1 }
     }],
     totalAmount: {
         type: Number,
-        required: true
+        default: 0
     },
     taxAmount: {
         type: Number,

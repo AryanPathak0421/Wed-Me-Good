@@ -15,10 +15,16 @@ import AdminProfile from './pages/AdminProfile';
 import AdminLogin from './pages/AdminLogin';
 import AdminGateways from './pages/AdminGateways';
 import AdminVendorVerification from './pages/AdminVendorVerification';
+import AdminVendorServices from './pages/AdminVendorServices';
 import AdminCategories from './pages/AdminCategories';
 import AdminReviews from './pages/AdminReviews';
+import AdminVendorPortfolios from './pages/AdminVendorPortfolios';
+import AdminVendorLedger from './pages/AdminVendorLedger';
+import AdminPolicies from './pages/AdminPolicies';
+import AdminSupport from './pages/AdminSupport';
 
 // Simple placeholder page component
+
 const PlaceholderPage = ({ title }) => (
   <div className="space-y-4">
     <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
@@ -36,7 +42,10 @@ const AdminRoutes = () => {
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="vendors" element={<AdminVendors />} />
+        <Route path="vendor-services" element={<AdminVendorServices />} />
+        <Route path="vendor-portfolios" element={<AdminVendorPortfolios />} />
         <Route path="verification" element={<AdminVendorVerification />} />
+        <Route path="vendor-ledger" element={<AdminVendorLedger />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="subscriptions" element={<AdminSubscriptions />} />
         <Route path="bookings" element={<AdminBookings />} />
@@ -47,8 +56,11 @@ const AdminRoutes = () => {
         <Route path="banners" element={<AdminBanners />} />
         <Route path="logs" element={<AdminLogs />} />
         <Route path="reviews" element={<AdminReviews />} />
+        <Route path="policies" element={<AdminPolicies />} />
+        <Route path="support" element={<AdminSupport />} />
         <Route path="settings" element={<AdminSettings />} />
         <Route path="profile" element={<AdminProfile />} />
+
         <Route path="security" element={<PlaceholderPage title="Privacy & Security Access" />} />
       </Route>
       {/* Fallback */}

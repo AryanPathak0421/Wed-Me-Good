@@ -62,7 +62,8 @@ const vendorSchema = new mongoose.Schema({
     services: [{
         name: String,
         category: String,
-        basePrice: Number,
+        image: String,
+        features: [String],
         packages: [{
             name: String,
             price: Number,
@@ -126,10 +127,25 @@ const vendorSchema = new mongoose.Schema({
         startDate: Date,
         endDate: Date
     },
+    language: {
+        type: String,
+        default: 'English (India)'
+    },
+    notifications: {
+        push: { type: Boolean, default: true },
+        email: { type: Boolean, default: true },
+        whatsapp: { type: Boolean, default: true }
+    },
+    isActive: {
+        type: Boolean,
+        default: true
+    },
     createdAt: {
         type: Date,
         default: Date.now
     }
+
+
 }, {
     timestamps: true
 });

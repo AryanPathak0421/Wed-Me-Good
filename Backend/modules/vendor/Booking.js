@@ -8,8 +8,10 @@ const bookingSchema = new mongoose.Schema({
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        ref: 'User'
+    },
+    customerName: {
+        type: String
     },
     leadId: {
         type: mongoose.Schema.Types.ObjectId,

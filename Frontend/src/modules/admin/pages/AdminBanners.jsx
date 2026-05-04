@@ -3,6 +3,7 @@ import Icon from '../../../components/ui/Icon';
 
 const AdminBanners = () => {
     const [banners, setBanners] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingBanner, setEditingBanner] = useState(null);
@@ -10,14 +11,16 @@ const AdminBanners = () => {
     const [imagePreview, setImagePreview] = useState(null);
     const [formData, setFormData] = useState({
         title: '',
-        linkUrl: '',
+        description: '',
         placement: 'Hero Main',
-        platform: 'All',
+        target: 'All',
+        category: 'All',
         status: 'Active'
     });
 
     useEffect(() => {
         fetchBanners();
+        fetchCategories();
     }, []);
 
     const fetchBanners = async () => {
@@ -37,6 +40,18 @@ const AdminBanners = () => {
         }
     };
 
+    const fetchCategories = async () => {
+        try {
+            const res = await fetch('/api/admin/categories');
+            const result = await res.json();
+            if (result.success) {
+                setCategories(result.data);
+            }
+        } catch (err) {
+            console.error('Error fetching categories:', err);
+        }
+    };
+
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -50,6 +65,7 @@ const AdminBanners = () => {
     };
 
     const handleSubmit = async (e) => {
+        console.log('🚀 Submit triggered');
         e.preventDefault();
         const token = localStorage.getItem('adminToken');
         const url = editingBanner ? `/api/admin/banners/${editingBanner._id}` : '/api/admin/banners';
@@ -57,12 +73,18 @@ const AdminBanners = () => {
 
         const data = new FormData();
         data.append('title', formData.title);
-        data.append('linkUrl', formData.linkUrl);
+        data.append('description', formData.description);
         data.append('placement', formData.placement);
-        data.append('platform', formData.platform);
+        data.append('target', formData.target);
+        data.append('category', formData.category);
         data.append('status', formData.status);
         if (imageFile) {
             data.append('image', imageFile);
+        }
+
+        if (!imageFile && !editingBanner) {
+            alert('Please select an image asset first');
+            return;
         }
 
         try {
@@ -80,10 +102,20 @@ const AdminBanners = () => {
                 setEditingBanner(null);
                 setImageFile(null);
                 setImagePreview(null);
-                setFormData({ title: '', linkUrl: '', placement: 'Hero Main', platform: 'All', status: 'Active' });
+                setFormData({ 
+                    title: '', 
+                    description: '', 
+                    placement: 'Hero Main', 
+                    target: 'All', 
+                    category: 'All',
+                    status: 'Active' 
+                });
+            } else {
+                alert(result.message || 'Failed to deploy asset');
             }
         } catch (err) {
             console.error('Error saving banner:', err);
+            alert('Network error. Please check your connection.');
         }
     };
 
@@ -109,9 +141,10 @@ const AdminBanners = () => {
         setImagePreview(banner.imageUrl);
         setFormData({
             title: banner.title,
-            linkUrl: banner.linkUrl || '',
+            description: banner.description || '',
             placement: banner.placement,
-            platform: banner.platform,
+            target: banner.target || 'All',
+            category: banner.category || 'All',
             status: banner.status
         });
         setIsModalOpen(true);
@@ -129,7 +162,14 @@ const AdminBanners = () => {
                         setEditingBanner(null);
                         setImagePreview(null);
                         setImageFile(null);
-                        setFormData({ title: '', linkUrl: '', placement: 'Hero Main', platform: 'All', status: 'Active' });
+                        setFormData({ 
+                            title: '', 
+                            description: '', 
+                            placement: 'Hero Main', 
+                            target: 'All', 
+                            category: 'All', 
+                            status: 'Active' 
+                        });
                         setIsModalOpen(true);
                     }}
                     className="h-10 px-6 rounded-xl bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95 flex items-center gap-2"
@@ -159,9 +199,8 @@ const AdminBanners = () => {
                             <tr>
                                 <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Asset Title</th>
                                 <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Placement</th>
-                                <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Platform</th>
                                 <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Performance</th>
-                                <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Status</th>
+                                <th className="px-5 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Target</th>
                                 <th className="px-6 py-4 text-right border-b border-slate-100"></th>
                             </tr>
                         </thead>
@@ -185,7 +224,6 @@ const AdminBanners = () => {
                                         </div>
                                     </td>
                                     <td className="px-5 py-3 text-[10px] font-bold text-slate-500 uppercase">{b.placement}</td>
-                                    <td className="px-5 py-3 text-[10px] font-bold text-slate-400 uppercase">{b.platform}</td>
                                     <td className="px-5 py-3">
                                         <div className="space-y-0.5">
                                             <p className="text-[10px] font-black text-slate-900">{b.clicks} Clicks</p>
@@ -193,10 +231,10 @@ const AdminBanners = () => {
                                         </div>
                                     </td>
                                     <td className="px-5 py-3">
-                                        <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest ${b.status === 'Active' ? 'bg-emerald-50 text-emerald-600' :
-                                                b.status === 'Scheduled' ? 'bg-amber-50 text-amber-600' :
-                                                    'bg-slate-100 text-slate-400'
-                                            }`}>{b.status}</span>
+                                        <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest ${b.target === 'Vendor' ? 'bg-blue-50 text-blue-600' :
+                                                b.target === 'User' ? 'bg-purple-50 text-purple-600' :
+                                                    'bg-slate-50 text-slate-600'
+                                            }`}>{b.target || 'All'}</span>
                                     </td>
                                     <td className="px-6 py-3 text-right">
                                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -225,8 +263,8 @@ const AdminBanners = () => {
             {isModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
-                    <div className="relative bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl animate-in zoom-in-95 duration-200">
-                        <div className="flex items-center justify-between mb-8">
+                    <div className="relative bg-white rounded-[2rem] w-full max-w-md max-h-[85vh] overflow-y-auto p-6 shadow-2xl animate-in zoom-in-95 duration-200 scrollbar-hide">
+                        <div className="flex items-center justify-between mb-6 shrink-0">
                             <div>
                                 <h3 className="text-lg font-black text-slate-900 tracking-tight">{editingBanner ? 'Edit Asset' : 'Deploy New Asset'}</h3>
                                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Banner Configuration Node</p>
@@ -236,53 +274,81 @@ const AdminBanners = () => {
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-5">
-                            <div className="space-y-1.5">
-                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Asset Title</label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={formData.title}
-                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                    className="w-full h-11 px-4 bg-slate-50 border border-slate-100 rounded-xl text-[12px] font-bold text-slate-900 outline-none focus:border-primary-400/50 transition-all"
-                                    placeholder="e.g. Summer Wedding Bonanza"
-                                />
-                            </div>
-
-                            <div className="space-y-1.5">
-                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Upload Asset</label>
-                                <div className="relative group">
+                        <div className="overflow-y-auto pr-2 custom-scrollbar space-y-5" style={{ maxHeight: 'calc(85vh - 120px)' }}>
+                            <form onSubmit={handleSubmit} className="space-y-5 pb-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Asset Title</label>
                                     <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={handleFileChange}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                        type="text"
+                                        required
+                                        value={formData.title}
+                                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                        className="w-full h-11 px-4 bg-slate-50 border border-slate-100 rounded-xl text-[12px] font-bold text-slate-900 outline-none focus:border-primary-400/50 transition-all"
+                                        placeholder="e.g. Summer Wedding Bonanza"
                                     />
-                                    <div className="w-full h-32 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 group-hover:border-primary-400/50 transition-all overflow-hidden">
-                                        {imagePreview ? (
-                                            <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                                        ) : (
-                                            <>
-                                                <Icon name="camera" size="sm" color="#94a3b8" />
-                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Click to upload image</p>
-                                            </>
-                                        )}
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Description</label>
+                                    <input
+                                        type="text"
+                                        value={formData.description}
+                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                        className="w-full h-11 px-4 bg-slate-50 border border-slate-100 rounded-xl text-[12px] font-bold text-slate-900 outline-none focus:border-primary-400/50 transition-all"
+                                        placeholder="e.g. Reach more couples"
+                                    />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Upload Asset</label>
+                                    <div className="relative group">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleFileChange}
+                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                        />
+                                        <div className="w-full h-32 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 group-hover:border-primary-400/50 transition-all overflow-hidden">
+                                            {imagePreview ? (
+                                                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <>
+                                                    <Icon name="camera" size="sm" color="#94a3b8" />
+                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Click to upload image</p>
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div className="space-y-1.5">
-                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Redirect Link</label>
-                                <input
-                                    type="text"
-                                    value={formData.linkUrl}
-                                    onChange={(e) => setFormData({ ...formData, linkUrl: e.target.value })}
-                                    className="w-full h-11 px-4 bg-slate-50 border border-slate-100 rounded-xl text-[12px] font-bold text-slate-900 outline-none focus:border-primary-400/50 transition-all"
-                                    placeholder="/vendors/photographers"
-                                />
-                            </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Target Audience</label>
+                                        <select
+                                            value={formData.target}
+                                            onChange={(e) => setFormData({ ...formData, target: e.target.value })}
+                                            className="w-full h-11 px-4 bg-slate-50 border border-slate-100 rounded-xl text-[12px] font-bold text-slate-900 outline-none focus:border-primary-400/50 transition-all appearance-none cursor-pointer"
+                                        >
+                                            <option value="All">All Audiences</option>
+                                            <option value="Vendor">Vendors Only</option>
+                                            <option value="User">Users Only</option>
+                                        </select>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Specific Category</label>
+                                        <select
+                                            value={formData.category}
+                                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                            className="w-full h-11 px-4 bg-slate-50 border border-slate-100 rounded-xl text-[12px] font-bold text-slate-900 outline-none focus:border-primary-400/50 transition-all appearance-none cursor-pointer"
+                                        >
+                                            <option value="All">All Categories</option>
+                                            {categories.map(cat => (
+                                                <option key={cat._id} value={cat.name}>{cat.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
 
-                            <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
                                     <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Placement</label>
                                     <select
@@ -296,28 +362,15 @@ const AdminBanners = () => {
                                         <option>Popup Modal</option>
                                     </select>
                                 </div>
-                                <div className="space-y-1.5">
-                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Status</label>
-                                    <select
-                                        value={formData.status}
-                                        onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                        className="w-full h-11 px-4 bg-slate-50 border border-slate-100 rounded-xl text-[12px] font-bold text-slate-900 outline-none focus:border-primary-400/50 transition-all appearance-none"
-                                    >
-                                        <option>Active</option>
-                                        <option>Draft</option>
-                                        <option>Scheduled</option>
-                                        <option>Expired</option>
-                                    </select>
-                                </div>
-                            </div>
 
-                            <button
-                                type="submit"
-                                className="w-full h-12 mt-4 bg-slate-900 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95"
-                            >
-                                {editingBanner ? 'Update Asset' : 'Deploy Asset'}
-                            </button>
-                        </form>
+                                <button
+                                    type="submit"
+                                    className="w-full h-12 mt-4 bg-slate-900 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all active:scale-95"
+                                >
+                                    {editingBanner ? 'Update Asset' : 'Deploy Asset'}
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             )}

@@ -8,6 +8,7 @@ const Conversation = require('./Conversation');
 const Message = require('./Message');
 const SupportTicket = require('./SupportTicket');
 const SubscriptionPlan = require('../admin/SubscriptionPlan');
+const Banner = require('../admin/Banner');
 const jwt = require('jsonwebtoken');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
@@ -229,6 +230,26 @@ exports.getStats = async (req, res, next) => {
     }
 };
 
+// @desc    Get banners for vendor dashboard
+// @route   GET /api/vendor/banners
+// @access  Private
+exports.getDashboardBanners = async (req, res, next) => {
+    try {
+        const banners = await Banner.find({
+            status: 'Active',
+            target: { $in: ['All', 'Vendor'] },
+            category: { $in: ['All', req.vendor.category] }
+        }).sort('-createdAt');
+
+        res.status(200).json({
+            success: true,
+            data: banners
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 // @desc    Get vendor leads
 // @route   GET /api/vendor/leads
 // @access  Private
@@ -283,6 +304,60 @@ exports.getBookings = async (req, res, next) => {
         res.status(200).json({
             success: true,
             data: bookings
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Update booking status
+// @route   PUT /api/vendor/bookings/:id/status
+// @access  Private
+exports.updateBookingStatus = async (req, res, next) => {
+    try {
+        const { status } = req.body;
+        const booking = await Booking.findOneAndUpdate(
+            { _id: req.params.id, vendorId: req.vendor.id },
+            { status },
+            { new: true, runValidators: true }
+        );
+
+        if (!booking) {
+            return res.status(404).json({
+                success: false,
+                message: 'Booking not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: booking
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Create manual booking/event
+// @route   POST /api/vendor/bookings
+// @access  Private
+exports.createBooking = async (req, res, next) => {
+    try {
+        const { customerName, eventDate, location, services, totalAmount } = req.body;
+
+        const booking = await Booking.create({
+            vendorId: req.vendor.id,
+            customerName,
+            eventDate,
+            location,
+            services: services || ['Manual Entry'],
+            totalPrice: totalAmount || 0,
+            status: 'Confirmed'
+        });
+
+        res.status(201).json({
+            success: true,
+            data: booking
         });
     } catch (err) {
         next(err);
@@ -382,7 +457,7 @@ exports.markNotificationRead = async (req, res, next) => {
 exports.getSubscriptionPlans = async (req, res, next) => {
     try {
         const plans = await SubscriptionPlan.find({ isActive: true });
-        
+
         if (plans.length === 0) {
             const defaultPlan = await SubscriptionPlan.create({
                 name: 'Premium Partner',
@@ -409,9 +484,9 @@ exports.getSubscriptionPlans = async (req, res, next) => {
 exports.createSubscriptionOrder = async (req, res, next) => {
     try {
         const { planId } = req.body;
-        
+
         const plan = await SubscriptionPlan.findById(planId);
-        
+
         if (!plan || !plan.isActive) {
             return res.status(404).json({ success: false, message: 'Active plan not found' });
         }
@@ -468,7 +543,7 @@ exports.verifySubscriptionPayment = async (req, res, next) => {
 
             const startDate = new Date();
             const endDate = new Date();
-            
+
             if (durationUnit === 'year') {
                 endDate.setFullYear(startDate.getFullYear() + durationValue);
             } else {
@@ -505,7 +580,7 @@ exports.verifySubscriptionPayment = async (req, res, next) => {
 exports.getSubscriptionPlan = async (req, res, next) => {
     try {
         let plan = await SubscriptionPlan.findOne({ isActive: true });
-        
+
         if (!plan) {
             plan = await SubscriptionPlan.create({
                 name: 'Premium Partner',
@@ -570,13 +645,61 @@ exports.getEarningsSummary = async (req, res, next) => {
 exports.getQuotes = async (req, res, next) => {
     try {
         const quotes = await Quote.find({ vendorId: req.vendor.id })
-            .populate('userId', 'name email phone')
+            .populate('userId', 'fullName email phone')
             .populate('leadId')
             .sort('-createdAt');
 
         res.status(200).json({
             success: true,
             data: quotes
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Update a quote
+// @route   PUT /api/vendor/quotes/:id
+// @access  Private
+exports.updateQuote = async (req, res, next) => {
+    try {
+        const { totalAmount, items } = req.body;
+        const quote = await Quote.findOneAndUpdate(
+            { _id: req.params.id, vendorId: req.vendor.id },
+            { totalAmount, items },
+            { new: true, runValidators: true }
+        );
+
+        if (!quote) {
+            return res.status(404).json({ success: false, message: 'Quote not found' });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: quote
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Delete a quote
+// @route   DELETE /api/vendor/quotes/:id
+// @access  Private
+exports.deleteQuote = async (req, res, next) => {
+    try {
+        const quote = await Quote.findOneAndDelete({
+            _id: req.params.id,
+            vendorId: req.vendor.id
+        });
+
+        if (!quote) {
+            return res.status(404).json({ success: false, message: 'Quote not found' });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Quote removed'
         });
     } catch (err) {
         next(err);
@@ -613,6 +736,26 @@ exports.createQuote = async (req, res, next) => {
         res.status(201).json({
             success: true,
             data: quote
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Update vendor portfolio
+// @route   PUT /api/vendor/portfolio
+// @access  Private
+exports.updatePortfolio = async (req, res, next) => {
+    try {
+        const vendor = await Vendor.findByIdAndUpdate(
+            req.vendor.id,
+            { portfolio: req.body.portfolio },
+            { new: true, runValidators: true }
+        );
+
+        res.status(200).json({
+            success: true,
+            data: vendor.portfolio
         });
     } catch (err) {
         next(err);
@@ -727,14 +870,65 @@ exports.createSupportTicket = async (req, res, next) => {
     }
 };
 
-// @desc    Update settings
+// @desc    Change password
+// @route   PUT /api/vendor/settings/password
+// @access  Private
+exports.changePassword = async (req, res, next) => {
+    try {
+        console.log('🔄 Password Rotation Request Received for Vendor:', req.vendor.id);
+        const { currentPassword, newPassword } = req.body;
+
+
+        const vendor = await Vendor.findById(req.vendor.id).select('+password');
+
+        if (!(await vendor.matchPassword(currentPassword))) {
+            return res.status(401).json({ success: false, message: 'Current password incorrect' });
+        }
+
+        vendor.password = newPassword;
+        await vendor.save();
+
+        res.status(200).json({ success: true, message: 'Password updated' });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Deactivate/Toggle account status
+// @route   PUT /api/vendor/settings/deactivate
+// @access  Private
+exports.deactivateAccount = async (req, res, next) => {
+    try {
+        const vendor = await Vendor.findById(req.vendor.id);
+        vendor.isActive = !vendor.isActive;
+        await vendor.save();
+
+        res.status(200).json({ 
+            success: true, 
+            message: vendor.isActive ? 'Account activated' : 'Account deactivated',
+            isActive: vendor.isActive 
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// @desc    Update profile settings
+
+
 // @route   PUT /api/vendor/settings
 // @access  Private
 exports.updateSettings = async (req, res, next) => {
     try {
+        // Prevent sensitive fields from being updated via this route
+        const forbiddenFields = ['password', 'role', 'status', 'isVerified', 'subscription', 'email'];
+        const updateData = { ...req.body };
+
+        forbiddenFields.forEach(field => delete updateData[field]);
+
         const vendor = await Vendor.findByIdAndUpdate(req.vendor.id, {
-            $set: { settings: req.body }
-        }, { new: true });
+            $set: updateData
+        }, { new: true, runValidators: true });
 
         res.status(200).json({
             success: true,

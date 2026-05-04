@@ -20,12 +20,22 @@ const {
     getEarningsSummary,
     getQuotes,
     createQuote,
+    updateQuote,
+    deleteQuote,
     getConversations,
     getMessages,
     sendMessage,
     getSupportTickets,
     createSupportTicket,
-    updateSettings
+    deactivateAccount,
+    changePassword,
+
+    updateSettings,
+
+    getDashboardBanners,
+    updateBookingStatus,
+    updatePortfolio,
+    createBooking
 } = require('./vendorController');
 
 const router = express.Router();
@@ -35,9 +45,15 @@ const { protectVendor, requireSubscription, requireVendorApproval } = require('.
 router.post('/register', register);
 router.post('/login', login);
 router.get('/me', protectVendor, getMe);
+router.get('/banners', protectVendor, getDashboardBanners);
 router.post('/upload', protectVendor, upload.single('file'), uploadMedia);
 router.put('/onboarding/:step', protectVendor, updateOnboarding);
 router.put('/settings', protectVendor, updateSettings);
+router.put('/settings/password', protectVendor, changePassword);
+router.put('/settings/deactivate', protectVendor, deactivateAccount);
+
+
+router.put('/portfolio', protectVendor, updatePortfolio);
 
 // Stats & Analytics
 router.get('/stats', protectVendor, requireSubscription, requireVendorApproval, getStats);
@@ -50,9 +66,13 @@ router.put('/leads/:id', protectVendor, requireSubscription, requireVendorApprov
 // Quotes
 router.get('/quotes', protectVendor, requireSubscription, requireVendorApproval, getQuotes);
 router.post('/quotes', protectVendor, requireSubscription, requireVendorApproval, createQuote);
+router.put('/quotes/:id', protectVendor, requireSubscription, requireVendorApproval, updateQuote);
+router.delete('/quotes/:id', protectVendor, requireSubscription, requireVendorApproval, deleteQuote);
 
 // Bookings
 router.get('/bookings', protectVendor, requireSubscription, requireVendorApproval, getBookings);
+router.post('/bookings', protectVendor, requireSubscription, requireVendorApproval, createBooking);
+router.put('/bookings/:id/status', protectVendor, requireSubscription, requireVendorApproval, updateBookingStatus);
 
 // Reviews
 router.get('/reviews', protectVendor, requireSubscription, requireVendorApproval, getReviews);
