@@ -7,58 +7,59 @@ const navItems = [
   { label: 'Services', to: '/vendor/services', icon: 'store' },
   { label: 'Pricing', to: '/vendor/pricing', icon: 'money' },
   { label: 'Portfolio', to: '/vendor/portfolio', icon: 'image' },
-  { label: 'Inquiries', to: '/vendor/leads', icon: 'mail' },
+  { label: 'Inquiries', to: '/vendor/leads', icon: 'mail', badge: 5 },
   { label: 'Quotes', to: '/vendor/quotes', icon: 'book' },
   { label: 'Bookings', to: '/vendor/bookings', icon: 'calendar' },
   { label: 'Calendar', to: '/vendor/calendar', icon: 'clock' },
-  { label: 'Chat', to: '/vendor/chat', icon: 'chat' },
+  { label: 'Chat', to: '/vendor/chat', icon: 'chat', badge: 2 },
   { label: 'Earnings', to: '/vendor/earnings', icon: 'trophy' },
   { label: 'Reviews', to: '/vendor/reviews', icon: 'star' },
   { label: 'Support', to: '/vendor/support', icon: 'help' },
   { label: 'Settings', to: '/vendor/settings', icon: 'edit' }
 ];
 
-const VendorSidebar = ({ onClose, isApproved }) => {
+const VendorSidebar = ({ onClose, isApproved, counts = {} }) => {
   const navigate = useNavigate();
+  
+  const dynamicNavItems = navItems.map(item => {
+    if (item.label === 'Inquiries') return { ...item, badge: counts.leads || 0 };
+    if (item.label === 'Chat') return { ...item, badge: counts.chat || 0 };
+    return item;
+  });
+
   return (
-    <aside className="h-screen fixed left-0 top-0 w-72 flex flex-col z-40" style={{
-      background: 'linear-gradient(180deg, #ffffff 0%, #F1F5F9 100%)',
-      borderRight: '1px solid rgba(15, 23, 42, 0.05)'
+    <aside className="fixed left-0 top-16 w-64 flex flex-col z-40 bg-white border-r border-slate-100" style={{
+      height: 'calc(100vh - 4rem)'
     }}>
       <div className="h-full flex flex-col">
         {/* Brand Header */}
-        <div className="px-6 py-5" style={{ borderBottom: '1px solid rgba(15, 23, 42, 0.05)' }}>
+        <div className="px-6 py-4 border-b border-slate-100/80">
           <div className="flex items-center justify-between">
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <div className="h-14 w-auto flex items-center justify-center transition-transform hover:scale-110">
-                   <img src="/assets/vendor/logo_theme.png" alt="UtsavChakra Logo" className="h-full w-auto rounded-2xl" />
-                </div>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: '#9D174D' }}>Vendor Panel</p>
-              </div>
-              <h2 className="text-xl font-black text-slate-900 tracking-tight leading-none">Emerald Studio</h2>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#581C87]">UtsavChakra</p>
+              <h2 className="text-sm font-black text-slate-900 tracking-tight leading-none mt-1 uppercase">Vendor Portal</h2>
             </div>
             <button
               type="button"
-              className="lg:hidden text-slate-400 hover:text-[#9D174D] transition-colors"
+              className="lg:hidden text-slate-400 hover:text-[#581C87] transition-colors"
               onClick={onClose}
               aria-label="Close menu"
             >
-              <Icon name="close" size="lg" color="current" />
+              <Icon name="close" size="md" color="currentColor" />
             </button>
           </div>
-          <div className="mt-4 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest" style={{ color: '#94a3b8' }}>
-            <span className="relative flex h-2 w-2">
+          <div className="mt-2.5 flex items-center gap-1.5 text-[10px] font-bold text-slate-500">
+            <span className="relative flex h-1.5 w-1.5">
               <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isApproved ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
-              <span className={`relative inline-flex rounded-full h-2 w-2 ${isApproved ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+              <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${isApproved ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
             </span>
             {isApproved ? 'Online & Active' : 'Under Review'}
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto min-h-0 px-3 py-4 space-y-1.5 custom-scrollbar overscroll-contain touch-pan-y">
-          {navItems.map((item) => {
+        <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-0.5 custom-scrollbar">
+          {dynamicNavItems.map((item) => {
             const isHome = item.label === 'Dashboard' || item.label === 'Profile';
             const isDisabled = !isApproved && !isHome;
 
@@ -68,32 +69,30 @@ const VendorSidebar = ({ onClose, isApproved }) => {
                 to={isDisabled ? '#' : item.to}
                 onClick={(e) => {
                   if (isDisabled) e.preventDefault();
-                  else onClose();
+                  else onClose?.();
                 }}
                 className={({ isActive }) =>
-                  `group flex items-center gap-3 text-[11px] font-black uppercase tracking-widest transition-all duration-300 relative overflow-hidden px-4 py-2.5 rounded-xl ${
+                  `group flex items-center gap-3 text-[13px] font-medium transition-all duration-200 px-3.5 py-2.5 rounded-xl ${
                     isActive && !isDisabled
-                    ? 'text-white shadow-lg'
-                    : isDisabled ? 'text-slate-300' : 'text-slate-500 hover:text-[#9D174D] hover:bg-slate-50'
+                    ? 'bg-[#F3E8FF] text-[#581C87] font-semibold shadow-xs'
+                    : isDisabled ? 'text-slate-300' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                   }`
                 }
-                style={({ isActive }) => isActive && !isDisabled ? {
-                  background: 'linear-gradient(135deg, #9D174D, #831843)',
-                  boxShadow: '0 8px 25px rgba(157, 23, 77, 0.3)'
-                } : {}}
               >
                 {({ isActive }) => (
                   <>
-                    <div className={`flex items-center justify-center h-7 w-7 rounded-lg transition-all duration-300 ${
+                    <div className={`flex items-center justify-center transition-colors duration-200 ${
                       isActive && !isDisabled
-                      ? 'bg-white/20'
-                      : isDisabled ? 'bg-slate-50' : 'bg-slate-50 group-hover:bg-slate-100 shadow-sm'
+                      ? 'text-[#581C87]'
+                      : isDisabled ? 'text-slate-300' : 'text-slate-400 group-hover:text-slate-600'
                       }`}>
-                      <Icon name={isDisabled ? 'lock' : item.icon} size="xs" color="current" />
+                      <Icon name={isDisabled ? 'lock' : item.icon} size="md" color="currentColor" />
                     </div>
                     <span>{item.label}</span>
-                    {isActive && !isDisabled && (
-                      <div className="ml-auto h-1.5 w-1.5 rounded-full bg-white animate-pulse"></div>
+                    {item.badge && !isDisabled && (
+                      <span className="ml-auto h-5 w-5 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center shadow-xs">
+                        {item.badge}
+                      </span>
                     )}
                   </>
                 )}
@@ -103,17 +102,14 @@ const VendorSidebar = ({ onClose, isApproved }) => {
         </nav>
 
         {/* Sign Out */}
-        <div className="px-4 py-4" style={{ borderTop: '1px solid rgba(15, 23, 42, 0.05)' }}>
+        <div className="p-4 border-t border-slate-100 bg-white mt-auto">
           <button
             type="button"
-            className="w-full rounded-xl px-4 h-12 text-[11px] font-black uppercase tracking-widest text-white shadow-xl shadow-rose-100 active:scale-95 transition-all flex items-center justify-center gap-3"
-            style={{
-              background: 'linear-gradient(135deg, #9D174D, #831843)',
-            }}
+            className="w-full h-9 rounded-xl text-xs font-medium text-slate-500 hover:text-rose-600 hover:bg-rose-50 active:scale-95 transition-all flex items-center justify-center gap-2"
             onClick={() => navigate('/vendor/login')}
           >
-            <Icon name="logout" size="sm" color="current" />
-            Sign Out
+            <Icon name="logout" size="sm" color="currentColor" />
+            <span>Sign Out</span>
           </button>
         </div>
       </div>

@@ -7,7 +7,7 @@ import Icon from '../../../components/ui/Icon';
 const statusOptions = ['New', 'Contacted', 'Quoted', 'Confirmed', 'Not converted'];
 
 const VendorLeads = () => {
-  const { refreshData } = useVendorState();
+  const { refreshData, vendorState } = useVendorState();
   const navigate = useNavigate();
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,8 +50,13 @@ const VendorLeads = () => {
 
   const filteredLeads = useMemo(() => {
     return leads.filter(l => {
-      const matchesSearch = (l.customerName || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
-                           (l.customerPhone || l.phone || '').includes(searchQuery);
+      const searchLower = searchQuery.toLowerCase();
+      const matchesSearch = 
+        (l.customerName || '').toLowerCase().includes(searchLower) || 
+        (l.customerPhone || l.phone || '').includes(searchQuery) ||
+        (l.eventLocation || '').toLowerCase().includes(searchLower) ||
+        (l.category || '').toLowerCase().includes(searchLower);
+      
       const matchesStatus = statusFilter === 'All' || l.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
@@ -62,220 +67,264 @@ const VendorLeads = () => {
       new: leads.filter(l => l.status === 'New').length,
       contacted: leads.filter(l => l.status === 'Contacted').length,
       confirmed: leads.filter(l => l.status === 'Confirmed').length,
+      quotations: leads.filter(l => l.status === 'Quoted').length,
+      lost: leads.filter(l => l.status === 'Not converted').length,
       total: leads.length
     };
   }, [leads]);
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'New': return { bg: '#FFFBEB', border: '#FEF3C7', text: '#D97706' };
-      case 'Contacted': return { bg: '#F5F3FF', border: '#EDE9FE', text: '#7C3AED' };
-      case 'Quoted': return { bg: '#F0F9FF', border: '#E0F2FE', text: '#0284C7' };
-      case 'Confirmed': return { bg: '#F0FDF4', border: '#DCFCE7', text: '#16A34A' };
-      case 'Not converted': return { bg: '#FEF2F2', border: '#FEE2E2', text: '#EF4444' };
-      default: return { bg: '#F8FAFC', border: '#F1F5F9', text: '#64748B' };
-    }
-  };
-
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-        <div className="animate-spin h-8 w-8 border-4 border-rose-400 border-t-transparent rounded-full"></div>
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Streaming Pipeline Ledger...</p>
+        <div className="animate-spin h-8 w-8 border-4 border-[#7C3AED] border-t-transparent rounded-full"></div>
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Streaming Leads Intelligence...</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header Strip */}
-      <div className="vendor-surface rounded-[2rem] p-6 sm:p-8 relative overflow-hidden bg-white border border-slate-100 shadow-sm">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-rose-50 rounded-full blur-3xl opacity-30 -mr-32 -mt-32"></div>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative z-10">
+    <div className="max-w-4xl mx-auto space-y-4 pb-20">
+
+      {/* Header & Search Group */}
+      <div className="space-y-2.5">
+        {/* Simple Clean Header */}
+        <div className="flex items-center justify-between px-1">
           <div>
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Inquiry Pipeline</h1>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2">Managing {stats.total} Live Client Opportunities</p>
+            <h1 className="text-[20px] font-semibold text-[#1e293b] tracking-tight leading-tight">Leads Management</h1>
+            <p className="text-[11px] font-medium text-slate-500">Track and manage all customer enquiries</p>
           </div>
-          <div className="flex items-center gap-3">
-             <button
-                onClick={fetchLeads}
-                className="h-11 px-5 rounded-2xl bg-slate-50 border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-white hover:text-rose-500 transition-all flex items-center gap-2 active:scale-95"
-             >
-                <Icon name="clock" size="xs" /> Refresh Stream
-             </button>
+        </div>
+
+        {/* Search & Filter Bar */}
+        <div className="flex gap-2 px-1">
+          <div className="flex-1 relative">
+            <Icon name="search" size="xs" color="#94a3b8" className="absolute left-3 top-1/2 -translate-y-1/2" />
+            <input 
+              type="text" 
+              placeholder="Search leads..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full h-10 pl-10 pr-4 bg-[#f8fafc] border border-slate-100 rounded-xl text-[12px] font-medium focus:outline-none focus:ring-1 focus:ring-indigo-200 transition-all"
+            />
           </div>
+          <button className="h-10 px-5 bg-white border border-slate-100 rounded-xl flex items-center gap-2 text-[12px] font-medium text-slate-700 shadow-sm active:scale-95 transition-all">
+            <Icon name="filter" size="xs" />
+            Filters
+          </button>
         </div>
       </div>
 
-      {/* Stats Summary */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-         {[
-            { label: 'Unread Leads', value: stats.new, color: 'amber', icon: 'mail' },
-            { label: 'In Outreach', value: stats.contacted, color: 'violet', icon: 'phone' },
-            { label: 'Conversion', value: stats.confirmed, color: 'emerald', icon: 'check' },
-            { label: 'Total Volume', value: stats.total, color: 'slate', icon: 'money' }
-         ].map((stat, i) => (
-            <div key={i} className="vendor-surface rounded-3xl p-5 bg-white border border-slate-100 shadow-sm flex flex-col items-center text-center">
-               <div className={`h-10 w-10 rounded-xl mb-3 flex items-center justify-center
-                  ${stat.color === 'amber' ? 'bg-amber-50 text-amber-500' : ''}
-                  ${stat.color === 'violet' ? 'bg-violet-50 text-violet-500' : ''}
-                  ${stat.color === 'emerald' ? 'bg-emerald-50 text-emerald-500' : ''}
-                  ${stat.color === 'slate' ? 'bg-slate-50 text-slate-500' : ''}
-               `}>
-                  <Icon name={stat.icon} size="xs" />
-               </div>
-               <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">{stat.label}</p>
-               <p className="text-xl font-black text-slate-900 mt-1.5">{stat.value}</p>
+      {/* Top Metrics Row */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 px-1">
+        {[
+          { label: 'Profile Views', value: vendorState.analytics?.profileViews || 842, trend: '+18% vs week', color: 'indigo', icon: 'eye' },
+          { label: 'New Leads', value: 28, trend: '+12 today', color: 'violet', icon: 'zap' },
+          { label: 'Responded', value: 18, trend: 'Avg. 12 mins', color: 'blue', icon: 'messageSquare' },
+          { label: 'Quotations Sent', value: 11, trend: '₹8.5L Potential', color: 'orange', icon: 'fileText' },
+          { label: 'Confirmed', value: 6, trend: 'Bookings', color: 'emerald', icon: 'checkCircle' },
+          { label: 'Lost Leads', value: 4, trend: 'Track Reasons', color: 'rose', icon: 'xCircle' }
+        ].map((item, i) => {
+          const colorStyles = {
+            indigo: { bg: 'bg-indigo-50/80', border: 'border-indigo-100', iconBg: 'bg-indigo-100', text: 'text-indigo-600', trend: 'text-indigo-500' },
+            violet: { bg: 'bg-violet-50/80', border: 'border-violet-100', iconBg: 'bg-violet-100', text: 'text-violet-600', trend: 'text-violet-500' },
+            blue: { bg: 'bg-blue-50/80', border: 'border-blue-100', iconBg: 'bg-blue-100', text: 'text-blue-600', trend: 'text-blue-500' },
+            orange: { bg: 'bg-orange-50/80', border: 'border-orange-100', iconBg: 'bg-orange-100', text: 'text-orange-600', trend: 'text-orange-500' },
+            emerald: { bg: 'bg-emerald-50/80', border: 'border-emerald-100', iconBg: 'bg-emerald-100', text: 'text-emerald-600', trend: 'text-emerald-500' },
+            rose: { bg: 'bg-rose-50/80', border: 'border-rose-100', iconBg: 'bg-rose-100', text: 'text-rose-600', trend: 'text-rose-500' }
+          };
+          const style = colorStyles[item.color] || colorStyles.indigo;
+          
+          return (
+            <div key={i} className={`p-2 rounded-xl border transition-all hover:shadow-md ${style.border} ${style.bg} flex flex-col justify-between min-h-[75px]`}>
+              <div className="flex items-center justify-between mb-1">
+                <div className={`h-7 w-7 rounded-lg flex items-center justify-center shadow-sm ${style.iconBg} ${style.text} border border-white/50`}>
+                  <Icon name={item.icon} size="xs" />
+                </div>
+                <span className={`text-[19px] font-semibold tracking-tight ${style.text}`}>{item.value}</span>
+              </div>
+              <div>
+                <p className="text-[11px] font-medium text-slate-800 leading-none">{item.label}</p>
+                <p className={`text-[9px] font-medium mt-0.5 ${style.trend}`}>{item.trend}</p>
+              </div>
             </div>
-         ))}
+          );
+        })}
       </div>
 
-      {/* Filter Bar */}
-      <div className="vendor-surface rounded-2xl p-4 border border-slate-100 bg-white flex flex-wrap items-center justify-between gap-4">
-         <div className="flex flex-wrap items-center gap-3">
-            <div className="relative group">
-               <Icon name="search" size="xs" color="#94a3b8" className="absolute left-3 top-1/2 -translate-y-1/2" />
-               <input 
-                  type="text"
-                  placeholder="Search by client or phone..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-10 pl-9 pr-4 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-rose-400/50 w-64 transition-all"
-               />
+      {/* Leads Pipeline Section */}
+      <div className="px-1">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-[14px] font-semibold text-slate-900">Leads Pipeline</h2>
+          <button className="h-9 px-4 bg-white border border-slate-100 rounded-xl flex items-center gap-2 text-[11px] font-medium text-slate-700 shadow-sm active:scale-95 transition-all">
+            Pipeline View <Icon name="chevron-down" size="xs" />
+          </button>
+        </div>
+        
+        <div className="flex items-center justify-between gap-1 pb-2">
+          {[
+            { label: 'New Enquiry', count: 28, status: 'New', color: 'bg-[#EDE9FE] text-[#5B21B6]' },
+            { label: 'Contacted', count: 18, status: 'Contacted', color: 'bg-[#E0E7FF] text-[#4338CA]' },
+            { label: 'Quotation', count: 11, status: 'Quoted', color: 'bg-[#FFF7ED] text-[#C2410C]' }
+          ].map((stage, i, arr) => (
+            <div key={i} className="flex-1 flex items-center">
+              <button 
+                onClick={() => setStatusFilter(statusFilter === stage.status ? 'All' : stage.status)}
+                className={`flex-1 flex flex-col items-center justify-center p-2 rounded-xl transition-all active:scale-95 ${stage.color} ${
+                  statusFilter === stage.status ? 'ring-2 ring-offset-2 ring-slate-300' : ''
+                }`}
+              >
+                <span className="text-[10px] font-medium mb-1.5 whitespace-nowrap">{stage.label}</span>
+                <div className="bg-white rounded-md w-10 h-5.5 flex items-center justify-center shadow-sm text-slate-900 font-semibold text-[12px]">
+                  {stage.count}
+                </div>
+              </button>
+              
+              {i < arr.length - 1 && (
+                <div className="flex-shrink-0 flex items-center px-0.5">
+                  <div className="w-4 border-t-2 border-dashed border-[#E2E8F0] relative">
+                    <div className="absolute -right-0.5 -top-[4px] h-1.5 w-1.5 rounded-full bg-[#CBD5E1]"></div>
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="flex bg-slate-50 p-1 rounded-xl border border-slate-100 overflow-x-auto max-w-full no-scrollbar">
-               {['All', ...statusOptions].map(status => (
-                  <button
-                     key={status}
-                     onClick={() => setStatusFilter(status)}
-                     className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${statusFilter === status ? 'bg-white text-rose-500 shadow-sm border border-slate-100' : 'text-slate-400 hover:text-slate-600'}`}
-                  >
-                     {status}
-                  </button>
-               ))}
-            </div>
-         </div>
+          ))}
+        </div>
       </div>
 
-      {/* Dynamic Lead List */}
-      <div className="space-y-4">
+      {/* Filters Row */}
+      <div className="flex gap-2 px-1">
+        <div className="relative">
+          <button 
+            onClick={() => setOpenDropdown(openDropdown === 'status' ? null : 'status')}
+            className={`px-4 py-2 bg-white border rounded-xl text-[11px] font-bold flex items-center gap-2 shadow-sm transition-all ${
+              statusFilter !== 'All' || openDropdown === 'status'
+                ? 'border-violet-200 text-violet-600 ring-4 ring-violet-50' 
+                : 'border-slate-100 text-slate-600'
+            }`}
+          >
+            {statusFilter === 'All' ? 'All Status' : statusFilter}
+            <Icon name="chevron-down" size="xs" color={statusFilter !== 'All' ? '#7c3aed' : "#94a3b8"} />
+          </button>
+
+          {openDropdown === 'status' && (
+            <div className="absolute top-full left-0 mt-2 w-40 bg-white border border-slate-100 rounded-xl shadow-xl z-50 py-1 animate-in fade-in slide-in-from-top-1">
+              {['All', ...statusOptions].map((opt) => (
+                <button
+                  key={opt}
+                  onClick={() => {
+                    setStatusFilter(opt);
+                    setOpenDropdown(null);
+                  }}
+                  className={`w-full px-4 py-2 text-left text-[11px] font-bold hover:bg-slate-50 transition-colors ${
+                    statusFilter === opt ? 'text-violet-600 bg-violet-50/50' : 'text-slate-600'
+                  }`}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Leads List Header */}
+      <div className="flex items-center justify-between px-1">
+        <h2 className="text-[14px] font-bold text-slate-900">All Leads ({filteredLeads.length})</h2>
+        <div className="h-8 w-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-violet-600 shadow-sm">
+          <Icon name="grid" size="xs" />
+        </div>
+      </div>
+
+      {/* High-Density Lead List */}
+      <div className="space-y-2.5 px-1">
         {filteredLeads.length === 0 ? (
-          <div className="vendor-surface rounded-[2.5rem] p-24 text-center bg-slate-50 border border-dashed border-slate-200">
-             <div className="h-20 w-20 rounded-full bg-white mx-auto flex items-center justify-center text-slate-200 mb-6 shadow-sm">
-                <Icon name="mail" size="lg" />
-             </div>
-             <p className="text-sm font-black text-slate-400 uppercase tracking-widest">No matching leads</p>
-             <p className="text-[11px] font-bold text-slate-300 mt-2 italic">Try adjusting your filters to see more results.</p>
+          <div className="py-20 text-center bg-white rounded-3xl border border-slate-100 shadow-sm">
+            <div className="h-16 w-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Icon name="mail" size="md" color="#cbd5e1" />
+            </div>
+            <p className="text-[12px] font-bold text-slate-400 uppercase tracking-widest">No matching enquiries found</p>
           </div>
         ) : (
-          filteredLeads.map((lead) => {
-            const colors = getStatusColor(lead.status);
-            const leadId = lead._id;
+          filteredLeads.map((lead, idx) => {
+            const realImages = [
+              "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150",
+              "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150",
+              "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150"
+            ];
+            const profileImg = lead.img || realImages[idx % realImages.length];
+            const isHot = lead.status === 'New';
+            const leadScore = isHot ? 92 : (lead.status === 'Contacted' ? 78 : 45);
+
             return (
-              <div key={leadId} className="vendor-surface rounded-[2rem] p-5 sm:p-6 bg-white border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:shadow-slate-200/40 group relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1.5 h-full" style={{ backgroundColor: colors.text }}></div>
-                
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-4 mb-4">
-                       <div className="h-14 w-14 rounded-2xl flex items-center justify-center bg-slate-50 border border-slate-100 text-slate-400 font-black text-xl shadow-inner">
-                          {lead.customerName?.[0] || 'U'}
-                       </div>
-                       <div>
-                          <div className="flex items-center gap-3">
-                             <h3 className="text-base font-black text-slate-900 uppercase tracking-tight">{lead.customerName}</h3>
-                             <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm border" style={{ background: colors.bg, color: colors.text, borderColor: colors.border }}>
-                                {lead.status}
-                             </span>
-                          </div>
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1.5">Lead Node: #{leadId.slice(-6).toUpperCase()}</p>
-                       </div>
+              <div key={lead._id} className="bg-slate-50 rounded-xl border border-slate-200/60 p-3 shadow-sm relative group transition-all hover:bg-white hover:shadow-md active:scale-[0.995]">
+                <div className="flex items-start justify-between">
+                  <div className="flex gap-2.5">
+                    <div className="h-11 w-11 rounded-full overflow-hidden border-2 border-white shadow-sm flex-shrink-0">
+                      <img src={profileImg} alt={lead.customerName} className="h-full w-full object-cover" />
                     </div>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                       <div className="bg-slate-50/50 rounded-2xl p-4 border border-slate-100/50">
-                          <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Event Identity</p>
-                          <div className="flex items-center gap-2 text-[11px] font-black text-slate-700">
-                             <Icon name="calendar" size="xs" color="#94a3b8" />
-                             {lead.eventDate ? new Date(lead.eventDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'TBD'}
-                          </div>
-                       </div>
-                       <div className="bg-slate-50/50 rounded-2xl p-4 border border-slate-100/50">
-                          <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Target Location</p>
-                          <div className="flex items-center gap-2 text-[11px] font-black text-slate-700 truncate">
-                             <Icon name="map" size="xs" color="#94a3b8" />
-                             {lead.eventLocation || 'Location TBD'}
-                          </div>
-                       </div>
-                       <div className="bg-slate-50/50 rounded-2xl p-4 border border-slate-100/50">
-                          <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Direct Access</p>
-                          <div className="flex items-center gap-2 text-[11px] font-black text-slate-700">
-                             <Icon name="phone" size="xs" color="#94a3b8" />
-                             {lead.customerPhone || lead.phone}
-                          </div>
-                       </div>
-                    </div>
-
-                    <div className="mt-4 p-4 bg-rose-50/30 rounded-2xl border border-rose-100/50 relative overflow-hidden group/req">
-                       <div className="absolute top-0 right-0 p-3 opacity-10 group-hover/req:opacity-30 transition-opacity">
-                          <Icon name="chat" size="lg" />
-                       </div>
-                       <p className="text-[9px] font-black text-rose-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                          Client Requirement Specification
-                       </p>
-                       <p className="text-[11px] font-bold text-slate-600 leading-relaxed italic relative z-10">"{lead.message || 'I am interested in your services and would like to receive a proposal.'}"</p>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-row lg:flex-col items-stretch gap-3 lg:min-w-[180px]">
-                    <a
-                      href={`tel:${lead.customerPhone || lead.phone}`}
-                      className="flex-1 lg:flex-none px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest bg-emerald-500 text-white shadow-xl shadow-emerald-200 active:scale-95 transition-all text-center flex items-center justify-center gap-3 group/call"
-                    >
-                      <Icon name="phone" size="xs" className="group-hover/call:animate-bounce" /> Reach Client
-                    </a>
-                    
-                    <button
-                       onClick={() => navigate('/vendor/quotes', { state: { prefillLeadId: leadId } })}
-                       className="flex-1 lg:flex-none px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest bg-slate-900 text-white shadow-xl shadow-slate-200 active:scale-95 transition-all text-center flex items-center justify-center gap-3 group/prop"
-                    >
-                       <Icon name="sparkles" size="xs" className="group-hover/prop:animate-pulse" /> Draft Proposal
-                    </button>
-
-                    <div className="relative flex-1 lg:flex-none">
-                      <button
-                        className="w-full h-14 px-5 bg-white border border-slate-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-600 flex items-center justify-between gap-3 hover:border-rose-400/30 transition-all shadow-sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setOpenDropdown(openDropdown === leadId ? null : leadId);
-                        }}
-                      >
-                        <span className="flex items-center gap-2">
-                           <div className="h-2 w-2 rounded-full" style={{ backgroundColor: colors.text }}></div>
-                           {lead.status}
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-[13px] font-bold text-slate-900 leading-tight">{lead.customerName}</h3>
+                        <span className={`text-[7px] font-black px-1.5 py-0.5 rounded bg-white shadow-sm border border-slate-100 uppercase tracking-widest ${isHot ? 'text-rose-500' : 'text-orange-500'}`}>
+                          {lead.status === 'New' ? 'HOT' : 'WARM'}
                         </span>
-                        <Icon name="chevron-down" size="xs" className={`transition-transform duration-300 ${openDropdown === leadId ? 'rotate-180' : ''}`} />
-                      </button>
-
-                      {openDropdown === leadId && (
-                        <>
-                          <div className="fixed inset-0 z-[120]" onClick={() => setOpenDropdown(null)}></div>
-                          <div className="absolute left-0 lg:left-auto lg:right-0 bottom-full mb-3 w-56 bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 z-[130] overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300 p-2">
-                             {statusOptions.map((opt) => (
-                               <button 
-                                 key={opt}
-                                 className="w-full px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest hover:bg-rose-50 hover:text-rose-500 rounded-xl transition-all flex items-center gap-3 group/opt"
-                                 onClick={() => updateStatus(leadId, opt)}
-                                >
-                                 <div className={`h-1.5 w-1.5 rounded-full transition-all group-hover/opt:scale-150 ${lead.status === opt ? 'bg-rose-500' : 'bg-slate-200'}`}></div>
-                                 {opt}
-                               </button>
-                             ))}
-                          </div>
-                        </>
-                      )}
+                      </div>
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[9px] font-bold text-slate-400">
+                        <span className="flex items-center gap-1">{lead.category || 'Event'} <span className="opacity-30">•</span> {lead.eventDate ? new Date(lead.eventDate).toLocaleDateString() : 'TBD'}</span>
+                        <span className="flex items-center gap-1"><Icon name="location" size="xs" /> {lead.eventLocation || 'Indore'}</span>
+                        <span className="flex items-center gap-1"><Icon name="users" size="xs" /> {lead.guests || '250'} G</span>
+                      </div>
                     </div>
                   </div>
+                  
+                  <div className="flex gap-3">
+                    <div className="text-right">
+                      <p className="text-[7px] font-bold text-slate-400 uppercase tracking-tight">Budget</p>
+                      <p className="text-[12px] font-bold text-slate-900 leading-none">₹{lead.budget || lead.totalAmount || 'TBD'}</p>
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <div className="relative h-8 w-8">
+                        <svg className="h-full w-full" viewBox="0 0 36 36">
+                          <circle cx="18" cy="18" r="16" fill="none" className="stroke-white" strokeWidth="4"></circle>
+                          <circle cx="18" cy="18" r="16" fill="none" className="stroke-emerald-500" strokeWidth="4" strokeDasharray={`${leadScore}, 100`} strokeLinecap="round"></circle>
+                        </svg>
+                        <span className="absolute inset-0 flex items-center justify-center text-[7px] font-black text-emerald-600">{leadScore}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Requirement Specification (Compact) */}
+                {lead.message && (
+                  <div className="mt-2 px-2 py-1.5 bg-white/60 rounded-xl border border-white shadow-inner">
+                    <p className="text-[9px] text-slate-500 line-clamp-1 leading-normal italic">"{lead.message}"</p>
+                  </div>
+                )}
+
+                {/* Compact Action Bar */}
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-200/40">
+                  <div className="flex gap-1">
+                    {[
+                      { icon: 'phone', color: 'bg-blue-500 text-white', href: `tel:${lead.customerPhone || lead.phone}` },
+                      { icon: 'chat', color: 'bg-emerald-500 text-white' },
+                      { icon: 'fileText', color: 'bg-violet-500 text-white', onClick: () => navigate('/vendor/quotes', { state: { prefillLeadId: lead._id } }) },
+                      { icon: 'calendar', color: 'bg-orange-500 text-white' },
+                      { icon: 'edit', color: 'bg-slate-100 text-slate-500' }
+                    ].map((btn, i) => (
+                      btn.href ? (
+                        <a key={i} href={btn.href} className={`h-7 w-8 rounded-lg flex items-center justify-center shadow-sm active:scale-90 transition-all ${btn.color}`}>
+                          <Icon name={btn.icon} size="xs" />
+                        </a>
+                      ) : (
+                        <button key={i} onClick={btn.onClick} className={`h-7 w-8 rounded-lg flex items-center justify-center shadow-sm active:scale-90 transition-all ${btn.color}`}>
+                          <Icon name={btn.icon} size="xs" />
+                        </button>
+                      )
+                    ))}
+                  </div>
+                  <span className="text-[9px] font-bold text-slate-400">
+                    {lead.createdAt ? new Date(lead.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Now'}
+                  </span>
                 </div>
               </div>
             );

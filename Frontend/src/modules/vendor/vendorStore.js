@@ -60,17 +60,13 @@ export const defaultVendorState = {
     blockedDates: [todayISO()]
   },
   analytics: {
-    profileViews: 1240,
-    inquiries: 45,
-    bookings: 12,
-    conversionRate: 8.5
+    profileViews: 0,
+    inquiries: 0,
+    bookings: 0,
+    conversionRate: 0
   },
-  status: 'Approved',
-  notifications: [
-    { id: '1', message: 'You have a new inquiry for Wedding Decor', time: '2 hours ago' },
-    { id: '2', message: 'Booking confirmed for Rahul & Sneha', time: '5 hours ago' },
-    { id: '3', message: 'Your KYC documents have been verified', time: '1 day ago' }
-  ]
+  status: 'Pending',
+  notifications: []
 };
 
 export const loadVendorState = () => {

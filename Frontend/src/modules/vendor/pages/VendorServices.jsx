@@ -59,7 +59,7 @@ const VendorServices = () => {
       const token = localStorage.getItem('vendorToken');
       const serviceData = {
         name: newService.name,
-        category: vendorState.category, // Always use vendor's registration category
+        category: vendorState.category,
         image: newService.image,
         packages: [
           { name: 'Standard', price: 0, features: newService.features.filter(Boolean) },
@@ -124,103 +124,136 @@ const VendorServices = () => {
 
   const getServiceColor = (index) => {
     const colors = [
-      { bg: '#FFF1F2', border: '#FFE4E6', text: '#E11D48' }, // Rose
-      { bg: '#F0F9FF', border: '#E0F2FE', text: '#0284C7' }, // Sky
-      { bg: '#F5F3FF', border: '#EDE9FE', text: '#7C3AED' }, // Purple
-      { bg: '#FFFBEB', border: '#FEF3C7', text: '#D97706' }, // Amber
-      { bg: '#F0FDF4', border: '#DCFCE7', text: '#16A34A' }  // Emerald
+      { bg: '#F8FAFF', border: '#E0E7FF', text: '#4F46E5', accent: '#EEF2FF' }, // Indigo
+      { bg: '#F0FDF4', border: '#DCFCE7', text: '#16A34A', accent: '#F0FDF4' }, // Emerald
+      { bg: '#FFF1F2', border: '#FFE4E6', text: '#E11D48', accent: '#FFF1F2' }, // Rose
+      { bg: '#F5F3FF', border: '#EDE9FE', text: '#7C3AED', accent: '#F5F3FF' }, // Purple
     ];
     return colors[index % colors.length];
   };
 
+  if (!vendorState) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <div className="animate-spin h-8 w-8 border-4 border-[#ed648f] border-t-transparent rounded-full"></div>
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Loading Services...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Header */}
-      <div className="vendor-surface rounded-xl p-3 sm:p-5 relative overflow-hidden bg-[#FDF2F8] border border-rose-100">
-        <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 relative z-10">
+    <div className="space-y-3 sm:space-y-4 animate-in fade-in duration-500 pb-20 sm:pb-0">
+      <style>{`
+        .chevron-card {
+          clip-path: polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%, 10% 50%);
+        }
+        .chevron-card:first-child {
+          clip-path: polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%);
+          border-top-left-radius: 12px;
+          border-bottom-left-radius: 12px;
+        }
+        .chevron-card:last-child {
+          clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 10% 50%);
+          border-top-right-radius: 12px;
+          border-bottom-right-radius: 12px;
+        }
+      `}</style>
+
+      {/* Header Section (Matching Image 2) */}
+      <div className="bg-white rounded-xl p-4 sm:p-6 border border-slate-100 shadow-sm relative overflow-hidden">
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#ed648f]">{vendorState.category || 'Vendor'}</p>
-            <h2 className="text-lg sm:text-xl font-black text-slate-900 mt-0.5">My Services</h2>
-            <p className="text-[11px] sm:text-xs font-bold text-slate-500 mt-0.5">All services are locked to your registered category.</p>
+            <p className="text-[9px] font-black uppercase tracking-widest text-[#ed648f] mb-1">{vendorState.category?.toUpperCase() || 'CATEGORY'}</p>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight">My Services</h2>
+            <p className="text-[11px] font-bold text-slate-400 mt-1 max-w-xs">
+              Manage your locked category offerings.
+            </p>
           </div>
           <button 
             type="button" 
             disabled={isSaving}
-            className="vendor-cta rounded-lg px-5 py-2.5 text-[11px] sm:text-xs font-black uppercase tracking-widest active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-rose-200 disabled:opacity-50"
+            className="h-10 px-6 rounded-lg bg-[#ed648f] text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-rose-100 active:scale-95 transition-all disabled:opacity-50"
             onClick={() => {
               setEditingId(null);
               setNewService({ name: '', image: '', features: ['', ''] });
               setShowModal(true);
             }}
           >
-            <Icon name="plus" size="xs" /> Add service
+            <Icon name="plus" size="xs" /> Add Service
           </button>
         </div>
       </div>
 
-      {/* Stats Row */}
-      <div className="grid grid-cols-3 gap-3">
+      {/* Stats Pipeline Row (Matching Image 1 Card Style) */}
+      <div className="flex w-full h-12 sm:h-14 gap-1 overflow-hidden">
         {[
-          { label: 'Services', value: vendorState.services?.length || 0, bg: '#F0F9FF', border: '#E0F2FE' },
-          { label: 'Category', value: vendorState.category || 'N/A', bg: '#FFFBEB', border: '#FEF3C7' },
-          { label: 'Visibility', value: 'High', bg: '#F0FDF4', border: '#DCFCE7' }
+          { label: 'Services', value: vendorState.services?.length || 0, color: '#F5F3FF', text: '#7C3AED' },
+          { label: 'Category', value: vendorState.category || 'N/A', color: '#FFFBEB', text: '#D97706' },
+          { label: 'Visibility', value: 'High', color: '#F0FDF4', text: '#16A34A' }
         ].map((stat, i) => (
-          <div key={i} className="vendor-surface rounded-xl p-2 sm:p-3 border shadow-none flex flex-col items-center justify-center text-center transition-all hover:scale-[1.02]" style={{ background: stat.bg, borderColor: stat.border }}>
-            <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter mb-0.5">{stat.label}</p>
-            <p className="text-[10px] sm:text-xs font-black text-slate-900 tracking-tight leading-none">{stat.value}</p>
+          <div 
+            key={i} 
+            className="chevron-card flex-1 flex flex-col items-center justify-center p-1 relative"
+            style={{ backgroundColor: stat.color }}
+          >
+            <p className="text-[7px] sm:text-[9px] font-black uppercase tracking-widest mb-0.5" style={{ color: stat.text }}>{stat.label}</p>
+            <div className="h-5 w-auto px-2 bg-white rounded-md flex items-center justify-center shadow-xs">
+               <span className="text-[10px] sm:text-[11px] font-black text-slate-900">{stat.value}</span>
+            </div>
           </div>
         ))}
       </div>
 
-      {/* Service Grid */}
+      {/* Service List Cards (Professional & Compact) */}
       <div className="grid gap-4 lg:grid-cols-2">
         {vendorState.services?.map((service, i) => {
           const theme = getServiceColor(i);
           return (
-            <div key={service._id} className="vendor-surface rounded-2xl p-0 relative overflow-hidden transition-all hover:shadow-md border flex flex-col sm:flex-row" style={{ backgroundColor: theme.bg, borderColor: theme.border }}>
+            <div 
+              key={service._id} 
+              className="bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm flex flex-col sm:flex-row group transition-all hover:shadow-md hover:border-indigo-100"
+            >
               {/* Service Image */}
-              <div className="w-full sm:w-40 h-40 sm:h-auto bg-slate-100 flex-shrink-0 relative overflow-hidden">
+              <div className="w-full sm:w-36 h-36 sm:h-auto bg-slate-50 flex-shrink-0 relative overflow-hidden">
                 {service.image ? (
-                   <img src={service.image} className="h-full w-full object-cover" alt={service.name} />
+                   <img src={service.image} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" alt={service.name} />
                 ) : (
-                   <div className="h-full w-full flex flex-col items-center justify-center text-slate-300">
+                   <div className="h-full w-full flex flex-col items-center justify-center text-slate-200 bg-slate-50">
                       <Icon name="camera" size="sm" />
-                      <span className="text-[8px] font-black uppercase mt-1">No Image</span>
                    </div>
                 )}
-                <div className="absolute top-2 left-2 px-2 py-1 rounded-md bg-white/90 text-[8px] font-black uppercase tracking-widest text-slate-900 shadow-sm">
+                <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-white/90 text-[8px] font-black uppercase tracking-widest text-slate-900 border border-slate-100 shadow-sm">
                    {service.category || vendorState.category}
                 </div>
               </div>
 
-              <div className="flex-1 p-5">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">{service.name}</h3>
-                    <p className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-40">Primary Listing</p>
+              <div className="flex-1 p-4 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="text-[14px] sm:text-[16px] font-black text-slate-900 uppercase tracking-tight">{service.name}</h3>
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={() => handleEdit(service)} className="h-7 w-7 rounded-md bg-slate-50 flex items-center justify-center text-slate-400 hover:text-[#7C3AED] hover:bg-violet-50 transition-all border border-slate-100">
+                          <Icon name="edit" size="xs" />
+                      </button>
+                      <button onClick={() => handleDelete(service._id)} className="h-7 w-7 rounded-md bg-slate-50 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all border border-slate-100">
+                          <Icon name="trash" size="xs" />
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => handleEdit(service)} className="h-8 w-8 rounded-lg bg-white/60 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors">
-                        <Icon name="edit" size="xs" />
-                    </button>
-                    <button onClick={() => handleDelete(service._id)} className="h-8 w-8 rounded-lg bg-white/60 flex items-center justify-center text-rose-400 hover:text-rose-600 transition-colors">
-                        <Icon name="trash" size="xs" />
-                    </button>
+                  
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {(service.features || service.packages?.[0]?.features || []).map((item, idx) => (
+                      <div key={idx} className="flex items-center gap-1.5 bg-slate-50/80 rounded-md px-2 py-1 border border-slate-100 text-[9px] font-bold text-slate-600">
+                        <Icon name="check" size="xs" color="#10b981" />
+                        <span className="truncate max-w-[100px]">{item}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
                 
-                <div className="space-y-3">
-                  <div className="px-1">
-                    <p className="text-[9px] font-black text-slate-900/30 uppercase tracking-widest mb-2">Highlights</p>
-                    <div className="flex flex-wrap gap-2">
-                      {(service.features || service.packages?.[0]?.features || []).map((item, idx) => (
-                        <div key={idx} className="flex items-center gap-1.5 bg-white/60 rounded-lg px-2 py-1 border border-white/80 text-[9px] font-bold text-slate-600">
-                          <Icon name="check" size="xs" color="#10b981" />
-                          <span className="truncate">{item}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                <div className="mt-4 pt-3 border-t border-slate-50 flex items-center justify-between">
+                   <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Listing Managed</p>
+                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-200"></span>
                 </div>
               </div>
             </div>
@@ -231,12 +264,12 @@ const VendorServices = () => {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowModal(false)}></div>
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowModal(false)}></div>
           <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 overflow-hidden animate-in fade-in zoom-in duration-300">
              <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="text-lg font-black text-slate-900 tracking-tight">{editingId ? 'Edit Service' : 'New Service'}</h3>
-                  <p className="text-xs font-bold text-slate-500">Define your offering details</p>
+                  <p className="text-xs font-bold text-slate-500">Configure your business offering</p>
                 </div>
                 <button onClick={() => setShowModal(false)} className="h-8 w-8 rounded-full hover:bg-slate-100 flex items-center justify-center transition-colors">
                    <Icon name="close" size="sm" />
@@ -244,8 +277,7 @@ const VendorServices = () => {
              </div>
 
              <div className="space-y-4">
-                {/* Image Upload */}
-                <div className="relative h-32 w-full rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center justify-center overflow-hidden group">
+                <div className="relative h-32 w-full rounded-xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center justify-center overflow-hidden group">
                    {newService.image ? (
                       <>
                         <img src={newService.image} className="h-full w-full object-cover" alt="Service" />
@@ -256,53 +288,32 @@ const VendorServices = () => {
                    ) : (
                       <label className="cursor-pointer flex flex-col items-center">
                          <Icon name="camera" size="sm" color="#94a3b8" />
-                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">Upload Display Image</span>
+                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">Display Image</span>
                          <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
                       </label>
                    )}
-                   {newService.image && <input type="file" className="hidden" id="service-img-change" accept="image/*" onChange={handleImageUpload} />}
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Service Name</label>
-                    <input 
-                      className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black focus:outline-none focus:border-rose-400 transition-all"
-                      placeholder="e.g. Traditional Wedding Stage"
-                      value={newService.name}
-                      onChange={(e) => setNewService({...newService, name: e.target.value})}
-                    />
-                </div>
-
-                <div className="bg-slate-50 rounded-xl p-3 border border-slate-200">
-                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none">Auto-Assigned Category</p>
-                    <p className="text-xs font-black text-slate-900 mt-1">{vendorState.category}</p>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Service Name</label>
+                    <input className="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black focus:outline-none focus:border-indigo-400 transition-all" placeholder="e.g. Traditional Wedding Stage" value={newService.name} onChange={(e) => setNewService({...newService, name: e.target.value})} />
                 </div>
 
                 <div className="space-y-1.5">
-                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Key Features (Max 4)</label>
+                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Key Features</label>
                    <div className="grid grid-cols-2 gap-2">
                       {[0, 1, 2, 3].map(idx => (
-                        <input 
-                          key={idx}
-                          className="w-full h-9 px-3 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold focus:outline-none focus:border-rose-400"
-                          placeholder={`Feature ${idx + 1}`}
-                          value={newService.features[idx] || ''}
-                          onChange={(e) => {
-                            const updated = [...newService.features];
-                            updated[idx] = e.target.value;
-                            setNewService({...newService, features: updated});
-                          }}
-                        />
+                        <input key={idx} className="w-full h-9 px-3 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold focus:outline-none focus:border-indigo-400" placeholder={`Feature ${idx + 1}`} value={newService.features[idx] || ''} onChange={(e) => {
+                          const updated = [...newService.features];
+                          updated[idx] = e.target.value;
+                          setNewService({...newService, features: updated});
+                        }} />
                       ))}
                    </div>
                 </div>
 
                 <div className="pt-2">
-                   <button 
-                     disabled={isSaving}
-                     onClick={handleSave} 
-                     className="w-full vendor-cta h-12 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-rose-200 disabled:opacity-50"
-                   >
+                   <button disabled={isSaving} onClick={handleSave} className="w-full h-12 rounded-xl text-xs font-black uppercase tracking-widest bg-[#ed648f] text-white shadow-lg shadow-rose-100 active:scale-95 transition-all disabled:opacity-50">
                       {isSaving ? 'Saving...' : (editingId ? 'Update Service' : 'Create Service')}
                    </button>
                 </div>

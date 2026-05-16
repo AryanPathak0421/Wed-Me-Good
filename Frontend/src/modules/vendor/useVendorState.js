@@ -12,6 +12,13 @@ export const useVendorState = () => {
       // Always fetch profile first to check status
       const profileRes = await vendorApi.getProfile(token);
       
+      // Handle unauthorized / expired token
+      if (profileRes.success === false && (profileRes.message === 'Invalid token.' || profileRes.message === 'Access denied. No token provided.')) {
+        localStorage.removeItem('vendorToken');
+        window.location.href = '/vendor/login';
+        return;
+      }
+
       const newState = { ...defaultVendorState };
       if (profileRes.success) {
         Object.assign(newState, profileRes.data);
