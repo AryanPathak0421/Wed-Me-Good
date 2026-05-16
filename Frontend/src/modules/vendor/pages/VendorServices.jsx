@@ -157,6 +157,14 @@ const VendorServices = () => {
           border-top-right-radius: 12px;
           border-bottom-right-radius: 12px;
         }
+        .service-arrow-card {
+          clip-path: polygon(0% 0%, 96% 0%, 100% 50%, 96% 100%, 0% 100%, 4% 50%);
+        }
+        @media (max-width: 640px) {
+          .service-arrow-card {
+            clip-path: polygon(0% 0%, 100% 0%, 100% 92%, 50% 100%, 0% 92%);
+          }
+        }
       `}</style>
 
       {/* Header Section (Matching Image 2) */}
@@ -185,20 +193,20 @@ const VendorServices = () => {
       </div>
 
       {/* Stats Pipeline Row (Matching Image 1 Card Style) */}
-      <div className="flex w-full h-12 sm:h-14 gap-1 overflow-hidden">
+      <div className="flex w-full h-12 sm:h-14 gap-1 overflow-hidden drop-shadow-sm">
         {[
-          { label: 'Services', value: vendorState.services?.length || 0, color: '#F5F3FF', text: '#7C3AED' },
-          { label: 'Category', value: vendorState.category || 'N/A', color: '#FFFBEB', text: '#D97706' },
-          { label: 'Visibility', value: 'High', color: '#F0FDF4', text: '#16A34A' }
+          { label: 'Services', value: vendorState.services?.length || 0, color: '#1E293B', text: '#94A3B8' },
+          { label: 'Category', value: vendorState.category || 'N/A', color: '#334155', text: '#CBD5E1' },
+          { label: 'Visibility', value: 'High', color: '#ed648f', text: '#FCE7F3' }
         ].map((stat, i) => (
           <div 
             key={i} 
             className="chevron-card flex-1 flex flex-col items-center justify-center p-1 relative"
             style={{ backgroundColor: stat.color }}
           >
-            <p className="text-[7px] sm:text-[9px] font-black uppercase tracking-widest mb-0.5" style={{ color: stat.text }}>{stat.label}</p>
-            <div className="h-5 w-auto px-2 bg-white rounded-md flex items-center justify-center shadow-xs">
-               <span className="text-[10px] sm:text-[11px] font-black text-slate-900">{stat.value}</span>
+            <p className="text-[7px] sm:text-[9px] font-bold uppercase tracking-widest mb-0.5" style={{ color: stat.text }}>{stat.label}</p>
+            <div className="h-5 w-auto px-2.5 bg-white/10 backdrop-blur-md rounded-md flex items-center justify-center border border-white/10 shadow-sm">
+               <span className="text-[10px] sm:text-[11px] font-bold text-white">{stat.value}</span>
             </div>
           </div>
         ))}
@@ -211,31 +219,32 @@ const VendorServices = () => {
           return (
             <div 
               key={service._id} 
-              className="bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm flex flex-col sm:flex-row group transition-all hover:shadow-md hover:border-indigo-100"
+              className="service-arrow-card overflow-hidden shadow-sm flex flex-col sm:flex-row group transition-all hover:shadow-md hover:-translate-y-0.5"
+              style={{ backgroundColor: theme.bg }}
             >
               {/* Service Image */}
-              <div className="w-full sm:w-36 h-36 sm:h-auto bg-slate-50 flex-shrink-0 relative overflow-hidden">
+              <div className="w-full sm:w-36 h-36 sm:h-auto bg-white/40 flex-shrink-0 relative overflow-hidden pl-0 sm:pl-3">
                 {service.image ? (
                    <img src={service.image} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" alt={service.name} />
                 ) : (
-                   <div className="h-full w-full flex flex-col items-center justify-center text-slate-200 bg-slate-50">
+                   <div className="h-full w-full flex flex-col items-center justify-center text-slate-300">
                       <Icon name="camera" size="sm" />
                    </div>
                 )}
-                <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-white/90 text-[8px] font-black uppercase tracking-widest text-slate-900 border border-slate-100 shadow-sm">
+                <div className="absolute top-2 left-4 sm:left-6 px-2 py-0.5 rounded bg-white/90 text-[8px] font-bold uppercase tracking-widest text-slate-900 shadow-sm backdrop-blur-sm">
                    {service.category || vendorState.category}
                 </div>
               </div>
 
-              <div className="flex-1 p-4 flex flex-col justify-between">
+              <div className="flex-1 p-4 sm:p-5 sm:pl-6 sm:pr-10 flex flex-col justify-between">
                 <div>
                   <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-[14px] sm:text-[16px] font-black text-slate-900 uppercase tracking-tight">{service.name}</h3>
-                    <div className="flex items-center gap-1.5">
-                      <button onClick={() => handleEdit(service)} className="h-7 w-7 rounded-md bg-slate-50 flex items-center justify-center text-slate-400 hover:text-[#7C3AED] hover:bg-violet-50 transition-all border border-slate-100">
+                    <h3 className="text-[14px] sm:text-[16px] font-semibold text-slate-900 uppercase tracking-tight">{service.name}</h3>
+                    <div className="flex items-center gap-1.5 ml-2">
+                      <button onClick={() => handleEdit(service)} className="h-7 w-7 rounded-md bg-white flex items-center justify-center text-slate-400 hover:text-indigo-600 shadow-sm transition-all border border-white/40">
                           <Icon name="edit" size="xs" />
                       </button>
-                      <button onClick={() => handleDelete(service._id)} className="h-7 w-7 rounded-md bg-slate-50 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all border border-slate-100">
+                      <button onClick={() => handleDelete(service._id)} className="h-7 w-7 rounded-md bg-white flex items-center justify-center text-slate-400 hover:text-rose-600 shadow-sm transition-all border border-white/40">
                           <Icon name="trash" size="xs" />
                       </button>
                     </div>
@@ -243,17 +252,17 @@ const VendorServices = () => {
                   
                   <div className="flex flex-wrap gap-1.5 mt-2">
                     {(service.features || service.packages?.[0]?.features || []).map((item, idx) => (
-                      <div key={idx} className="flex items-center gap-1.5 bg-slate-50/80 rounded-md px-2 py-1 border border-slate-100 text-[9px] font-bold text-slate-600">
-                        <Icon name="check" size="xs" color="#10b981" />
+                      <div key={idx} className="flex items-center gap-1.5 bg-white/60 rounded px-2 py-1 text-[9px] font-medium text-slate-700 shadow-sm">
+                        <Icon name="check" size="xs" color={theme.text} />
                         <span className="truncate max-w-[100px]">{item}</span>
                       </div>
                     ))}
                   </div>
                 </div>
                 
-                <div className="mt-4 pt-3 border-t border-slate-50 flex items-center justify-between">
-                   <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Listing Managed</p>
-                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-200"></span>
+                <div className="mt-4 pt-3 flex items-center justify-between border-t border-black/5">
+                   <p className="text-[9px] font-semibold uppercase tracking-[0.2em]" style={{ color: theme.text }}>Listing Managed</p>
+                   <span className="h-1.5 w-1.5 rounded-full shadow-sm" style={{ backgroundColor: theme.text }}></span>
                 </div>
               </div>
             </div>
