@@ -225,22 +225,13 @@ const VendorSubscriptionOnboarding = () => {
           handler: async function (response) {
             setIsSaving(true);
             try {
-              // Direct mock verification bypass
-              const verifyRes = await fetch('http://localhost:5000/api/vendor/subscription/verify', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                  razorpay_order_id: `order_fallback_${Date.now()}`,
-                  razorpay_payment_id: response.razorpay_payment_id || `pay_${Date.now()}`,
-                  razorpay_signature: 'mock_signature',
-                  isMock: true
-                })
-              });
-
-              const verifyData = await verifyRes.json();
+              // Direct mock verification bypass using vendorApi
+              const verifyData = await vendorApi.verifySubscriptionPayment({
+                razorpay_order_id: `order_fallback_${Date.now()}`,
+                razorpay_payment_id: response.razorpay_payment_id || `pay_${Date.now()}`,
+                razorpay_signature: 'mock_signature',
+                isMock: true
+              }, token);
               if (verifyData.success) {
                 updateVendorState({
                   subscription: {
@@ -285,21 +276,12 @@ const VendorSubscriptionOnboarding = () => {
         console.error('All Razorpay options failed, utilizing silent bypass:', fallbackErr);
         try {
           let orderId = `order_${Date.now()}`;
-          const verifyRes = await fetch('http://localhost:5000/api/vendor/subscription/verify', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              razorpay_order_id: orderId,
-              razorpay_payment_id: `pay_${Date.now()}`,
-              razorpay_signature: 'mock_signature',
-              isMock: true
-            })
-          });
-
-          const verifyData = await verifyRes.json();
+          const verifyData = await vendorApi.verifySubscriptionPayment({
+            razorpay_order_id: orderId,
+            razorpay_payment_id: `pay_${Date.now()}`,
+            razorpay_signature: 'mock_signature',
+            isMock: true
+          }, token);
           if (verifyData.success) {
             updateVendorState({
               subscription: {
@@ -331,13 +313,7 @@ const VendorSubscriptionOnboarding = () => {
     // Save skipped status to backend
     if (token) {
       try {
-        await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/vendor/subscription/skip`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        });
+        await vendorApi.skipSubscription(token);
       } catch (err) {
         console.warn('Failed to save subscription skip to backend:', err);
       }

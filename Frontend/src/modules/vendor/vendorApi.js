@@ -170,6 +170,16 @@ export const vendorApi = {
         return response.json();
     },
 
+    skipSubscription: async (token) => {
+        const response = await fetch(`${BASE_URL}/subscription/skip`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return response.json();
+    },
+
     updateProfile: async (data, token) => {
         const response = await fetch(`${BASE_URL}/settings`, {
             method: 'PUT',
