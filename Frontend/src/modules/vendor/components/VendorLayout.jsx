@@ -13,10 +13,10 @@ const VendorLayout = () => {
   const { vendorState, loading } = useVendorState();
 
   useEffect(() => {
-    if (!loading && vendorState._id && vendorState.subscription?.status !== 'Active') {
+    if (!loading && vendorState._id && vendorState.status === 'Approved' && vendorState.subscription?.status !== 'Active') {
       navigate('/vendor/onboarding/subscription');
     }
-  }, [loading, vendorState._id, vendorState.subscription?.status, navigate]);
+  }, [loading, vendorState._id, vendorState.status, vendorState.subscription?.status, navigate]);
 
   useEffect(() => {
     if (sidebarOpen) {
