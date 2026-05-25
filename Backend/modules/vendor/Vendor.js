@@ -125,7 +125,7 @@ const vendorSchema = new mongoose.Schema({
         planId: String,
         planName: String,
         amount: Number,
-        status: { type: String, enum: ['Pending', 'Active', 'Expired'], default: 'Pending' },
+        status: { type: String, enum: ['Pending', 'Active', 'Expired', 'Skipped'], default: 'Pending' },
         paymentId: String,
         orderId: String,
         startDate: Date,

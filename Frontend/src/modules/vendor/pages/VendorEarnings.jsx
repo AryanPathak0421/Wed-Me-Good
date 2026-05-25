@@ -145,15 +145,7 @@ const VendorEarnings = () => {
     setSaveStatus('');
     try {
       const token = localStorage.getItem('vendorToken');
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/vendor/settings`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ bank: bankDetails })
-      });
-      const data = await res.json();
+      const data = await vendorApi.updateProfile({ bank: bankDetails }, token);
       if (data.success) {
         setSaveStatus('success');
         setTimeout(() => {
