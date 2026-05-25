@@ -13,7 +13,8 @@ const VendorLayout = () => {
   const { vendorState, loading } = useVendorState();
 
   useEffect(() => {
-    if (!loading && vendorState._id && vendorState.status === 'Approved' && vendorState.subscription?.status !== 'Active') {
+    const isSkipped = localStorage.getItem('skippedSubscription') === 'true';
+    if (!loading && vendorState._id && vendorState.status === 'Approved' && vendorState.subscription?.status !== 'Active' && !isSkipped) {
       navigate('/vendor/onboarding/subscription');
     }
   }, [loading, vendorState._id, vendorState.status, vendorState.subscription?.status, navigate]);

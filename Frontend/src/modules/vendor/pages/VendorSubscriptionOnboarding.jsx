@@ -326,6 +326,7 @@ const VendorSubscriptionOnboarding = () => {
   };
 
   const handleSkip = () => {
+    localStorage.setItem('skippedSubscription', 'true');
     showToast('Subscription skipped. Moving to review.');
     setTimeout(() => {
       navigate('/vendor/onboarding/review');
@@ -509,7 +510,7 @@ const VendorSubscriptionOnboarding = () => {
         </div>
 
         {/* Action Button */}
-        <div className="mt-4 mb-2 max-w-md mx-auto w-full px-0.5">
+        <div className="mt-4 mb-2 max-w-md mx-auto w-full px-0.5 flex flex-col gap-3">
           <button
             type="button"
             onClick={handleComplete}
@@ -528,6 +529,14 @@ const VendorSubscriptionOnboarding = () => {
             ) : (
               'Complete Registration'
             )}
+          </button>
+
+          <button 
+            type="button"
+            onClick={handleSkip}
+            className="text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-[#4F35C3] transition-colors text-center py-2"
+          >
+            Skip for now
           </button>
         </div>
 
