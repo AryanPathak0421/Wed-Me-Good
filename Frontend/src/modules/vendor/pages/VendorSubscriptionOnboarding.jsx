@@ -325,8 +325,31 @@ const VendorSubscriptionOnboarding = () => {
     }
   };
 
-  const handleSkip = () => {
-    localStorage.setItem('skippedSubscription', 'true');
+  const handleSkip = async () => {
+    const token = localStorage.getItem('vendorToken');
+    
+    // Save skipped status to backend
+    if (token) {
+      try {
+        await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/vendor/subscription/skip`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      } catch (err) {
+        console.warn('Failed to save subscription skip to backend:', err);
+      }
+    }
+    
+    // Mark subscription as skipped in vendor state
+    updateVendorState({
+      subscription: {
+        ...vendorState.subscription,
+        status: 'Skipped'
+      }
+    });
     showToast('Subscription skipped. Moving to review.');
     setTimeout(() => {
       navigate('/vendor/onboarding/review');
@@ -510,7 +533,7 @@ const VendorSubscriptionOnboarding = () => {
         </div>
 
         {/* Action Button */}
-        <div className="mt-4 mb-2 max-w-md mx-auto w-full px-0.5 flex flex-col gap-3">
+        <div className="mt-4 mb-2 max-w-md mx-auto w-full px-0.5">
           <button
             type="button"
             onClick={handleComplete}
@@ -529,14 +552,6 @@ const VendorSubscriptionOnboarding = () => {
             ) : (
               'Complete Registration'
             )}
-          </button>
-
-          <button 
-            type="button"
-            onClick={handleSkip}
-            className="text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-[#4F35C3] transition-colors text-center py-2"
-          >
-            Skip for now
           </button>
         </div>
 

@@ -17,6 +17,7 @@ const {
     createSubscriptionOrder,
     verifySubscriptionPayment,
     getSubscriptionPlans,
+    skipSubscription,
     getEarningsSummary,
     getQuotes,
     createQuote,
@@ -95,5 +96,6 @@ router.post('/support', protectVendor, requireSubscription, requireVendorApprova
 router.get('/subscription/plans', protectVendor, getSubscriptionPlans);
 router.post('/subscription/order', protectVendor, createSubscriptionOrder);
 router.post('/subscription/verify', protectVendor, verifySubscriptionPayment);
+router.post('/subscription/skip', protectVendor, skipSubscription);
 
 module.exports = router;

@@ -652,6 +652,31 @@ exports.getSubscriptionPlan = async (req, res, next) => {
     }
 };
 
+// @desc    Skip subscription (for onboarding)
+// @route   POST /api/vendor/subscription/skip
+// @access  Private
+exports.skipSubscription = async (req, res, next) => {
+    try {
+        const vendor = await Vendor.findByIdAndUpdate(
+            req.vendor.id,
+            {
+                'subscription.status': 'Skipped',
+                'subscription.planId': null,
+                'subscription.planName': null
+            },
+            { new: true }
+        );
+
+        res.status(200).json({
+            success: true,
+            message: 'Subscription skipped',
+            data: vendor.subscription
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 
 // @desc    Get earnings summary
 // @route   GET /api/vendor/earnings
