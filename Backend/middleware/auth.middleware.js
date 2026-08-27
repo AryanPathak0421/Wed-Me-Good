@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const User = require('../modules/user/user.model');
 const Vendor = require('../modules/vendor/Vendor');
 
+
+
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
 // Protect routes - require authentication
